@@ -2,15 +2,31 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static values = {
-    theme: String,
+    theme: { type: String, default: "light" }
   }
   static targets = ["sunIcon", "moonIcon"];
 
+  initialize() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+      this.themeValue = savedTheme;
+    }
+  }
+
   connect() {
-    document.documentElement.classList.add(this.themeValue);
-    document.documentElement.style.colorScheme = this.themeValue;
-    this.moonIconTarget.classList.toggle("!hidden", this.themeValue === "light");
-    this.sunIconTarget.classList.toggle("!hidden", this.themeValue === "dark");
+    this.applyTheme(this.themeValue);
+    this.updateIcons(this.themeValue);
+  }
+  
+  applyTheme(theme) {
+    document.documentElement.classList.remove('light', 'dark');
+    document.documentElement.classList.add(theme);
+    document.documentElement.style.colorScheme = theme;
+  }
+  
+  updateIcons(theme) {
+    this.moonIconTarget.classList.toggle("!hidden", theme === "light");
+    this.sunIconTarget.classList.toggle("!hidden", theme === "dark");
   }
 
   toggle(event) {
@@ -19,12 +35,8 @@ export default class extends Controller {
   }
 
   themeValueChanged(value, previousValue) {
-    if (document.documentElement.classList.contains(previousValue)) {
-      document.documentElement.classList.remove(previousValue);
-    }
-    document.documentElement.classList.add(value);
-    document.documentElement.style.colorScheme = value;
-    this.moonIconTarget.classList.toggle("!hidden", value === "light");
-    this.sunIconTarget.classList.toggle("!hidden", value === "dark");
+    this.applyTheme(value);
+    this.updateIcons(value);
+    localStorage.setItem('theme', value);
   }
 }

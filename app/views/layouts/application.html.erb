@@ -1,6 +1,15 @@
 <!DOCTYPE html>
-<html class="h-full antialiased light">
+<html class="h-full antialiased">
   <head>
+    <script>
+      // ページ読み込み時にlocalStorageからテーマを取得して即時適用
+      const savedTheme = localStorage.getItem('theme');
+      if (savedTheme) {
+        document.documentElement.classList.remove('light', 'dark');
+        document.documentElement.classList.add(savedTheme);
+        document.documentElement.style.colorScheme = savedTheme;
+      }
+    </script>
     <title><%= content_for(:title) || "Spotlight" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
