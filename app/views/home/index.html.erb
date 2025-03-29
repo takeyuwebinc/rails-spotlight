@@ -93,46 +93,33 @@
             <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
               <h2 class="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 <span class="h-6 w-6">
-                  <i class="fa-regular fa-briefcase"></i>
+                  <i class="fa-regular fa-folder-open"></i>
                 </span>
-                <span class="ml-3">Work</span>
+                <span class="ml-3">Projects</span>
               </h2>
-              <ol class="mt-6 space-y-4">
-                <li class="flex gap-4">
-                  <div class="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full ring-1 shadow-md shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                    <%= image_tag "logo.png", loading: "lazy", width: 32, height: 32, decoding: "async", class: "h-7 w-7", style: "color: transparent" %>
-                  </div>
-                  <dl class="flex flex-auto flex-wrap gap-x-2">
-                    <dt class="sr-only">Company</dt>
-                    <dd class="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">TakeyuWeb Inc.</dd>
-                    <dt class="sr-only">Role</dt>
-                    <dd class="text-xs text-zinc-400 dark:text-zinc-500">Software Engineer</dd>
-                    <dt class="sr-only">Date</dt>
-                    <dd class="ml-auto text-xs text-zinc-400 dark:text-zinc-500">
-                      <time datetime="2016">2016</time>
-                      <span aria-hidden="true">—</span>
-                      <time datetime="2025">Present</time>
-                    </dd>
-                  </dl>
-                </li>
-                <li class="flex gap-4">
-                  <div class="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full ring-1 shadow-md shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                    <%= image_tag "logo.png", loading: "lazy", width: 32, height: 32, decoding: "async", class: "h-7 w-7", style: "color: transparent" %>
-                  </div>
-                  <dl class="flex flex-auto flex-wrap gap-x-2">
-                    <dt class="sr-only">Company</dt>
-                    <dd class="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">TakeyuWeb Inc.</dd>
-                    <dt class="sr-only">Role</dt>
-                    <dd class="text-xs text-zinc-400 dark:text-zinc-500">Software Engineer</dd>
-                    <dt class="sr-only">Date</dt>
-                    <dd class="ml-auto text-xs text-zinc-400 dark:text-zinc-500">
-                      <time datetime="2016">2016</time>
-                      <span aria-hidden="true">—</span>
-                      <time datetime="2025">Present</time>
-                    </dd>
-                  </dl>
-                </li>
-              </ol>
+              <ul class="mt-6 space-y-4">
+                <% @featured_projects.each do |project| %>
+                  <li class="flex gap-4">
+                    <div class="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full ring-1 shadow-md shadow-zinc-800/5 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+                      <div class="h-7 w-7 rounded-full bg-<%= project.color %> flex items-center justify-center">
+                        <i class="fa-solid <%= project.icon %> text-white text-xs"></i>
+                      </div>
+                    </div>
+                    <dl class="flex flex-auto flex-wrap gap-x-2">
+                      <dt class="sr-only">Project</dt>
+                      <dd class="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100"><%= project.title %></dd>
+                      <dt class="sr-only">Technologies</dt>
+                      <dd class="text-xs text-zinc-400 dark:text-zinc-500"><%= project.technologies %></dd>
+                    </dl>
+                  </li>
+                <% end %>
+              </ul>
+              <div class="mt-6 flex">
+                <%= link_to projects_path, class: "flex items-center gap-2 text-sm font-medium text-teal-500 dark:text-teal-400" do %>
+                  すべてのプロジェクトを見る
+                  <i class="fa-solid fa-chevron-right ml-1 h-auto w-2"></i>
+                <% end %>
+              </div>
             </div>
           </div>
         </div>

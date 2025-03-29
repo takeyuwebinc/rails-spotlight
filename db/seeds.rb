@@ -49,3 +49,65 @@ articles_data.each do |article_data|
 end
 
 puts "サンプル記事が作成されました"
+
+# サンプルプロジェクトデータ
+projects_data = [
+  {
+    title: "企業向けCRMシステム開発",
+    description: "大手製造業向けにカスタマイズされたCRMシステムを開発。顧客管理、営業支援、分析機能を統合し、業務効率を30%向上させました。",
+    icon: "fa-building",
+    color: "blue-600",
+    technologies: "Ruby on Rails, PostgreSQL, React",
+    position: 1
+  },
+  {
+    title: "ECサイトリニューアル",
+    description: "アパレルブランドのECサイトを全面リニューアル。モバイルファーストのデザイン、高速な検索機能、パーソナライズされたレコメンド機能を実装し、コンバージョン率が25%向上しました。",
+    icon: "fa-cart-shopping",
+    color: "green-600",
+    technologies: "Ruby on Rails, MySQL, Vue.js, AWS",
+    position: 2
+  },
+  {
+    title: "フィットネスアプリ開発",
+    description: "パーソナルトレーニングを提供するフィットネス企業向けにモバイルアプリを開発。トレーニング記録、栄養管理、コーチとのコミュニケーション機能を統合し、会員継続率が40%向上しました。",
+    icon: "fa-mobile-screen",
+    color: "purple-600",
+    technologies: "React Native, Ruby on Rails API, Firebase",
+    position: 3
+  },
+  {
+    title: "データ分析ダッシュボード",
+    description: "金融機関向けにリアルタイムデータ分析ダッシュボードを開発。複雑な金融データを視覚化し、意思決定プロセスを効率化。レポート作成時間を80%削減しました。",
+    icon: "fa-chart-line",
+    color: "red-600",
+    technologies: "Ruby on Rails, D3.js, PostgreSQL, Redis",
+    position: 4
+  },
+  {
+    title: "オンライン学習プラットフォーム",
+    description: "教育機関向けにカスタマイズされたオンライン学習プラットフォームを開発。動画講義、インタラクティブな課題、進捗管理機能を実装し、学生の学習成果が20%向上しました。",
+    icon: "fa-graduation-cap",
+    color: "yellow-600",
+    technologies: "Ruby on Rails, Hotwire, PostgreSQL, AWS",
+    position: 5
+  },
+  {
+    title: "予約管理システム",
+    description: "医療機関向けに予約管理システムを開発。オンライン予約、自動リマインダー、スタッフスケジュール管理機能を統合し、予約の無断キャンセルが60%減少しました。",
+    icon: "fa-calendar-check",
+    color: "teal-600",
+    technologies: "Ruby on Rails, Stimulus.js, MySQL, Sidekiq",
+    position: 6
+  }
+]
+
+# 既存のプロジェクトを削除
+Project.delete_all
+
+# サンプルプロジェクトを作成
+projects_data.each do |project_data|
+  Project.create!(project_data)
+end
+
+puts "サンプルプロジェクトが作成されました"

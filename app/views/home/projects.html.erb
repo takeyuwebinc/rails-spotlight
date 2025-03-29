@@ -12,137 +12,28 @@
         </header>
         <div class="mt-16 sm:mt-20">
           <ul role="list" class="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3">
-            <!-- 案件1 -->
-            <li class="group relative flex flex-col items-start">
-              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <div class="h-8 w-8 rounded-full bg-blue-600 flex items-center justify-center">
-                  <i class="fa-solid fa-building text-white"></i>
+            <% @projects.each do |project| %>
+              <li class="group relative flex flex-col items-start">
+                <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+                  <div class="h-8 w-8 rounded-full bg-<%= project.color %> flex items-center justify-center">
+                    <i class="fa-solid <%= project.icon %> text-white"></i>
+                  </div>
                 </div>
-              </div>
-              <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                企業向けCRMシステム開発
-              </h2>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                大手製造業向けにカスタマイズされたCRMシステムを開発。顧客管理、営業支援、分析機能を統合し、業務効率を30%向上させました。
-              </p>
-              <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <span class="flex items-center">
-                  <i class="fa-solid fa-tag mr-1"></i>
-                  Ruby on Rails, PostgreSQL, React
-                </span>
-              </p>
-            </li>
-
-            <!-- 案件2 -->
-            <li class="group relative flex flex-col items-start">
-              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <div class="h-8 w-8 rounded-full bg-green-600 flex items-center justify-center">
-                  <i class="fa-solid fa-cart-shopping text-white"></i>
-                </div>
-              </div>
-              <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                ECサイトリニューアル
-              </h2>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                アパレルブランドのECサイトを全面リニューアル。モバイルファーストのデザイン、高速な検索機能、パーソナライズされたレコメンド機能を実装し、コンバージョン率が25%向上しました。
-              </p>
-              <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <span class="flex items-center">
-                  <i class="fa-solid fa-tag mr-1"></i>
-                  Ruby on Rails, MySQL, Vue.js, AWS
-                </span>
-              </p>
-            </li>
-
-            <!-- 案件3 -->
-            <li class="group relative flex flex-col items-start">
-              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <div class="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center">
-                  <i class="fa-solid fa-mobile-screen text-white"></i>
-                </div>
-              </div>
-              <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                フィットネスアプリ開発
-              </h2>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                パーソナルトレーニングを提供するフィットネス企業向けにモバイルアプリを開発。トレーニング記録、栄養管理、コーチとのコミュニケーション機能を統合し、会員継続率が40%向上しました。
-              </p>
-              <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <span class="flex items-center">
-                  <i class="fa-solid fa-tag mr-1"></i>
-                  React Native, Ruby on Rails API, Firebase
-                </span>
-              </p>
-            </li>
-
-            <!-- 案件4 -->
-            <li class="group relative flex flex-col items-start">
-              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <div class="h-8 w-8 rounded-full bg-red-600 flex items-center justify-center">
-                  <i class="fa-solid fa-chart-line text-white"></i>
-                </div>
-              </div>
-              <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                データ分析ダッシュボード
-              </h2>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                金融機関向けにリアルタイムデータ分析ダッシュボードを開発。複雑な金融データを視覚化し、意思決定プロセスを効率化。レポート作成時間を80%削減しました。
-              </p>
-              <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <span class="flex items-center">
-                  <i class="fa-solid fa-tag mr-1"></i>
-                  Ruby on Rails, D3.js, PostgreSQL, Redis
-                </span>
-              </p>
-            </li>
-
-            <!-- 案件5 -->
-            <li class="group relative flex flex-col items-start">
-              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <div class="h-8 w-8 rounded-full bg-yellow-600 flex items-center justify-center">
-                  <i class="fa-solid fa-graduation-cap text-white"></i>
-                </div>
-              </div>
-              <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                オンライン学習プラットフォーム
-              </h2>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                教育機関向けにカスタマイズされたオンライン学習プラットフォームを開発。動画講義、インタラクティブな課題、進捗管理機能を実装し、学生の学習成果が20%向上しました。
-              </p>
-              <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <span class="flex items-center">
-                  <i class="fa-solid fa-tag mr-1"></i>
-                  Ruby on Rails, Hotwire, PostgreSQL, AWS
-                </span>
-              </p>
-            </li>
-
-            <!-- 案件6 -->
-            <li class="group relative flex flex-col items-start">
-              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <div class="h-8 w-8 rounded-full bg-teal-600 flex items-center justify-center">
-                  <i class="fa-solid fa-calendar-check text-white"></i>
-                </div>
-              </div>
-              <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                予約管理システム
-              </h2>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                医療機関向けに予約管理システムを開発。オンライン予約、自動リマインダー、スタッフスケジュール管理機能を統合し、予約の無断キャンセルが60%減少しました。
-              </p>
-              <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <span class="flex items-center">
-                  <i class="fa-solid fa-tag mr-1"></i>
-                  Ruby on Rails, Stimulus.js, MySQL, Sidekiq
-                </span>
-              </p>
-            </li>
+                <h2 class="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
+                  <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
+                  <%= project.title %>
+                </h2>
+                <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <%= project.description %>
+                </p>
+                <p class="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
+                  <span class="flex items-center">
+                    <i class="fa-solid fa-tag mr-1"></i>
+                    <%= project.technologies %>
+                  </span>
+                </p>
+              </li>
+            <% end %>
           </ul>
         </div>
       </div>
