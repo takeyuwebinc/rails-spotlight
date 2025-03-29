@@ -47,72 +47,30 @@
       <div class="mx-auto max-w-2xl lg:max-w-5xl">
         <div class="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
           <div class="flex flex-col gap-16">
-            <article class="group relative flex flex-col items-start">
-              <h2 class="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                <a href="#">
-                  <span class="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl"></span>
-                  <span class="relative z-10">Crafting a design system for a multiplanetary future</span>
-                </a>
-              </h2>
-              <time class="relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5">
-                <span class="absolute inset-y-0 left-0 flex items-center" area-hidden="true">
-                  <span class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span>
-                </span>
-                September 5, 2022
-              </time>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Most companies try to stay ahead of the curve when it comes to visual design, but for Planetaria we needed to create a brand that would still inspire us 100 years from now when humanity has spread across our entire solar system.
-              </p>
-              <div area-hidden="true" class="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500">
-                Read article
-                <i class="fa-solid fa-chevron-right" class="ml-1 h-4 w-4 stroke-current"></i>
-              </div>
-            </article>
-            <article class="group relative flex flex-col items-start">
-              <h2 class="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                <a href="#">
-                  <span class="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl"></span>
-                  <span class="relative z-10">Crafting a design system for a multiplanetary future</span>
-                </a>
-              </h2>
-              <time class="relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5">
-                <span class="absolute inset-y-0 left-0 flex items-center" area-hidden="true">
-                  <span class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span>
-                </span>
-                September 5, 2022
-              </time>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Most companies try to stay ahead of the curve when it comes to visual design, but for Planetaria we needed to create a brand that would still inspire us 100 years from now when humanity has spread across our entire solar system.
-              </p>
-              <div area-hidden="true" class="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500">
-                Read article
-                <i class="fa-solid fa-chevron-right" class="ml-1 h-4 w-4 stroke-current"></i>
-              </div>
-            </article>
-            <article class="group relative flex flex-col items-start">
-              <h2 class="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
-                <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
-                <a href="#">
-                  <span class="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl"></span>
-                  <span class="relative z-10">Crafting a design system for a multiplanetary future</span>
-                </a>
-              </h2>
-              <time class="relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5">
-                <span class="absolute inset-y-0 left-0 flex items-center" area-hidden="true">
-                  <span class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span>
-                </span>
-                September 5, 2022
-              </time>
-              <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                Most companies try to stay ahead of the curve when it comes to visual design, but for Planetaria we needed to create a brand that would still inspire us 100 years from now when humanity has spread across our entire solar system.
-              </p>
-              <div area-hidden="true" class="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500">
-                Read article
-                <i class="fa-solid fa-chevron-right" class="ml-1 h-4 w-4 stroke-current"></i>
-              </div>
-            </article>
+            <% @articles.each do |article| %>
+              <article class="group relative flex flex-col items-start">
+                <h2 class="text-base font-semibold tracking-tight text-zinc-800 dark:text-zinc-100">
+                  <div class="absolute -inset-x-4 -inset-y-6 z-0 scale-95 bg-zinc-50 opacity-0 transition group-hover:scale-100 group-hover:opacity-100 sm:-inset-x-6 sm:rounded-2xl dark:bg-zinc-800/50"></div>
+                  <%= link_to article_path(article) do %>
+                    <span class="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl"></span>
+                    <span class="relative z-10"><%= article.title %></span>
+                  <% end %>
+                </h2>
+                <time class="relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-3.5">
+                  <span class="absolute inset-y-0 left-0 flex items-center" aria-hidden="true">
+                    <span class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span>
+                  </span>
+                  <%= article.published_at.strftime("%Y年%m月%d日") %>
+                </time>
+                <p class="relative z-10 mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                  <%= article.description %>
+                </p>
+                <div aria-hidden="true" class="relative z-10 mt-4 flex items-center text-sm font-medium text-teal-500">
+                  記事を読む
+                  <i class="fa-solid fa-chevron-right ml-1 h-4 w-4 stroke-current"></i>
+                </div>
+              </article>
+            <% end %>
           </div>
           <div class="space-y-10 lg:pl-16 xl:pl-24">
             <form class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
