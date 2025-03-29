@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html class="h-full antialiased light">
   <head>
     <title><%= content_for(:title) || "Spotlight" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -7,21 +7,61 @@
     <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
 
     <%= yield :head %>
 
     <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
     <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
 
-    <link rel="icon" href="/icon.png" type="image/png">
-    <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/icon.png">
+    <link rel="icon" href="/favicon.ico" type="image/ico">
+    <link rel="apple-touch-icon" href="favicon.ico">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://kit.fontawesome.com/9dc685ee75.js" crossorigin="anonymous"></script>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="flex h-full bg-zinc-50 dark:bg-black">
+    <div class="flex w-full">
+      <div class="fixed inset-0 flex justify-center sm:px-8">
+        <div class="flex w-full max-w-7xl lg:px-8">
+          <div class="w-full bg-white ring-1 ring-zinc-100 dark:bg-zinc-900 dark:ring-zinc-300/20"></div>
+        </div>
+      </div>
+      <div class="relative flex w-full flex-col">
+        <%= render "layouts/header" %>
+        <% if home? %>
+          <div class="flex-none" style="height:var(--content-offset)"></div>
+        <% end %>
+        <main class="flex-auto">
+          <%= yield %>
+        </main>
+        <footer class="mt-32 flex-none">
+          <div class="sm:px-8">
+            <div class="mx-auto w-full max-w-7xl lg:px-8">
+              <div class="border-t border-zinc-100 pt-10 pb-16 dark:border-zinc-700/40">
+                <div class="relative px-4 sm:px-8 lg:px-12">
+                  <div class="mx-auto max-w-2xl lg:max-w-5xl">
+                    <div class="flex flex-col items-center justify-between gap-6 md:flex-row">
+                      <div class="flex flex-wrap justify-center gap-x-6 gap-y-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+                        <a class="transition hover:text-teal-500 dark:hover:text-teal-400" href="/about">About</a>
+                        <a class="transition hover:text-teal-500 dark:hover:text-teal-400" href="/articles">Articles</a>
+                        <a class="transition hover:text-teal-500 dark:hover:text-teal-400" href="/projects">Projects</a>
+                        <a class="transition hover:text-teal-500 dark:hover:text-teal-400" href="/speaking">Speaking</a>
+                        <a class="transition hover:text-teal-500 dark:hover:text-teal-400" href="/uses">Uses</a>
+                      </div>
+                      <p class="text-sm text-zinc-400 dark:text-zinc-500">
+                        &copy; <%= Date.current.year %> TakeyuWeb Inc. All rights reserved.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </footer>
+      </div>
+    </div>
   </body>
 </html>

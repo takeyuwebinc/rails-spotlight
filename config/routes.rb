@@ -11,4 +11,15 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  root "home#index"
+  get "about" => "home#about"
+
+  # Articles
+  get "articles" => "articles#index"
+  get "articles/:slug" => "articles#show", as: :article
+
+  # TODO: Add resources for projects, speaking, and uses
+  get "projects" => "home#projects"
+  get "speaking" => "home#speaking"
+  get "uses" => "home#uses"
 end

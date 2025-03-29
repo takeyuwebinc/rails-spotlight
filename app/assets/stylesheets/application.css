@@ -8,3 +8,14 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
+html {
+  --header-position: sticky;
+  --content-offset: 116px;
+  --header-height: 180px;
+  --header-mb: -116px;
+  --header-top: 0px;
+  --avatar-top: 0px;
+  --avatar-image-transform: translate3d(0rem, 0, 0) scale(1);
+  --avatar-border-transform: translate3d(-0.2222222222222222rem, 0, 0) scale(1.7777777777777777);
+  --avatar-border-opacity: 0;
+}
