@@ -49,6 +49,11 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  # Testing framework
+  gem "rspec-rails", "~> 6.0"
+  gem "factory_bot_rails"
+  gem "faker"
 end
 
 group :development do
@@ -59,3 +64,7 @@ end
 
 gem "tailwindcss-rails", "~> 4.1"
 gem "view_component", "~> 3.10"
+
+# Markdown parsing and frontmatter extraction
+gem "front_matter_parser", "~> 1.0.1"
+gem "redcarpet", "~> 3.6"

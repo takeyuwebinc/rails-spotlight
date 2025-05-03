@@ -1,24 +1,18 @@
-# README
+# docs
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## リポジトリの目的
+https://takeyuweb.co.jp として公開するRailsアプリケーション
 
-Things you may want to cover:
+## コンテンツの管理
+docs ディレクトリ
 
-* Ruby version
+### コンテンツの反映
 
-* System dependencies
+```ruby
+bundle exec rails db:import
+```
 
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+- docs/published 上のmarkdownファイルを探す。
+- markdownから title, slug, published_date といったメタデータを取り出す。
+- markdown本文をHTMLに変換する。
+- 対応するActiveRecordモデルレコードを更新または追加する。
