@@ -2,5 +2,6 @@
 import "@hotwired/turbo"
 import "controllers"
 
-import "trix"
-import "@rails/actiontext"
+// Removed ActionText dependencies as we're no longer using it
+// import "trix"
+// import "@rails/actiontext"

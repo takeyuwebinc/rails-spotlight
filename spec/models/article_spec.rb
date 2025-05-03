@@ -14,7 +14,7 @@ RSpec.describe Article, type: :model do
       expect(article.title).to eq('Test Article')
       expect(article.description).to eq('This is a test article for testing the import functionality.')
       expect(article.published_at.to_date.to_s).to eq('2025-05-03')
-      expect(article.content.to_plain_text).to include('This is a test article created for testing the import functionality.')
+      expect(article.content).to include('This is a test article created for testing the import functionality.')
     end
 
     it 'returns the number of imported articles' do
@@ -34,6 +34,7 @@ RSpec.describe Article, type: :model do
           title: 'Test Article',
           slug: 'test-article',
           description: 'Old description',
+          content: 'Old content',
           published_at: '2025-01-01'
         )
       end
@@ -46,6 +47,7 @@ RSpec.describe Article, type: :model do
         article = Article.find_by(slug: 'test-article')
         expect(article.description).to eq('This is a test article for testing the import functionality.')
         expect(article.published_at.to_date.to_s).to eq('2025-05-03')
+        expect(article.content).to include('This is a test article created for testing the import functionality.')
       end
     end
   end

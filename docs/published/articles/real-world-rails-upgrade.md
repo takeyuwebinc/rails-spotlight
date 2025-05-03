@@ -6,8 +6,6 @@ published_date: 2024-10-26
 description: Ruby on Railsアプリケーションを最新の状態に保つことの重要性と、実際のアップグレード事例から得られた知見を紹介します。Rails 5.0から7.1へのアップグレード過程で直面した課題と解決策、そして得られた成果について解説します。
 ---
 
-# 現実のRuby/Railsアップグレード
-
 :::message
 この記事は、[Kaigi on Rails 2024 で発表した内容](https://kaigionrails.org/2024/talks/takeyuweb/)の原稿をもとに作成しました。
 :::

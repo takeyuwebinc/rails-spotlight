@@ -17,3 +17,19 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam euismod, nisl eg
 ## Section 2
 
 Sed euismod, nisl eget aliquam ultricies, nunc nisl aliquet nunc, quis aliquam nisl nunc quis nisl.
+
+:::details 詳細情報
+これは詳細ブロックのテストです。このブロックはタイトルをクリックすると表示されます。
+
+- 項目1
+- 項目2
+- 項目3
+:::
+
+:::message
+これはメッセージブロックです。
+:::
+
+:::message alert
+これは警告メッセージブロックです。
+:::

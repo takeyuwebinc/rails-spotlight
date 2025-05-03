@@ -17,6 +17,20 @@ class Project < ApplicationRecord
   # @param source_dir [String] Path to the directory containing project markdown files
   # @return [Integer] Number of projects imported
   def self.import_from_docs(source_dir)
+    require "redcarpet"
+
+    # Initialize Markdown renderer with custom renderer for special syntax
+    renderer = CustomHtmlRenderer.new(hard_wrap: true)
+    markdown = Redcarpet::Markdown.new(renderer, {
+      autolink: true,
+      tables: true,
+      fenced_code_blocks: true,
+      strikethrough: true,
+      highlight: true,
+      superscript: true,
+      underline: true,
+      quote: true
+    })
     # Find all markdown files in the source directory
     project_files = Dir.glob(File.join(source_dir, "**", "*.md"))
 

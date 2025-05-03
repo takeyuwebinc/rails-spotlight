@@ -20,7 +20,7 @@
                 </time>
               </header>
               <div class="prose prose-zinc mt-8 dark:prose-invert">
-                <%= @article.content %>
+                <%= @article.content.html_safe %>
               </div>
             </article>
           </div>

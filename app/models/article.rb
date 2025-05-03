@@ -1,9 +1,8 @@
 class Article < ApplicationRecord
-  has_rich_text :content
-
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :description, presence: true
+  validates :content, presence: true
   validates :published_at, presence: true
 
   scope :published, -> { where("published_at <= ?", Time.current).order(published_at: :desc) }
@@ -18,8 +17,8 @@ class Article < ApplicationRecord
   def self.import_from_docs(source_dir)
     require "redcarpet"
 
-    # Initialize Markdown renderer
-    renderer = Redcarpet::Render::HTML.new(hard_wrap: true)
+    # Initialize Markdown renderer with custom renderer for special syntax
+    renderer = CustomHtmlRenderer.new(hard_wrap: true)
     markdown = Redcarpet::Markdown.new(renderer, {
       autolink: true,
       tables: true,
@@ -79,10 +78,11 @@ class Article < ApplicationRecord
             article.published_at = Time.current
           end
 
+          # Set the HTML content directly
+          article.content = html_content
+
           # Save the article to create it if it's new
           if article.save
-            # Update the rich text content
-            article.update(content: html_content)
             puts "  Saved article: #{article.title}"
             imported_count += 1
           else

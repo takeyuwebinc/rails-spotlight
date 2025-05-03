@@ -6,8 +6,6 @@ published_date: 2025-02-19
 description: Kamal v2を実際に案件で使ってみてわかったことをもとに、実践的なKamalの使い方を紹介します。Kamalは特定のプラットフォームに依存せず、デプロイ先の環境構築が容易かつゼロダウンタイムのデプロイが簡単にできる特徴があります。
 ---
 
-# Real World Kamal
-
 ## 対象読者
 
 - Kamal の仕組みを知りたい
@@ -440,6 +438,7 @@ cronから実行するコマンドでDockerコンテナ起動時に渡した環�
 
 :::details 設定例
 コマンド実行時のコンテナ内の環境変数を書き出しておき、 `BASH_ENV` で反映する。
+
 ```yaml:config/deploy.yml
 servers:
   # 省略
