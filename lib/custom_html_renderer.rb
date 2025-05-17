@@ -1,7 +1,17 @@
 require "securerandom"
+require_relative "custom_markdown_extensions"
 
 class CustomHtmlRenderer < Redcarpet::Render::HTML
   attr_reader :placeholders
+
+  def initialize(options = {})
+    super
+    @placeholders = {}
+    
+    # 拡張機能を登録
+    CustomMarkdownExtensions.register_extensions(self)
+  end
+  
 
   def preprocess(document)
     @placeholders = {}

@@ -68,3 +68,5 @@ gem "view_component", "~> 3.10"
 # Markdown parsing and frontmatter extraction
 gem "front_matter_parser", "~> 1.0.1"
 gem "redcarpet", "~> 3.6"
+
+gem "metainspector", "~> 5.15"
