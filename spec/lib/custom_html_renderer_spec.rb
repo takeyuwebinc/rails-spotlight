@@ -60,8 +60,8 @@ RSpec.describe CustomHtmlRenderer do
       it 'renders alert message blocks correctly' do
         result = markdown.render(text)
         expect(result).to include('<div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded-r">')
-        expect(result).to include('<svg class="h-5 w-5 text-red-400"')
         expect(result).to include('<p class="text-sm text-red-800">This is an alert message</p>')
+        expect(result).not_to include('<svg class="h-5 w-5 text-red-400"')
       end
     end
 
