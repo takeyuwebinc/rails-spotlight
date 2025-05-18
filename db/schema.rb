@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_03_172318) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_18_055901) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -49,6 +49,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_03_172318) do
     t.text "content"
     t.index ["published_at"], name: "index_articles_on_published_at"
     t.index ["slug"], name: "index_articles_on_slug", unique: true
+  end
+
+  create_table "link_metadata", force: :cascade do |t|
+    t.string "url", null: false
+    t.string "title", default: "", null: false
+    t.text "description", default: "", null: false
+    t.string "domain", default: "", null: false
+    t.string "favicon", default: "", null: false
+    t.string "image_url", default: "", null: false
+    t.datetime "last_fetched_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["url"], name: "index_link_metadata_on_url", unique: true
   end
 
   create_table "projects", force: :cascade do |t|

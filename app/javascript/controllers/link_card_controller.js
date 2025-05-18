@@ -1,3 +1,11 @@
+/**
+ * リンクカードコントローラー
+ * 
+ * URLからメタデータを取得し、リンクカードとして表示するStimulusコントローラー
+ * 
+ * @class LinkCardController
+ * @extends Controller
+ */
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
@@ -5,11 +13,25 @@ export default class extends Controller {
     url: String
   }
   
+  /**
+   * コントローラーが接続されたときに呼び出される
+   * 
+   * @method connect
+   * @memberof LinkCardController
+   */
   connect() {
     // コントローラーが接続されたらメタデータを取得
     this.fetchMetadata()
   }
   
+  /**
+   * URLからメタデータを取得する
+   * 
+   * @method fetchMetadata
+   * @memberof LinkCardController
+   * @async
+   * @returns {Promise<void>}
+   */
   async fetchMetadata() {
     try {
       // APIエンドポイントにリクエスト
@@ -29,6 +51,18 @@ export default class extends Controller {
     }
   }
   
+  /**
+   * 取得したメタデータでリンクカードを描画する
+   * 
+   * @method renderLinkCard
+   * @memberof LinkCardController
+   * @param {Object} data - メタデータオブジェクト
+   * @param {string} data.title - ページのタイトル
+   * @param {string} data.description - ページの説明
+   * @param {string} data.domain - ドメイン名
+   * @param {string} data.favicon - ファビコンのURL
+   * @param {string} data.imageUrl - 画像のURL
+   */
   renderLinkCard(data) {
     // リンクカードのHTMLを生成
     const html = this.generateCardHTML(data)
@@ -37,6 +71,19 @@ export default class extends Controller {
     this.element.outerHTML = html
   }
   
+  /**
+   * メタデータからリンクカードのHTMLを生成する
+   * 
+   * @method generateCardHTML
+   * @memberof LinkCardController
+   * @param {Object} data - メタデータオブジェクト
+   * @param {string} data.title - ページのタイトル
+   * @param {string} data.description - ページの説明
+   * @param {string} data.domain - ドメイン名
+   * @param {string} data.favicon - ファビコンのURL
+   * @param {string} data.imageUrl - 画像のURL
+   * @returns {string} 生成されたHTML
+   */
   generateCardHTML(data) {
     const { title, description, domain, favicon, imageUrl } = data
     

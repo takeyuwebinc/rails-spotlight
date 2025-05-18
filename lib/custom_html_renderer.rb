@@ -7,11 +7,60 @@ class CustomHtmlRenderer < Redcarpet::Render::HTML
   def initialize(options = {})
     super
     @placeholders = {}
-    
+
     # 拡張機能を登録
     CustomMarkdownExtensions.register_extensions(self)
   end
-  
+
+  # noautolinkクラスを持つ要素内のリンクを自動生成しないようにする
+  #
+  # @param link [String] 変換対象のリンクURL
+  # @param link_type [Symbol] リンクの種類（:email, :url）
+  # @return [String] 変換後のHTML
+  # @note このメソッドは、noautolinkクラスを持つ要素内のリンクを自動生成しないようにします。
+  #   これにより、リンクカード内のURLが二重にリンクされるのを防ぎます。
+  def autolink(link, link_type)
+    # 現在処理中のテキストがnoautolinkクラスを持つ要素内かどうかを確認
+    if @in_noautolink
+      link
+    else
+      %(<a href="#{link}">#{link}</a>)
+    end
+  end
+
+  # HTMLタグを処理する際にnoautolinkクラスを検出
+  #
+  # @param html [String] 処理対象のHTML
+  # @return [String] 処理後のHTML
+  # @note このメソッドは、HTMLタグを処理する際にnoautolinkクラスを検出し、
+  #   そのクラスを持つ要素内のリンクを自動生成しないようにします。
+  def preprocess_html_block(html)
+    if html.include?("noautolink")
+      @in_noautolink = true
+      result = super
+      @in_noautolink = false
+      result
+    else
+      super
+    end
+  end
+
+  # リンクを処理する前にnoautolinkクラスを検出
+  #
+  # @param link [String] 処理対象のリンク
+  # @return [String] 処理後のリンク
+  # @note このメソッドは、リンクを処理する前にnoautolinkクラスを検出し、
+  #   そのクラスを持つ要素内のリンクを自動生成しないようにします。
+  def preprocess_link(link)
+    if link.include?("noautolink")
+      @in_noautolink = true
+      result = super
+      @in_noautolink = false
+      result
+    else
+      super
+    end
+  end
 
   def preprocess(document)
     @placeholders = {}

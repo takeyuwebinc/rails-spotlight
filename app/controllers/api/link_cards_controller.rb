@@ -1,32 +1,27 @@
-require 'metainspector'
-
 module Api
+  # URLのメタデータを取得するAPIコントローラー
   class LinkCardsController < ApplicationController
+    # URLからメタデータを取得するエンドポイント
+    #
+    # @note このエンドポイントは、URLからメタデータ（タイトル、説明、ドメイン、ファビコン、画像URL）を取得します。
+    #   キャッシュがある場合はキャッシュから取得し、ない場合は外部サイトから取得します。
+    #
+    # @param url [String] メタデータを取得するURL（クエリパラメータ）
+    # @return [JSON] メタデータのJSON（タイトル、説明、ドメイン、ファビコン、画像URL）
+    #   または、エラーが発生した場合はエラー情報を含むJSON
+    # @example
+    #   GET /api/link_cards/metadata?url=https://example.com
     def metadata
       url = params[:url]
-      
-      # URLが提供されていない場合はエラー
-      unless url.present?
-        return render json: { error: "URL parameter is required" }, status: :bad_request
-      end
-      
-      begin
-        # MetaInspectorを使用してURLからメタデータを取得
-        page = MetaInspector.new(url, timeout: 5)
-        
-        # レスポンスデータを構築
-        data = {
-          title: page.title.to_s.strip,
-          description: page.best_description.to_s.strip,
-          domain: page.host,
-          favicon: page.images.favicon.to_s,
-          imageUrl: page.images.best.to_s
-        }
-        
-        render json: data
-      rescue => e
-        # エラーが発生した場合はエラーレスポンスを返す
-        render json: { error: e.message }, status: :unprocessable_entity
+      result = LinkMetadatum.fetch_metadata(url)
+
+      if result[:error].present?
+        # エラーがある場合はエラーレスポンスを返す
+        status = url.present? ? :unprocessable_entity : :bad_request
+        render json: { error: result[:error] }, status: status
+      else
+        # 成功した場合はメタデータを返す
+        render json: result
       end
     end
   end
