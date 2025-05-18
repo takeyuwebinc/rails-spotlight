@@ -69,7 +69,7 @@ gem "view_component", "~> 3.10"
 gem "front_matter_parser", "~> 1.0.1"
 gem "redcarpet", "~> 3.6"
 
-gem "metainspector", "~> 5.15"
+gem "metainspector", "~> 5.16"
 
 # API documentation with Swagger
 gem "rswag-api"
