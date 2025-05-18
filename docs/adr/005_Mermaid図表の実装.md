@@ -26,133 +26,20 @@ Mermaid.jsを使用して、Markdown内に記述されたmermaid構文のコー�
 
 ### バックエンド（Markdownパーサー拡張）
 
-`CustomHtmlRenderer`クラスに拡張モジュールが処理をフックできる仕組みを追加し、`MermaidExtension`モジュールでMermaidコードブロックを処理する。
+`CustomHtmlRenderer`クラスに拡張モジュールが処理をフックできる仕組みを追加し、`MermaidExtension`モジュールでMermaidコードブロックを処理する。主な実装ポイントは以下の通り：
 
-```ruby
-# lib/custom_html_renderer.rb
-class CustomHtmlRenderer < Redcarpet::Render::HTML
-  attr_reader :placeholders, :block_code_handlers
-
-  def initialize(options = {})
-    super
-    @placeholders = {}
-    @block_code_handlers = []
-
-    # 拡張機能を登録
-    CustomMarkdownExtensions.register_extensions(self)
-  end
-
-  # コードブロックのレンダリングをカスタマイズ
-  def block_code(code, language)
-    # 登録されたハンドラを順に試す
-    @block_code_handlers.each do |handler|
-      result = handler.call(code, language)
-      return result if result # ハンドラが処理した場合はその結果を返す
-    end
-    
-    # どのハンドラも処理しなかった場合はデフォルト処理
-    %(<pre><code class="#{language}">#{CGI.escape_html(code)}</code></pre>)
-  end
-
-  # ブロックコードハンドラを登録するメソッド
-  def register_block_code_handler(handler)
-    @block_code_handlers << handler
-  end
-end
-
-# lib/custom_markdown_extensions.rb
-module MermaidExtension
-  def self.register(renderer)
-    # block_codeハンドラを登録
-    renderer.register_block_code_handler(
-      lambda do |code, language|
-        if language == "mermaid"
-          # Mermaid図表用のHTMLを生成
-          escaped_code = CGI.escape_html(code)
-          %(<div class="mermaid-diagram" data-controller="mermaid">
-              <pre class="mermaid-source" style="display: none;">#{escaped_code}</pre>
-              <div class="mermaid-render"></div>
-            </div>)
-        else
-          nil # このハンドラでは処理しない
-        end
-      end
-    )
-  end
-end
-```
+1. カスタムレンダラーに拡張機能を登録する仕組みを実装
+2. Mermaidコードブロックを検出するハンドラーを登録
+3. 検出したMermaidコードを特別なHTMLコンテナに変換
 
 ### フロントエンド実装
 
-1. importmapにmermaid.jsを追加：
-
-```ruby
-# config/importmap.rb
-pin "mermaid", to: "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
-```
-
-2. Stimulusコントローラーを作成：
-
-```javascript
-// app/javascript/controllers/mermaid_controller.js
-import { Controller } from "@hotwired/stimulus"
-import mermaid from "mermaid"
-
-export default class extends Controller {
-  connect() {
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-      securityLevel: 'loose',
-      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-    })
-    
-    this.renderDiagram()
-    
-    // ダークモード切り替えイベントをリッスン
-    this.themeChangeHandler = this.handleThemeChange.bind(this)
-    window.addEventListener('theme-changed', this.themeChangeHandler)
-  }
-  
-  disconnect() {
-    window.removeEventListener('theme-changed', this.themeChangeHandler)
-  }
-  
-  handleThemeChange(event) {
-    mermaid.initialize({
-      startOnLoad: false,
-      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
-      securityLevel: 'loose',
-      fontFamily: 'ui-sans-serif, system-ui, sans-serif',
-    })
-    
-    this.renderDiagram()
-  }
-  
-  renderDiagram() {
-    const renderTarget = this.element.querySelector('.mermaid-render')
-    const source = this.element.querySelector('.mermaid-source').textContent
-    
-    try {
-      mermaid.render('mermaid-svg-' + Date.now(), source)
-        .then(result => {
-          renderTarget.innerHTML = result.svg
-        })
-        .catch(error => {
-          console.error('Mermaid rendering error:', error)
-          renderTarget.innerHTML = `<div class="p-4 bg-red-50 text-red-500 rounded">
-            図表の描画に失敗しました: ${error.message}
-          </div>`
-        })
-    } catch (error) {
-      console.error('Mermaid error:', error)
-      renderTarget.innerHTML = `<div class="p-4 bg-red-50 text-red-500 rounded">
-        図表の描画に失敗しました: ${error.message}
-      </div>`
-    }
-  }
-}
-```
+1. importmapにmermaid.jsライブラリを追加
+2. Stimulusコントローラーを作成し、以下の機能を実装：
+   - Mermaidライブラリの初期化と設定
+   - コードブロックからの図表レンダリング
+   - ダークモード切り替え時の再レンダリング
+   - エラーハンドリングとユーザーへのフィードバック表示
 
 ## 代替案
 
