@@ -62,7 +62,7 @@ group :development do
 end
 
 
-gem "tailwindcss-rails", "~> 4.1"
+gem "tailwindcss-rails", "~> 4.2"
 gem "view_component", "~> 3.10"
 
 # Markdown parsing and frontmatter extraction
