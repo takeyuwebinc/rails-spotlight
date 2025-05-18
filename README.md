@@ -22,3 +22,11 @@ bundle exec rails db:import
 ```bash
 $ claude
 ```
+
+## API仕様書
+
+```
+bundle exec rails rswag:specs:swaggerize
+```
+
+http://localhost:3000/api-docs/

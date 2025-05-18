@@ -70,3 +70,8 @@ gem "front_matter_parser", "~> 1.0.1"
 gem "redcarpet", "~> 3.6"
 
 gem "metainspector", "~> 5.15"
+
+# API documentation with Swagger
+gem "rswag-api"
+gem "rswag-ui"
+gem "rswag-specs", group: [ :development, :test ]

@@ -1,0 +1,81 @@
+---
+openapi: 3.0.1
+info:
+  title: Spotlight Rails API
+  version: v1
+  description: API documentation for Spotlight Rails application
+paths:
+  "/api/link_cards/metadata":
+    get:
+      summary: URLからメタデータを取得する
+      tags:
+      - Link Cards
+      description: URLからメタデータ（タイトル、説明、ドメイン、ファビコン、画像URL）を取得します。キャッシュがある場合はキャッシュから取得し、ない場合は外部サイトから取得します。
+      parameters:
+      - name: url
+        in: query
+        required: true
+        description: メタデータを取得するURL
+        schema:
+          type: string
+      responses:
+        '200':
+          description: メタデータの取得に成功
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                    description: ページのタイトル
+                  description:
+                    type: string
+                    description: ページの説明
+                  domain:
+                    type: string
+                    description: ドメイン名
+                  favicon:
+                    type: string
+                    description: ファビコンのURL
+                  imageUrl:
+                    type: string
+                    description: 代表画像のURL
+                required:
+                - title
+                - description
+                - domain
+        '400':
+          description: URLパラメータが不足している
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+                required:
+                - error
+        '422':
+          description: メタデータの取得に失敗
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: エラーメッセージ
+                required:
+                - error
+servers:
+- url: "{protocol}://{defaultHost}"
+  variables:
+    protocol:
+      default: http
+      enum:
+      - http
+      - https
+    defaultHost:
+      default: localhost:3000
