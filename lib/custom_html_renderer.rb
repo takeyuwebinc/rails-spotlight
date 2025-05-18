@@ -1,15 +1,34 @@
 require "securerandom"
+require "cgi"
 require_relative "custom_markdown_extensions"
 
 class CustomHtmlRenderer < Redcarpet::Render::HTML
-  attr_reader :placeholders
+  attr_reader :placeholders, :block_code_handlers
 
   def initialize(options = {})
     super
     @placeholders = {}
+    @block_code_handlers = []
 
     # 拡張機能を登録
     CustomMarkdownExtensions.register_extensions(self)
+  end
+
+  # コードブロックのレンダリングをカスタマイズ
+  def block_code(code, language)
+    # 登録されたハンドラを順に試す
+    @block_code_handlers.each do |handler|
+      result = handler.call(code, language)
+      return result if result # ハンドラが処理した場合はその結果を返す
+    end
+
+    # どのハンドラも処理しなかった場合はデフォルト処理
+    %(<pre><code class="#{language}">#{CGI.escape_html(code)}</code></pre>)
+  end
+
+  # ブロックコードハンドラを登録するメソッド
+  def register_block_code_handler(handler)
+    @block_code_handlers << handler
   end
 
   # noautolinkクラスを持つ要素内のリンクを自動生成しないようにする

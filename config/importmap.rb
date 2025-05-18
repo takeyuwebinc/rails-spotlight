@@ -8,3 +8,6 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 # Removed ActionText dependencies as we're no longer using it
 # pin "trix"
 # pin "@rails/actiontext", to: "actiontext.esm.js"
+
+# Mermaid.js for diagram rendering
+pin "mermaid", to: "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
