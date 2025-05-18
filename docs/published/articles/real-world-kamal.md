@@ -676,6 +676,7 @@ https://github.com/basecamp/kamal-proxy/commit/d9895fec592c47ab51ab580fec024e7c0
 :::details デプロイフックで更新する場合
 デプロイフックに書くと、Kamal Proxyの設定をコードで管理することができます。
 デプロイフック中では、bundlerでインストールしている場合も `bundle exec` なしで動作します。
+
 ```bash:.kamal/hooks/pre-deploy
 #!/bin/bash
 set -ex
@@ -842,6 +843,7 @@ https://docs.docker.jp/config/container/logging/configure.html#supported-logging
 
 :::details 利用例
 実行中のアプリバージョンの確認
+
 ```bash
 $ bundle exec kamal app version -d production
 App Host: myapp.host
@@ -849,6 +851,7 @@ b1680c634f06ea84670e3db6fa2669a792480d7e
 ```
 
 デプロイ（新しいバージョン）
+
 ```bash
 $ bundle exec kamal deploy -d production
 $ bundle exec kamal app version -d production
@@ -857,6 +860,7 @@ App Host: myapp.host
 ```
 
 アプリバージョンを指定して戻す
+
 ```bash
 $ bundle exec kamal app boot --version=b1680c634f06ea84670e3db6fa2669a792480d7e -d production
 $ bundle exec kamal app version -d production
@@ -876,6 +880,7 @@ latest-production
 ```
 
 latestがどのアプリバージョンかは `kamal app images` コマンドで確認できます。アプリバージョンはdockerイメージのタグに該当します。
+
 ```bash
 $ bundle exec kamal app images -d production
   INFO [25b28fc6] Running docker image ls takeyuweb/myapp on myapp.host
@@ -1010,6 +1015,7 @@ https://github.com/basecamp/kamal/issues/1147
 
 :::details 実行例
 リモートホスト上で実行
+
 ```bash
 $ docker exec kamal-proxy kamal-proxy ls
 Service      Host       Target             State    TLS  
@@ -1018,6 +1024,7 @@ $ docker exec kamal-proxy kamal-proxy remove myapp-web
 ```
 
 ローカルホスト上で実行
+
 ```bash
 $ bundle exec kamal deploy
 ```
