@@ -16,3 +16,9 @@ bundle exec rails db:import
 - markdownから title, slug, published_date といったメタデータを取り出す。
 - markdown本文をHTMLに変換する。
 - 対応するActiveRecordモデルレコードを更新または追加する。
+
+## Claude Code
+
+```bash
+$ claude
+```
