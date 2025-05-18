@@ -23,6 +23,17 @@ bundle exec rails db:import
 $ claude
 ```
 
+### ブラウザ自動化機能
+
+CLINEのブラウザアクション機能を使用するには、Puppeteer/Chromiumの依存関係が必要です。
+開発環境では以下のコマンドで必要な依存関係をインストールできます：
+
+```bash
+$ bin/install-puppeteer-deps.sh
+```
+
+新しい開発環境では、`bin/claude-setup.sh` の実行時に自動的にインストールされます。
+
 ## API仕様書
 
 ```
