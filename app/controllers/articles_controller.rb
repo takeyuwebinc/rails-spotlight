@@ -4,8 +4,6 @@ class ArticlesController < ApplicationController
   end
 
   def show
-    @article = Article.find_by!(slug: params[:slug])
-  rescue ActiveRecord::RecordNotFound
-    redirect_to articles_path, alert: "記事が見つかりませんでした"
+    @article = Article.includes(:tags).find_by!(slug: params[:slug])
   end
 end

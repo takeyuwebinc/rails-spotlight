@@ -9,13 +9,19 @@
           <p class="mt-6 text-lg text-zinc-600 dark:text-zinc-400">
             I'm <%= link_to "Takeyu", "https://github.com/takeyuweb", class: "text-teal-500 dark:text-teal-400" %> and I'm a Rails Engineer, Rubyist, and Full-Stack Developer.
           </p>
-          <div class="mt-4 flex flex-wrap gap-2">
-            <%= render(BadgeComponent.new(text: "Rails", bg_color: "bg-red-100", text_color: "text-red-800")) %>
-            <%= render(BadgeComponent.new(text: "JavaScript", bg_color: "bg-yellow-100", text_color: "text-yellow-800")) %>
-            <%= render(BadgeComponent.new(text: "ViewComponent", bg_color: "bg-purple-100", text_color: "text-purple-800")) %>
-            <%= render(BadgeComponent.new(text: "AWS", bg_color: "bg-orange-100", text_color: "text-orange-800")) %>
-            <%= render(BadgeComponent.new(text: "Kamal", bg_color: "bg-blue-100", text_color: "text-blue-800")) %>
-          </div>
+          <% if @featured_tags.any? %>
+            <div class="mt-4 flex flex-wrap gap-2">
+              <% @featured_tags.each do |tag| %>
+                <% colors = tag.badge_colors %>
+                <%= render(BadgeComponent.new(
+                  text: tag.name,
+                  bg_color: colors[:bg_color],
+                  text_color: colors[:text_color],
+                  href: tag_articles_path(tag.slug)
+                )) %>
+              <% end %>
+            </div>
+          <% end %>
           <div class="mt-6 flex gap-6">
             <a class="group -m-1 p-1" area-label="Fllow on X" href="https://x.com/takeyuweb">
               <i class="fa-brands fa-x-twitter fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300"></i>

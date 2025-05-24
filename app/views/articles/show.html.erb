@@ -63,6 +63,19 @@
                   <span class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span>
                   <span class="ml-3"><%= @article.published_at.strftime("%Y年%m月%d日") %></span>
                 </time>
+                <% if @article.tags.any? %>
+                  <div class="mt-6 flex flex-wrap gap-2 md:mb-6">
+                    <% @article.tags.each do |tag| %>
+                      <% colors = tag.badge_colors %>
+                      <%= render(BadgeComponent.new(
+                        text: tag.name,
+                        bg_color: colors[:bg_color],
+                        text_color: colors[:text_color],
+                        href: tag_articles_path(tag.slug)
+                      )) %>
+                    <% end %>
+                  </div>
+                <% end %>
               </header>
               
               <!-- モバイル用の目次（折りたたみ可能） -->

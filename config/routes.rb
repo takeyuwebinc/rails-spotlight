@@ -31,6 +31,9 @@ Rails.application.routes.draw do
   get "articles" => "articles#index"
   get "articles/:slug" => "articles#show", as: :article
 
+  # Tags
+  get "tags/:slug/articles" => "tags#show", as: :tag_articles
+
   # TODO: Add resources for projects, speaking, and uses
   get "projects" => "home#projects"
   get "speaking" => "home#speaking"

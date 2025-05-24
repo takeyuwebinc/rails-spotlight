@@ -1,3 +1,9 @@
-<div class="<%= @bg_color %> inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs <%= @text_color %>">
-  <%= @text %>
-</div>
+<% if href %>
+  <%= link_to href, class: "#{bg_color} inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs #{text_color} hover:opacity-80 transition-opacity cursor-pointer" do %>
+    <%= text %>
+  <% end %>
+<% else %>
+  <div class="<%= bg_color %> inline-flex items-center justify-center px-1.5 py-0.5 rounded text-xs <%= text_color %>">
+    <%= text %>
+  </div>
+<% end %>

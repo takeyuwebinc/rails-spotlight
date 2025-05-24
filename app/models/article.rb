@@ -1,4 +1,7 @@
 class Article < ApplicationRecord
+  has_many :article_tags, dependent: :destroy
+  has_many :tags, through: :article_tags
+
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :description, presence: true
@@ -6,6 +9,7 @@ class Article < ApplicationRecord
   validates :published_at, presence: true
 
   scope :published, -> { where("published_at <= ?", Time.current).order(published_at: :desc) }
+  scope :tagged_with, ->(tag_slug) { joins(:tags).where(tags: { slug: tag_slug }) }
 
   def to_param
     slug
@@ -53,6 +57,7 @@ class Article < ApplicationRecord
           slug_match = frontmatter_text.match(/slug:\s*(.+)$/)
           description_match = frontmatter_text.match(/description:\s*(.+)$/)
           published_date_match = frontmatter_text.match(/published_date:\s*(.+)$/)
+          tags_match = frontmatter_text.match(/tags:\s*(.+)$/)
 
           # Convert markdown to HTML
           html_content = markdown.render(markdown_content)
@@ -83,6 +88,19 @@ class Article < ApplicationRecord
 
           # Save the article to create it if it's new
           if article.save
+            # Process tags if present
+            if tags_match
+              tag_names = tags_match[1].split(",").map(&:strip)
+              article.tags.clear # Remove existing tags
+
+              tag_names.each do |tag_name|
+                next if tag_name.blank?
+
+                tag = Tag.find_or_create_by(name: tag_name)
+                article.tags << tag unless article.tags.include?(tag)
+              end
+            end
+
             puts "  Saved article: #{article.title}"
             imported_count += 1
           else
