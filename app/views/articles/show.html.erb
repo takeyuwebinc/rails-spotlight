@@ -24,7 +24,7 @@
                 <h1 class="mt-6 text-4xl font-bold tracking-tight text-zinc-800 sm:text-5xl dark:text-zinc-100">
                   <%= @article.title %>
                 </h1>
-                <time datetime="<%= @article.published_at.iso8601 %>" class="order-first flex items-center text-base text-zinc-400 dark:text-zinc-500">
+                <time datetime="<%= @article.published_at.iso8601 %>" class="order-first flex items-center text-base text-zinc-400 dark:text-zinc-500 xl:ml-12">
                   <span class="h-4 w-0.5 rounded-full bg-zinc-200 dark:bg-zinc-500"></span>
                   <span class="ml-3"><%= @article.published_at.strftime("%Y年%m月%d日") %></span>
                 </time>
