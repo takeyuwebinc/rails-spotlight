@@ -4,9 +4,11 @@ class Project < ApplicationRecord
   validates :icon, presence: true
   validates :color, presence: true
   validates :technologies, presence: true
+  validates :published_at, presence: true
 
   # 表示順に並べるスコープ
   scope :ordered, -> { order(position: :asc) }
+  scope :published, -> { where("published_at <= ?", Time.current).order(position: :asc) }
 
   # 技術タグを配列として取得するメソッド
   def technology_list
@@ -54,6 +56,7 @@ class Project < ApplicationRecord
           icon_match = frontmatter_text.match(/icon:\s*(.+)$/)
           color_match = frontmatter_text.match(/color:\s*(.+)$/)
           position_match = frontmatter_text.match(/position:\s*(\d+)$/)
+          published_date_match = frontmatter_text.match(/published_date:\s*(.+)$/)
 
           # Technologies might be a list, so handle differently
           technologies = []
@@ -90,6 +93,13 @@ class Project < ApplicationRecord
             project.position = position_match[1].to_i
           else
             project.position = 999
+          end
+
+          # Set the published date
+          if published_date_match
+            project.published_at = published_date_match[1].strip
+          else
+            project.published_at = Time.current
           end
 
           # Save the project

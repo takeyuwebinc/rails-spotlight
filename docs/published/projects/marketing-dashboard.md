@@ -2,6 +2,7 @@
 title: マーケティング分析ダッシュボード
 category: project
 published_date: 2025-04-27
+position: 4
 icon: fa-chart-line
 color: amber-500
 technologies:

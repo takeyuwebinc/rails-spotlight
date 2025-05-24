@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   def index
     @articles = Article.published.includes(:tags).limit(3)
-    @featured_projects = Project.ordered.limit(5)
+    @featured_projects = Project.published.limit(5)
     @featured_tags = Tag.joins(:articles)
                         .where("articles.published_at <= ?", Time.current)
                         .group("tags.id")
@@ -9,12 +9,8 @@ class HomeController < ApplicationController
                         .limit(5)
   end
 
-  # TODO: Add resources for articles, projects, speaking, and uses
+  # TODO: Add resources for articles, speaking, and uses
   def about
-  end
-
-  def projects
-    @projects = Project.ordered
   end
 
   def speaking

@@ -2,6 +2,7 @@
 title: ECサイトリニューアル
 category: project
 published_date: 2025-04-27
+position: 2
 icon: fa-shop
 color: green-500
 technologies:

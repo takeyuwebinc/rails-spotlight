@@ -2,6 +2,7 @@
 title: クラウド請求書管理システム
 category: project
 published_date: 2025-04-27
+position: 1
 icon: fa-cloud
 color: blue-500
 technologies:

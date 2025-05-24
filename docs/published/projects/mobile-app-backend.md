@@ -2,6 +2,7 @@
 title: モバイルアプリバックエンド
 category: project
 published_date: 2025-04-27
+position: 5
 icon: fa-mobile-screen
 color: purple-500
 technologies:

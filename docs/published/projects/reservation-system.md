@@ -2,6 +2,7 @@
 title: 予約管理システム
 category: project
 published_date: 2025-04-27
+position: 6
 icon: fa-calendar
 color: red-500
 technologies:

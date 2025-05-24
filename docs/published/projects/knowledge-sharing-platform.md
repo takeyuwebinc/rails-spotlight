@@ -2,6 +2,7 @@
 title: 社内ナレッジ共有プラットフォーム
 category: project
 published_date: 2025-04-27
+position: 3
 icon: fa-users
 color: teal-500
 technologies:
