@@ -52,13 +52,14 @@ export default class extends Controller {
    * 
    * @method handleThemeChange
    * @memberof MermaidController
-   * @param {Event} event - テーマ変更イベント
+   * @param {CustomEvent} event - テーマ変更イベント
    */
   handleThemeChange(event) {
+    console.log(event);
     // テーマに応じてmermaidの設定を更新
     mermaid.initialize({
       startOnLoad: false,
-      theme: document.documentElement.classList.contains('dark') ? 'dark' : 'default',
+      theme: event.detail === 'dark' ? 'dark' : 'default',
       securityLevel: 'loose',
       fontFamily: 'ui-sans-serif, system-ui, sans-serif',
     })

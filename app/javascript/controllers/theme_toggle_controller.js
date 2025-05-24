@@ -38,5 +38,7 @@ export default class extends Controller {
     this.applyTheme(value);
     this.updateIcons(value);
     localStorage.setItem('theme', value);
+    const event = new CustomEvent("theme-changed", { detail: value });
+    window.dispatchEvent(event);
   }
 }
