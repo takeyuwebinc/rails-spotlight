@@ -39,7 +39,7 @@ class Tag < ApplicationRecord
   end
 
   def set_random_colors
-    return if bg_color.present? && text_color.present?
+    return if bg_color.present? || text_color.present?
 
     colors = generate_random_color_pair
     self.bg_color = colors[:bg_color]

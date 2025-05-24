@@ -35,7 +35,8 @@ RSpec.describe Project, type: :model do
           description: 'Old description',
           icon: 'fa-old',
           color: 'red-500',
-          technologies: 'Old Tech'
+          technologies: 'Old Tech',
+          published_at: 1.day.ago
         )
       end
 

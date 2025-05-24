@@ -36,8 +36,8 @@ RSpec.describe "Sitemaps", type: :request do
     end
 
     it "includes static page URLs" do
-      expect(response.body).to include("<loc>#{url_for(controller: 'home', action: 'about', only_path: false)}</loc>")
-      expect(response.body).to include("<loc>#{url_for(controller: 'home', action: 'projects', only_path: false)}</loc>")
+      expect(response.body).to include("<loc>#{about_url}</loc>")
+      expect(response.body).to include("<loc>#{projects_url}</loc>")
     end
 
     it "includes lastmod dates" do

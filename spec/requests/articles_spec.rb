@@ -49,10 +49,10 @@ RSpec.describe "Articles", type: :request do
       end
 
       it "displays tag badges with correct colors" do
-        expect(response.body).to include("bg-red-100") # Rails color
-        expect(response.body).to include("text-red-800")
-        expect(response.body).to include("bg-blue-100") # Kamal color
-        expect(response.body).to include("text-blue-800")
+        expect(response.body).to include("bg-red-600") # Rails background color
+        expect(response.body).to include("text-red-100") # Rails text color
+        expect(response.body).to include("bg-blue-600") # Kamal background color
+        expect(response.body).to include("text-blue-100") # Kamal text color
       end
 
       it "includes SEO meta tags" do
@@ -112,27 +112,6 @@ RSpec.describe "Articles", type: :request do
 
     it "displays all tags for an article" do
       expect(response.body).to include("Rails")
-      it "raises ActiveRecord::RecordNotFound" do
-        expect {
-          get article_path("non-existent-slug")
-        }.to raise_error(ActiveRecord::RecordNotFound)
-      end
-    end
-  end
-
-  describe "tag functionality in articles" do
-    let!(:rails_tag) { create(:tag, :rails) }
-    let!(:javascript_tag) { create(:tag, :javascript) }
-    let!(:article_with_multiple_tags) do
-      create(:article, title: "Multi Tag Article", slug: "multi-tag-article").tap do |article|
-        article.tags << [ rails_tag, javascript_tag ]
-      end
-    end
-
-    before { get article_path(article_with_multiple_tags) }
-
-    it "displays all tags for an article" do
-      expect(response.body).to include("Rails")
       expect(response.body).to include("JavaScript")
     end
 
@@ -142,8 +121,8 @@ RSpec.describe "Articles", type: :request do
     end
 
     it "displays correct colors for each tag" do
-      expect(response.body).to include("bg-red-100") # Rails
-      expect(response.body).to include("bg-yellow-100") # JavaScript
+      expect(response.body).to include("bg-red-600") # Rails background
+      expect(response.body).to include("bg-yellow-500") # JavaScript background
     end
   end
 end

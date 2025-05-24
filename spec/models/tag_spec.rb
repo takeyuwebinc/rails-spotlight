@@ -52,17 +52,13 @@ RSpec.describe Tag, type: :model do
     end
 
     it "validates presence of bg_color" do
-      tag = build(:tag)
-      tag.bg_color = nil
-      tag.valid?
+      tag = Tag.new(name: "Test Tag", bg_color: nil, text_color: "red-100")
       expect(tag).not_to be_valid
       expect(tag.errors[:bg_color]).to include("can't be blank")
     end
 
     it "validates presence of text_color" do
-      tag = build(:tag)
-      tag.text_color = nil
-      tag.valid?
+      tag = Tag.new(name: "Test Tag", bg_color: "red-600", text_color: nil)
       expect(tag).not_to be_valid
       expect(tag.errors[:text_color]).to include("can't be blank")
     end

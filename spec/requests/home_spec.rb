@@ -31,16 +31,16 @@ RSpec.describe "Home", type: :request do
       end
 
       it "displays tag badges with correct colors" do
-        expect(response.body).to include("bg-red-100") # Rails color
-        expect(response.body).to include("text-red-800")
-        expect(response.body).to include("bg-blue-100") # Kamal color
-        expect(response.body).to include("text-blue-800")
+        expect(response.body).to include("bg-red-600") # Rails background color
+        expect(response.body).to include("text-red-100") # Rails text color
+        expect(response.body).to include("bg-blue-600") # Kamal background color
+        expect(response.body).to include("text-blue-100") # Kamal text color
       end
 
       it "limits featured tags display" do
         # Create more tags with articles
         6.times do |i|
-          tag = create(:tag, name: "Tag#{i}", color: "blue")
+          tag = create(:tag, name: "Tag#{i}")
           create(:article, title: "Article #{i}", slug: "article-#{i}").tap do |article|
             article.tags << tag
           end
@@ -78,7 +78,7 @@ RSpec.describe "Home", type: :request do
       it "does not display tag badges for unpublished articles" do
         # Note: This test may fail if there are other published articles with Rails tag
         # The implementation correctly excludes unpublished articles from tag counting
-        expect(response.body).not_to include("bg-red-100") # Rails tag badge styling
+        expect(response.body).not_to include("bg-red-600") # Rails tag badge styling
       end
     end
 

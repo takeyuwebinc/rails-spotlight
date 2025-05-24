@@ -37,6 +37,13 @@ class Project < ApplicationRecord
           frontmatter_text = frontmatter_match[1]
           content_text = frontmatter_match[2].strip
 
+          # Check if this is a project file
+          category_match = frontmatter_text.match(/category:\s*(.+)$/)
+          if category_match && category_match[1].strip != "project"
+            puts "  Skipping non-project file: #{file_path}"
+            next
+          end
+
           # Extract metadata using regex
           title_match = frontmatter_text.match(/title:\s*(.+)$/)
           icon_match = frontmatter_text.match(/icon:\s*(.+)$/)
@@ -44,8 +51,12 @@ class Project < ApplicationRecord
           position_match = frontmatter_text.match(/position:\s*(\d+)$/)
           published_date_match = frontmatter_text.match(/published_date:\s*(.+)$/)
 
-          # Extract technologies as comma-separated string
-          technologies_match = frontmatter_text.match(/technologies:\s*(.+)$/)
+          # Extract technologies (handle both YAML array and comma-separated string)
+          technologies_match = frontmatter_text.match(/technologies:\s*\n((?:\s*-\s*.+\n?)+)/m)
+          if !technologies_match
+            # Try single line format
+            technologies_match = frontmatter_text.match(/technologies:\s*(.+)$/)
+          end
 
           # Find or create project by title
           title = title_match ? title_match[1].strip : "Untitled Project"
@@ -56,13 +67,20 @@ class Project < ApplicationRecord
           project.icon = icon_match ? icon_match[1].strip : "fa-code"
           project.color = color_match ? color_match[1].strip : "blue-600"
 
-          # Set technologies from comma-separated string
+          # Set technologies (handle both YAML array and comma-separated string)
           if technologies_match
-            # Split by comma, trim whitespace, and rejoin with consistent formatting
-            tech_list = technologies_match[1].split(",").map(&:strip)
-            project.technologies = tech_list.join(", ")
+            tech_text = technologies_match[1].strip
+            if tech_text.include?("- ")
+              # YAML array format
+              tech_list = tech_text.scan(/- (.+)/).flatten.map(&:strip)
+              project.technologies = tech_list.join(", ")
+            else
+              # Comma-separated string format
+              tech_list = tech_text.split(",").map(&:strip)
+              project.technologies = tech_list.join(", ")
+            end
           else
-            project.technologies = ""
+            project.technologies = "Unknown"
           end
 
           # Set position
