@@ -3,6 +3,7 @@ ARG RUBY_VERSION=3.4.2
 FROM ghcr.io/rails/devcontainer/images/ruby:$RUBY_VERSION
 
 # Install Puppeteer/Chromium dependencies
+USER root
 RUN apt-get update && apt-get install -y \
     libatk1.0-0 \
     libatk-bridge2.0-0 \
@@ -31,3 +32,5 @@ RUN apt-get update && apt-get install -y \
     libxss1 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+USER vscode
