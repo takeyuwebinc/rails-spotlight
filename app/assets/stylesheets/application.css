@@ -19,3 +19,7 @@ html {
   --avatar-border-transform: translate3d(-0.2222222222222222rem, 0, 0) scale(1.7777777777777777);
   --avatar-border-opacity: 0;
 }
+
+a {
+  word-break: break-all;
+}
