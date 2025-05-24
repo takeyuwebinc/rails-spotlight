@@ -41,8 +41,8 @@ RSpec.describe CustomHtmlRenderer do
 
       it 'renders message blocks correctly' do
         result = markdown.render(text)
-        expect(result).to include('<div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4 rounded-r">')
-        expect(result).to include('<p class="text-sm text-amber-800">This is a message</p>')
+        expect(result).to include('<div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-500 p-4 mb-4 rounded-r">')
+        expect(result).to include('<p class="text-sm text-amber-800 dark:text-amber-200">This is a message</p>')
       end
     end
 
@@ -59,8 +59,8 @@ RSpec.describe CustomHtmlRenderer do
 
       it 'renders alert message blocks correctly' do
         result = markdown.render(text)
-        expect(result).to include('<div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded-r">')
-        expect(result).to include('<p class="text-sm text-red-800">This is an alert message</p>')
+        expect(result).to include('<div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-500 p-4 mb-4 rounded-r">')
+        expect(result).to include('<p class="text-sm text-red-800 dark:text-red-200">This is an alert message</p>')
         expect(result).not_to include('<svg class="h-5 w-5 text-red-400"')
       end
     end
@@ -78,11 +78,11 @@ RSpec.describe CustomHtmlRenderer do
 
       it 'renders details blocks correctly' do
         result = markdown.render(text)
-        expect(result).to include('<div class="border border-gray-200 rounded mb-4" data-controller="details"')
-        expect(result).to include('<button data-action="click->details#toggle" class="flex justify-between items-center w-full p-4 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">')
+        expect(result).to include('<div class="border border-gray-200 dark:border-gray-700 rounded mb-4" data-controller="details"')
+        expect(result).to include('<button data-action="click->details#toggle" class="flex justify-between items-center w-full p-4 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none">')
         expect(result).to include('<span>タイトル</span>')
-        expect(result).to include('<div data-details-target="content" class="p-4 border-t border-gray-200 bg-gray-50"')
-        expect(result).to include('<p class="text-sm text-gray-600">詳細内容</p>')
+        expect(result).to include('<div data-details-target="content" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"')
+        expect(result).to include('<p class="text-sm text-gray-600 dark:text-gray-400">詳細内容</p>')
       end
     end
 
@@ -107,17 +107,17 @@ RSpec.describe CustomHtmlRenderer do
         result = markdown.render(text)
 
         # 詳細ブロックが存在することを確認
-        expect(result).to include('<div class="border border-gray-200 rounded mb-4" data-controller="details">')
+        expect(result).to include('<div class="border border-gray-200 dark:border-gray-700 rounded mb-4" data-controller="details">')
         expect(result).to include('<span>タイトル</span>')
 
         # 詳細ブロックの内容部分を抽出
-        details_content = result.match(/<div data-details-target="content" class="p-4 border-t border-gray-200 bg-gray-50">(.*?)<\/div><\/div>/m)
+        details_content = result.match(/<div data-details-target="content" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">(.*?)<\/div><\/div>/m)
         expect(details_content).not_to be_nil
 
         # 詳細ブロック内にメッセージブロックが含まれていることを確認
         details_html = details_content[1]
-        expect(details_html).to include('<div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4 rounded-r">')
-        expect(details_html).to include('<p class="text-sm text-amber-800">ネストされたメッセージ</p>')
+        expect(details_html).to include('<div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-500 p-4 mb-4 rounded-r">')
+        expect(details_html).to include('<p class="text-sm text-amber-800 dark:text-amber-200">ネストされたメッセージ</p>')
       end
     end
 
@@ -149,7 +149,7 @@ RSpec.describe CustomHtmlRenderer do
         expect(result).to include('<span>外側のタイトル</span>')
 
         # 外側の詳細ブロックの内容部分を抽出
-        outer_details_content = result.match(/<div data-details-target="content" class="p-4 border-t border-gray-200 bg-gray-50">(.*?)<\/div><\/div>/m)
+        outer_details_content = result.match(/<div data-details-target="content" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">(.*?)<\/div><\/div>/m)
         expect(outer_details_content).not_to be_nil
 
         # 内側の詳細ブロックが外側の詳細ブロック内にネストされていることを確認
@@ -158,7 +158,7 @@ RSpec.describe CustomHtmlRenderer do
 
         # 内側のメッセージブロックが外側の詳細ブロック内にネストされていることを確認
         # 正規表現で全体のHTMLを検索
-        expect(result).to match(/<div data-details-target="content" class="p-4 border-t border-gray-200 bg-gray-50">.*?<div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4 rounded-r">.*?<p class="text-sm text-amber-800">内側のメッセージ<\/p>/m)
+        expect(result).to match(/<div data-details-target="content" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">.*?<div class="bg-amber-50 dark:bg-amber-900\/20 border-l-4 border-amber-400 dark:border-amber-500 p-4 mb-4 rounded-r">.*?<p class="text-sm text-amber-800 dark:text-amber-200">内側のメッセージ<\/p>/m)
       end
     end
 
@@ -181,8 +181,8 @@ RSpec.describe CustomHtmlRenderer do
 
       it 'renders code blocks inside message correctly' do
         result = markdown.render(text)
-        expect(result).to include('<div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4 rounded-r">')
-        expect(result).to include('<p class="text-sm text-amber-800">コードブロック:</p>')
+        expect(result).to include('<div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-500 p-4 mb-4 rounded-r">')
+        expect(result).to include('<p class="text-sm text-amber-800 dark:text-amber-200">コードブロック:</p>')
         expect(result).to include('<code class="language-ruby">')
         expect(result).to include('def hello')
       end
@@ -210,10 +210,10 @@ RSpec.describe CustomHtmlRenderer do
 
       it 'renders code blocks inside details correctly' do
         result = markdown.render(text)
-        expect(result).to include('<div class="border border-gray-200 rounded mb-4" data-controller="details">')
+        expect(result).to include('<div class="border border-gray-200 dark:border-gray-700 rounded mb-4" data-controller="details">')
         expect(result).to include('<span>Rubyがインストールされている場合</span>')
         expect(result).to include('<code class="language-bash">gem install kamal')
-        expect(result).to include('<p class="text-sm text-gray-600">または bundle で導入</p>')
+        expect(result).to include('<p class="text-sm text-gray-600 dark:text-gray-400">または bundle で導入</p>')
         expect(result).to include('<code class="language-bash">bundle add kamal --group development')
       end
     end
@@ -232,7 +232,7 @@ RSpec.describe CustomHtmlRenderer do
 
         # Check that all blocks are rendered correctly
         20.times do |i|
-          expect(result).to include("<p class=\"text-sm text-amber-800\">Message #{i}</p>")
+          expect(result).to include("<p class=\"text-sm text-amber-800 dark:text-amber-200\">Message #{i}</p>")
         end
       end
     end

@@ -189,30 +189,30 @@ class CustomHtmlRenderer < Redcarpet::Render::HTML
       when :details
         # Wrap content in a paragraph with the appropriate class if it's not already wrapped
         content_with_class = if html_content.strip.start_with?("<p")
-                              html_content.gsub(/<p>/, '<p class="text-sm text-gray-600">')
+                              html_content.gsub(/<p>/, '<p class="text-sm text-gray-600 dark:text-gray-400">')
         else
-                              "<p class=\"text-sm text-gray-600\">#{html_content}</p>"
+                              "<p class=\"text-sm text-gray-600 dark:text-gray-400\">#{html_content}</p>"
         end
 
-        %(<div class="border border-gray-200 rounded mb-4" data-controller="details"><button data-action="click->details#toggle" class="flex justify-between items-center w-full p-4 text-left text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none"><span>#{data[:title]}</span><svg class="h-5 w-5 text-gray-500 transition-transform duration-200" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button><div data-details-target="content" class="p-4 border-t border-gray-200 bg-gray-50">#{content_with_class}</div></div>)
+        %(<div class="border border-gray-200 dark:border-gray-700 rounded mb-4" data-controller="details"><button data-action="click->details#toggle" class="flex justify-between items-center w-full p-4 text-left text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none"><span>#{data[:title]}</span><svg class="h-5 w-5 text-gray-500 dark:text-gray-400 transition-transform duration-200" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></button><div data-details-target="content" class="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">#{content_with_class}</div></div>)
       when :message
         # Wrap content in a paragraph with the appropriate class if it's not already wrapped
         content_with_class = if html_content.strip.start_with?("<p")
-                              html_content.gsub(/<p>/, '<p class="text-sm text-amber-800">')
+                              html_content.gsub(/<p>/, '<p class="text-sm text-amber-800 dark:text-amber-200">')
         else
-                              "<p class=\"text-sm text-amber-800\">#{html_content}</p>"
+                              "<p class=\"text-sm text-amber-800 dark:text-amber-200\">#{html_content}</p>"
         end
 
-        %(<div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4 rounded-r">#{content_with_class}</div>)
+        %(<div class="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-400 dark:border-amber-500 p-4 mb-4 rounded-r">#{content_with_class}</div>)
       when :message_alert
         # Wrap content in a paragraph with the appropriate class if it's not already wrapped
         content_with_class = if html_content.strip.start_with?("<p")
-                              html_content.gsub(/<p>/, '<p class="text-sm text-red-800">')
+                              html_content.gsub(/<p>/, '<p class="text-sm text-red-800 dark:text-red-200">')
         else
-                              "<p class=\"text-sm text-red-800\">#{html_content}</p>"
+                              "<p class=\"text-sm text-red-800 dark:text-red-200\">#{html_content}</p>"
         end
 
-        %(<div class="bg-red-50 border-l-4 border-red-400 p-4 mb-4 rounded-r">#{content_with_class}</div>)
+        %(<div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-500 p-4 mb-4 rounded-r">#{content_with_class}</div>)
       end
 
       # Replace the placeholder with the final HTML
