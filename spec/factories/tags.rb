@@ -1,31 +1,36 @@
 FactoryBot.define do
   factory :tag do
     sequence(:name) { |n| "Tag#{n}" }
-    color { "blue" }
+    # Colors will be set automatically by the model's random color generation
 
     trait :rails do
       name { "Rails" }
-      color { "red" }
+      bg_color { "red-600" }
+      text_color { "red-100" }
     end
 
     trait :javascript do
       name { "JavaScript" }
-      color { "yellow" }
+      bg_color { "yellow-500" }
+      text_color { "yellow-900" }
     end
 
     trait :docker do
       name { "Docker" }
-      color { "purple" }
+      bg_color { "purple-600" }
+      text_color { "purple-100" }
     end
 
     trait :kamal do
       name { "Kamal" }
-      color { "blue" }
+      bg_color { "blue-600" }
+      text_color { "blue-100" }
     end
 
     trait :devops do
       name { "DevOps" }
-      color { "green" }
+      bg_color { "green-600" }
+      text_color { "green-100" }
     end
   end
 end

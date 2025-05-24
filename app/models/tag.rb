@@ -4,9 +4,11 @@ class Tag < ApplicationRecord
 
   validates :name, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true
-  validates :color, presence: true
+  validates :bg_color, presence: true
+  validates :text_color, presence: true
 
   before_validation :generate_slug
+  before_validation :set_random_colors, on: :create
 
   scope :ordered, -> { order(:name) }
 
@@ -15,26 +17,7 @@ class Tag < ApplicationRecord
   end
 
   def badge_colors
-    case color
-    when "red"
-      { bg_color: "bg-red-100", text_color: "text-red-800" }
-    when "blue"
-      { bg_color: "bg-blue-100", text_color: "text-blue-800" }
-    when "green"
-      { bg_color: "bg-green-100", text_color: "text-green-800" }
-    when "yellow"
-      { bg_color: "bg-yellow-100", text_color: "text-yellow-800" }
-    when "purple"
-      { bg_color: "bg-purple-100", text_color: "text-purple-800" }
-    when "orange"
-      { bg_color: "bg-orange-100", text_color: "text-orange-800" }
-    when "pink"
-      { bg_color: "bg-pink-100", text_color: "text-pink-800" }
-    when "indigo"
-      { bg_color: "bg-indigo-100", text_color: "text-indigo-800" }
-    else
-      { bg_color: "bg-gray-100", text_color: "text-gray-800" }
-    end
+    { bg_color: "bg-#{bg_color}", text_color: "text-#{text_color}" }
   end
 
   def description
@@ -53,5 +36,41 @@ class Tag < ApplicationRecord
 
   def generate_slug
     self.slug ||= name.parameterize if name.present?
+  end
+
+  def set_random_colors
+    return if bg_color.present? && text_color.present?
+
+    colors = generate_random_color_pair
+    self.bg_color = colors[:bg_color]
+    self.text_color = colors[:text_color]
+  end
+
+  def generate_random_color_pair
+    # Available color families
+    color_families = %w[red orange amber yellow lime green emerald teal cyan sky blue indigo violet purple fuchsia pink rose]
+
+    # Select random color family
+    color_family = color_families.sample
+
+    # Define intensity ranges for good contrast
+    dark_bg_intensities = %w[600 700 800 900]
+    light_bg_intensities = %w[100 200 300 400]
+
+    # Randomly choose between dark or light background
+    if [ true, false ].sample
+      # Dark background with light text
+      bg_intensity = dark_bg_intensities.sample
+      text_intensity = %w[50 100 200].sample
+    else
+      # Light background with dark text
+      bg_intensity = light_bg_intensities.sample
+      text_intensity = %w[700 800 900].sample
+    end
+
+    {
+      bg_color: "#{color_family}-#{bg_intensity}",
+      text_color: "#{color_family}-#{text_intensity}"
+    }
   end
 end

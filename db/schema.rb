@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_24_184044) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_24_203225) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -89,9 +89,10 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_24_184044) do
   create_table "tags", force: :cascade do |t|
     t.string "name", null: false
     t.string "slug", null: false
-    t.string "color", default: "gray"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "bg_color", null: false
+    t.string "text_color", null: false
     t.index ["name"], name: "index_tags_on_name", unique: true
     t.index ["slug"], name: "index_tags_on_slug", unique: true
   end

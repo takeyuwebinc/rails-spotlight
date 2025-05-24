@@ -51,10 +51,20 @@ RSpec.describe Tag, type: :model do
       expect(tag.errors[:slug]).to include("has already been taken")
     end
 
-    it "validates presence of color" do
-      tag = build(:tag, color: nil)
+    it "validates presence of bg_color" do
+      tag = build(:tag)
+      tag.bg_color = nil
+      tag.valid?
       expect(tag).not_to be_valid
-      expect(tag.errors[:color]).to include("can't be blank")
+      expect(tag.errors[:bg_color]).to include("can't be blank")
+    end
+
+    it "validates presence of text_color" do
+      tag = build(:tag)
+      tag.text_color = nil
+      tag.valid?
+      expect(tag).not_to be_valid
+      expect(tag.errors[:text_color]).to include("can't be blank")
     end
   end
 
@@ -76,6 +86,90 @@ RSpec.describe Tag, type: :model do
         tag = build(:tag, name: "Custom Name", slug: "custom-slug")
         tag.valid?
         expect(tag.slug).to eq("custom-slug")
+      end
+    end
+
+    describe "#set_random_colors" do
+      it "sets random colors when creating a new tag" do
+        tag = build(:tag, name: "New Tag", bg_color: nil, text_color: nil)
+        tag.valid?
+
+        expect(tag.bg_color).to be_present
+        expect(tag.text_color).to be_present
+        expect(tag.bg_color).to match(/\A\w+-\d+\z/) # Format: "color-intensity"
+        expect(tag.text_color).to match(/\A\w+-\d+\z/) # Format: "color-intensity"
+      end
+
+      it "does not override existing colors" do
+        tag = build(:tag, name: "Existing Colors", bg_color: "purple-600", text_color: "purple-100")
+        tag.valid?
+
+        expect(tag.bg_color).to eq("purple-600")
+        expect(tag.text_color).to eq("purple-100")
+      end
+
+      it "only sets colors on create, not update" do
+        tag = create(:tag, name: "Test Tag")
+        original_bg_color = tag.bg_color
+        original_text_color = tag.text_color
+
+        tag.update(name: "Updated Name")
+
+        expect(tag.bg_color).to eq(original_bg_color)
+        expect(tag.text_color).to eq(original_text_color)
+      end
+    end
+  end
+
+  describe "color generation" do
+    describe "#generate_random_color_pair" do
+      let(:tag) { Tag.new }
+
+      it "generates colors with proper contrast for dark backgrounds" do
+        # Test multiple times to check different combinations
+        10.times do
+          colors = tag.send(:generate_random_color_pair)
+          bg_intensity = colors[:bg_color].split('-').last.to_i
+          text_intensity = colors[:text_color].split('-').last.to_i
+
+          if bg_intensity >= 600
+            expect(text_intensity).to be <= 200,
+              "Dark background (#{colors[:bg_color]}) should have light text, got #{colors[:text_color]}"
+          end
+        end
+      end
+
+      it "generates colors with proper contrast for light backgrounds" do
+        # Test multiple times to check different combinations
+        10.times do
+          colors = tag.send(:generate_random_color_pair)
+          bg_intensity = colors[:bg_color].split('-').last.to_i
+          text_intensity = colors[:text_color].split('-').last.to_i
+
+          if bg_intensity <= 400
+            expect(text_intensity).to be >= 700,
+              "Light background (#{colors[:bg_color]}) should have dark text, got #{colors[:text_color]}"
+          end
+        end
+      end
+
+      it "uses valid Tailwind color families" do
+        expected_families = %w[red orange amber yellow lime green emerald teal cyan sky blue indigo violet purple fuchsia pink rose]
+
+        colors = tag.send(:generate_random_color_pair)
+        bg_family = colors[:bg_color].split('-').first
+        text_family = colors[:text_color].split('-').first
+
+        expect(expected_families).to include(bg_family)
+        expect(expected_families).to include(text_family)
+      end
+
+      it "uses the same color family for background and text" do
+        colors = tag.send(:generate_random_color_pair)
+        bg_family = colors[:bg_color].split('-').first
+        text_family = colors[:text_color].split('-').first
+
+        expect(bg_family).to eq(text_family)
       end
     end
   end
@@ -100,103 +194,22 @@ RSpec.describe Tag, type: :model do
   end
 
   describe "#badge_colors" do
-    context "with red color" do
-      let(:tag) { create(:tag, color: "red") }
+    it "returns Tailwind classes based on bg_color and text_color" do
+      tag = create(:tag, bg_color: "purple-600", text_color: "purple-100")
 
-      it "returns red color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-red-100",
-          text_color: "text-red-800"
-        })
-      end
+      expect(tag.badge_colors).to eq({
+        bg_color: "bg-purple-600",
+        text_color: "text-purple-100"
+      })
     end
 
-    context "with blue color" do
-      let(:tag) { create(:tag, color: "blue") }
+    it "works with different color combinations" do
+      tag = create(:tag, bg_color: "emerald-200", text_color: "emerald-800")
 
-      it "returns blue color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-blue-100",
-          text_color: "text-blue-800"
-        })
-      end
-    end
-
-    context "with green color" do
-      let(:tag) { create(:tag, color: "green") }
-
-      it "returns green color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-green-100",
-          text_color: "text-green-800"
-        })
-      end
-    end
-
-    context "with yellow color" do
-      let(:tag) { create(:tag, color: "yellow") }
-
-      it "returns yellow color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-yellow-100",
-          text_color: "text-yellow-800"
-        })
-      end
-    end
-
-    context "with purple color" do
-      let(:tag) { create(:tag, color: "purple") }
-
-      it "returns purple color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-purple-100",
-          text_color: "text-purple-800"
-        })
-      end
-    end
-
-    context "with orange color" do
-      let(:tag) { create(:tag, color: "orange") }
-
-      it "returns orange color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-orange-100",
-          text_color: "text-orange-800"
-        })
-      end
-    end
-
-    context "with pink color" do
-      let(:tag) { create(:tag, color: "pink") }
-
-      it "returns pink color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-pink-100",
-          text_color: "text-pink-800"
-        })
-      end
-    end
-
-    context "with indigo color" do
-      let(:tag) { create(:tag, color: "indigo") }
-
-      it "returns indigo color scheme" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-indigo-100",
-          text_color: "text-indigo-800"
-        })
-      end
-    end
-
-    context "with unknown color" do
-      let(:tag) { create(:tag, color: "unknown") }
-
-      it "returns gray color scheme as default" do
-        expect(tag.badge_colors).to eq({
-          bg_color: "bg-gray-100",
-          text_color: "text-gray-800"
-        })
-      end
+      expect(tag.badge_colors).to eq({
+        bg_color: "bg-emerald-200",
+        text_color: "text-emerald-800"
+      })
     end
   end
 
@@ -227,36 +240,69 @@ RSpec.describe Tag, type: :model do
     it "creates rails tag with correct attributes" do
       tag = create(:tag, :rails)
       expect(tag.name).to eq("Rails")
-      expect(tag.color).to eq("red")
+      expect(tag.bg_color).to eq("red-600")
+      expect(tag.text_color).to eq("red-100")
       expect(tag.slug).to eq("rails")
     end
 
     it "creates javascript tag with correct attributes" do
       tag = create(:tag, :javascript)
       expect(tag.name).to eq("JavaScript")
-      expect(tag.color).to eq("yellow")
+      expect(tag.bg_color).to eq("yellow-500")
+      expect(tag.text_color).to eq("yellow-900")
       expect(tag.slug).to eq("javascript")
     end
 
     it "creates docker tag with correct attributes" do
       tag = create(:tag, :docker)
       expect(tag.name).to eq("Docker")
-      expect(tag.color).to eq("purple")
+      expect(tag.bg_color).to eq("purple-600")
+      expect(tag.text_color).to eq("purple-100")
       expect(tag.slug).to eq("docker")
     end
 
     it "creates kamal tag with correct attributes" do
       tag = create(:tag, :kamal)
       expect(tag.name).to eq("Kamal")
-      expect(tag.color).to eq("blue")
+      expect(tag.bg_color).to eq("blue-600")
+      expect(tag.text_color).to eq("blue-100")
       expect(tag.slug).to eq("kamal")
     end
 
     it "creates devops tag with correct attributes" do
       tag = create(:tag, :devops)
       expect(tag.name).to eq("DevOps")
-      expect(tag.color).to eq("green")
+      expect(tag.bg_color).to eq("green-600")
+      expect(tag.text_color).to eq("green-100")
       expect(tag.slug).to eq("devops")
+    end
+  end
+
+  describe "integration tests" do
+    it "creates a valid tag with random colors" do
+      tag = Tag.create(name: "Integration Test")
+
+      expect(tag).to be_persisted
+      expect(tag.bg_color).to be_present
+      expect(tag.text_color).to be_present
+      expect(tag.slug).to eq("integration-test")
+    end
+
+    it "ensures color contrast is maintained across multiple creations" do
+      tags = 5.times.map { Tag.create(name: "Test #{rand(1000)}") }
+
+      tags.each do |tag|
+        bg_intensity = tag.bg_color.split('-').last.to_i
+        text_intensity = tag.text_color.split('-').last.to_i
+
+        if bg_intensity >= 600
+          expect(text_intensity).to be <= 200,
+            "Tag #{tag.name}: Dark background (#{tag.bg_color}) should have light text, got #{tag.text_color}"
+        else
+          expect(text_intensity).to be >= 700,
+            "Tag #{tag.name}: Light background (#{tag.bg_color}) should have dark text, got #{tag.text_color}"
+        end
+      end
     end
   end
 end
