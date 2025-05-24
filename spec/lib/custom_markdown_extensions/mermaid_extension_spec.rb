@@ -51,7 +51,7 @@ RSpec.describe CustomMarkdownExtensions::MermaidExtension do
 
       it "renders a regular code block" do
         html = markdown.render(regular_markdown)
-        expect(html).to include('<pre><code class="ruby">')
+        expect(html).to include('<pre class="not-prose"><code class="language-ruby">')
         expect(html).to include('def hello')
         expect(html).not_to include('mermaid-diagram')
       end
