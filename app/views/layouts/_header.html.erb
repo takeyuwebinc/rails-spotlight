@@ -1,4 +1,4 @@
-<header class="pointer-events-none relative z-50 flex flex-none flex-col" style="height:var(--header-height);margin-bottom:var(--header-mb)">
+<header class="relative z-50 flex flex-none flex-col" style="height:var(--header-height);margin-bottom:var(--header-mb)" data-controller="mobile-menu">
   <% if home? %>
     <div class="order-last mt-[calc(--spacing(16)-(--spacing(3)))]"></div>
     <div class="sm:px-8 top-0 order-last -mb-3 pt-3">
@@ -26,11 +26,21 @@
                 <div class="flex flex-grow justify-end md:justify-center">
                   <div class="pointer-events-auto md:hidden">
                     <button type="button" class="group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-zinc-800 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20"
-                      aria-expanded="false">
+                      aria-expanded="false"
+                      data-mobile-menu-target="button"
+                      data-action="click->mobile-menu#toggle">
                       Menu <i class="fa-solid fa-chevron-down ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400"></i>
                     </button>
                   </div>
-                  <nav class="pointer-events-auto hidden md:block"><ul class="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/about">About</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/articles">Articles</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/projects">Projects</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/speaking">Speaking</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/uses">Uses</a></li></ul></nav>
+                  <nav class="pointer-events-auto hidden md:block">
+                    <ul class="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/about">About</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/articles">Articles</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/projects">Projects</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/speaking">Speaking</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/uses">Uses</a></li>
+                    </ul>
+                  </nav>
                 </div>
                 <div class="flex justify-end md:flex-1">
                   <div class="pointer-events-auto">
@@ -60,11 +70,21 @@
                 <div class="flex flex-grow justify-end md:justify-center">
                   <div class="pointer-events-auto md:hidden">
                     <button type="button" class="group flex items-center rounded-full bg-white/90 px-4 py-2 text-sm font-medium text-zinc-800 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10 dark:hover:ring-white/20"
-                      aria-expanded="false">
+                      aria-expanded="false"
+                      data-mobile-menu-target="button"
+                      data-action="click->mobile-menu#toggle">
                       Menu <i class="fa-solid fa-chevron-down ml-3 h-auto w-2 stroke-zinc-500 group-hover:stroke-zinc-700 dark:group-hover:stroke-zinc-400"></i>
                     </button>
                   </div>
-                  <nav class="pointer-events-auto hidden md:block"><ul class="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10"><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/about">About</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/articles">Articles</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/projects">Projects</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/speaking">Speaking</a></li><li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/uses">Uses</a></li></ul></nav>
+                  <nav class="pointer-events-auto hidden md:block">
+                    <ul class="flex rounded-full bg-white/90 px-3 text-sm font-medium text-zinc-800 ring-1 shadow-lg shadow-zinc-800/5 ring-zinc-900/5 backdrop-blur-sm dark:bg-zinc-800/90 dark:text-zinc-200 dark:ring-white/10">
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/about">About</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/articles">Articles</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/projects">Projects</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/speaking">Speaking</a></li>
+                      <li><a class="relative block px-3 py-2 transition hover:text-teal-500 dark:hover:text-teal-400" href="/uses">Uses</a></li>
+                    </ul>
+                  </nav>
                 </div>
                 <div class="flex justify-end md:flex-1">
                   <div class="pointer-events-auto">
@@ -77,4 +97,68 @@
         </div>
     </div>
   <% end %>
+
+  <!-- Mobile Navigation Menu -->
+  <div class="fixed inset-0 z-50 hidden" data-mobile-menu-target="menu">
+    <div class="fixed inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity duration-200" 
+         data-mobile-menu-target="overlay"
+         data-action="click->mobile-menu#closeOnBackdrop"></div>
+    
+    <div class="flex items-center justify-center min-h-full p-4">
+      <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl max-w-sm w-full scale-95 opacity-0 transition-all duration-200 ring-1 ring-zinc-100 dark:ring-zinc-800"
+           data-mobile-menu-target="modal">
+        <!-- Header -->
+        <div class="flex justify-between items-center p-6 border-b border-zinc-100 dark:border-zinc-800">
+          <h2 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200">Navigation</h2>
+          <button type="button" 
+                  class="text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition-colors cursor-pointer"
+                  data-action="click->mobile-menu#close"
+                  aria-label="Close menu">
+            <i class="fa-solid fa-xmark text-xl"></i>
+          </button>
+        </div>
+        
+        <!-- Navigation Links -->
+        <nav class="p-6">
+          <ul class="space-y-4">
+            <li>
+              <a href="/about" 
+                 class="block text-lg text-zinc-700 dark:text-zinc-300 hover:text-teal-500 dark:hover:text-teal-400 transition-colors py-2"
+                 data-action="click->mobile-menu#close">
+                About
+              </a>
+            </li>
+            <li>
+              <a href="/articles" 
+                 class="block text-lg text-zinc-700 dark:text-zinc-300 hover:text-teal-500 dark:hover:text-teal-400 transition-colors py-2"
+                 data-action="click->mobile-menu#close">
+                Articles
+              </a>
+            </li>
+            <li>
+              <a href="/projects" 
+                 class="block text-lg text-zinc-700 dark:text-zinc-300 hover:text-teal-500 dark:hover:text-teal-400 transition-colors py-2"
+                 data-action="click->mobile-menu#close">
+                Projects
+              </a>
+            </li>
+            <li>
+              <a href="/speaking" 
+                 class="block text-lg text-zinc-700 dark:text-zinc-300 hover:text-teal-500 dark:hover:text-teal-400 transition-colors py-2"
+                 data-action="click->mobile-menu#close">
+                Speaking
+              </a>
+            </li>
+            <li>
+              <a href="/uses" 
+                 class="block text-lg text-zinc-700 dark:text-zinc-300 hover:text-teal-500 dark:hover:text-teal-400 transition-colors py-2"
+                 data-action="click->mobile-menu#close">
+                Uses
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </div>
 </header>
