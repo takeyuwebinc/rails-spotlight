@@ -238,15 +238,15 @@ https://github.com/basecamp/kamal-proxy
 すべての環境で共通のものは `.kamal/secrets-common` です。
 
 :::details 設定例
-```plain:.kamal/secrets-staging
+```text:.kamal/secrets-staging
 RAILS_MASTER_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-```plain:.kamal/secrets-production
+```text:.kamal/secrets-production
 RAILS_MASTER_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-```plain:.kamal/secrets-common
+```text:.kamal/secrets-common
 KAMAL_REGISTRY_PASSWORD=dckr_pat_xxxxxxxxxxxxxxxxxxxx
 ```
 :::
@@ -318,7 +318,7 @@ Kamalの `deploy.yml` にホストのファイルシステムをアプリコン�
 
 `files` に指定したローカルファイルは、 `kamal accessory boot` コマンドでアップロードされます。（[該当するコード](https://github.com/basecamp/kamal/blob/6f29d4e78bc29c3392f54f93ea0451ad1ff68b13/lib/kamal/cli/accessory.rb#L14)）
 
-```plain:config/mysql/production.cnf
+```text:config/mysql/production.cnf
 [mysqld]
 character-set-server=utf8mb4
 collation-server=utf8mb4_general_ci
@@ -449,7 +449,7 @@ servers:
       - 123.456.789.012
 ```
 
-```plain:config/crontab
+```text:config/crontab
 SHELL=/bin/bash
 BASH_ENV=/etc/environment
 30 0 * * * cd /app && bundle exec rails statistic:daily > /proc/1/fd/1 2>&1
@@ -508,7 +508,7 @@ $ vi /etc/logrotate.d/mysqldump
 $ /usr/sbin/logrotate -v -f /etc/logrotate.d/mysqldump
 ```
 
-```plain:/etc/logrotate.d/mysqldump
+```text:/etc/logrotate.d/mysqldump
 /backup/mysqldump/myapp_production.sql.gz {
     daily
     rotate 14
@@ -583,7 +583,7 @@ accessories:
 ```
 [filesについてはこちら](#files-%E3%81%A8-volumes-%E3%81%A8-directories)
 
-```plain:config/mysql/my.cnf
+```text:config/mysql/my.cnf
 [mysqld]
 log_error = /var/log/mysqld.log
 ```

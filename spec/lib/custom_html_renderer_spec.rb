@@ -183,7 +183,7 @@ RSpec.describe CustomHtmlRenderer do
         result = markdown.render(text)
         expect(result).to include('<div class="bg-amber-50 border-l-4 border-amber-400 p-4 mb-4 rounded-r">')
         expect(result).to include('<p class="text-sm text-amber-800">コードブロック:</p>')
-        expect(result).to include('<code class="ruby">')
+        expect(result).to include('<code class="language-ruby">')
         expect(result).to include('def hello')
       end
     end
@@ -212,9 +212,9 @@ RSpec.describe CustomHtmlRenderer do
         result = markdown.render(text)
         expect(result).to include('<div class="border border-gray-200 rounded mb-4" data-controller="details">')
         expect(result).to include('<span>Rubyがインストールされている場合</span>')
-        expect(result).to include('<code class="bash">gem install kamal')
+        expect(result).to include('<code class="language-bash">gem install kamal')
         expect(result).to include('<p class="text-sm text-gray-600">または bundle で導入</p>')
-        expect(result).to include('<code class="bash">bundle add kamal --group development')
+        expect(result).to include('<code class="language-bash">bundle add kamal --group development')
       end
     end
 

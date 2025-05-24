@@ -1,3 +1,10 @@
+<% content_for :head do %>
+  <%# highlight.js for syntax highlighting %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<% end %>
+
 <div class="sm:px-8 mt-16 lg:mt-32">
   <div class="mx-auto w-full max-w-7xl lg:px-8">
     <div class="relative px-4 sm:px-8 lg:px-12">
@@ -35,7 +42,7 @@
               
               <!-- 記事本文 -->
               <article>
-                <div class="prose prose-zinc dark:prose-invert" data-table-of-contents-target="content">
+                <div class="prose prose-zinc dark:prose-invert" data-table-of-contents-target="content" data-controller="syntax-highlight">
                   <%= @article.content.html_safe %>
                 </div>
               </article>

@@ -16,6 +16,7 @@ module CustomMarkdownExtensions
     LinkCardExtension.register(renderer)
     MermaidExtension.register(renderer)
     ImageExtension.register(renderer)
+    SyntaxHighlightExtension.register(renderer)
   end
 
   # リンクカード拡張モジュール
@@ -216,6 +217,31 @@ module CustomMarkdownExtensions
         # 元の後処理メソッドを呼び出す
         original_postprocess.call(document)
       end
+    end
+  end
+
+  # シンタックスハイライト拡張モジュール
+  #
+  # このモジュールは、コードブロックにシンタックスハイライト機能を提供します。
+  module SyntaxHighlightExtension
+    # シンタックスハイライト拡張機能をレンダラーに登録する
+    #
+    # @param renderer [Redcarpet::Render::HTML] 拡張機能を登録するレンダラー
+    # @return [void]
+    # @example
+    #   SyntaxHighlightExtension.register(renderer)
+    def self.register(renderer)
+      # block_codeハンドラを登録
+      renderer.register_block_code_handler(
+        lambda do |code, language|
+          if language.present?
+            # highlight.js用のHTMLを生成
+            %(<pre class="not-prose"><code class="language-#{CGI.escape_html(language)}">#{CGI.escape_html(code)}</code></pre>)
+          else
+            nil # このハンドラでは処理しない
+          end
+        end
+      )
     end
   end
 end

@@ -9,8 +9,9 @@
 カスタムMarkdownの実装は、以下のコンポーネントで構成されています：
 
 1. **CustomHtmlRenderer**: Redcarpetライブラリを拡張したカスタムレンダラー
-2. **Stimulus.js コントローラ**: 折りたたみ機能などのインタラクティブな要素を制御
+2. **Stimulus.js コントローラ**: 折りたたみ機能、シンタックスハイライトなどのインタラクティブな要素を制御
 3. **Tailwind CSS**: スタイリングとレスポンシブデザイン
+4. **highlight.js**: シンタックスハイライト機能
 
 ## カスタムブロック構文
 
@@ -203,6 +204,44 @@ Markdown内の画像表示機能を拡張し、幅指定やキャプションな
 - キャプションが指定された場合は、画像の下に表示されます
 - 幅が指定された場合は、指定された幅で表示されます
 - リンクが設定された場合は、画像をクリックするとリンク先に移動します
+
+### シンタックスハイライト (Syntax Highlighting)
+
+コードブロックに対して、プログラミング言語に応じたシンタックスハイライトを自動的に適用します。highlight.jsライブラリを使用して、多くのプログラミング言語をサポートしています。
+
+#### 構文
+
+````markdown
+```ruby
+def hello
+  puts "Hello, World!"
+end
+```
+````
+
+#### サポート言語
+
+以下のプログラミング言語に対応しています：
+
+- **Ruby**: `ruby`
+- **JavaScript**: `javascript` または `js`
+- **TypeScript**: `typescript` または `ts`
+- **HTML**: `html`
+- **CSS**: `css`
+- **SCSS**: `scss`
+- **JSON**: `json`
+- **YAML**: `yaml`
+- **Bash/Shell**: `bash` または `shell`
+- **SQL**: `sql`
+- **Markdown**: `markdown`
+
+#### レンダリング結果
+
+- コードブロックには適切な`language-*`クラスが自動的に付与されます
+- highlight.jsによって構文に応じた色分けが適用されます
+- ダークモードとライトモードの両方に対応したテーマを使用
+- コードブロックは角丸のボーダーと適切な余白でスタイリングされます
+- フォントは等幅フォント（Consolas、Monaco等）を使用
 
 ## ネスト機能
 
@@ -475,6 +514,59 @@ sequenceDiagram
 
 画像をクリックすると詳細ページに移動します。
 ```
+
+### シンタックスハイライトの例
+
+#### Ruby コード
+
+````markdown
+```ruby
+class Article < ApplicationRecord
+  validates :title, presence: true
+  validates :content, presence: true
+  
+  def published?
+    published_at.present? && published_at <= Time.current
+  end
+end
+```
+````
+
+#### JavaScript コード
+
+````markdown
+```javascript
+const highlightCode = async () => {
+  const { default: Prism } = await import("prismjs")
+  await import("prismjs/components/prism-ruby")
+  
+  Prism.highlightAll()
+}
+```
+````
+
+#### JSON データ
+
+````markdown
+```json
+{
+  "title": "シンタックスハイライト機能の追加",
+  "languages": ["ruby", "javascript", "json"],
+  "enabled": true
+}
+```
+````
+
+#### Bash スクリプト
+
+````markdown
+```bash
+#!/bin/bash
+bundle install
+rails db:migrate
+rails server
+```
+````
 
 ## 制限事項と注意点
 
