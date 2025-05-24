@@ -223,6 +223,7 @@ module CustomMarkdownExtensions
   # シンタックスハイライト拡張モジュール
   #
   # このモジュールは、コードブロックにシンタックスハイライト機能を提供します。
+  # ファイル名表示機能もサポートしています。
   module SyntaxHighlightExtension
     # シンタックスハイライト拡張機能をレンダラーに登録する
     #
@@ -235,13 +236,71 @@ module CustomMarkdownExtensions
       renderer.register_block_code_handler(
         lambda do |code, language|
           if language.present?
-            # highlight.js用のHTMLを生成
-            %(<pre class="not-prose"><code class="language-#{CGI.escape_html(language)}">#{CGI.escape_html(code)}</code></pre>)
+            # 言語とファイル名を分離
+            lang, filename = parse_language_and_filename(language)
+
+            if filename.present?
+              # ファイル名付きコードブロックのHTMLを生成
+              generate_code_block_with_filename(code, lang, filename)
+            else
+              # 通常のコードブロックのHTMLを生成
+              generate_code_block(code, lang)
+            end
           else
             nil # このハンドラでは処理しない
           end
         end
       )
+    end
+
+    private
+
+    # 言語文字列からファイル名を分離する
+    #
+    # @param language [String] 言語文字列（例: "bash:~/.bash_profile"）
+    # @return [Array<String>] [言語, ファイル名] の配列
+    # @example
+    #   parse_language_and_filename("bash:~/.bash_profile") #=> ["bash", "~/.bash_profile"]
+    #   parse_language_and_filename("bash") #=> ["bash", nil]
+    def self.parse_language_and_filename(language)
+      if language.include?(":")
+        parts = language.split(":", 2)
+        lang = parts[0].strip
+        filename = parts[1].strip
+        filename = nil if filename.empty?
+        [ lang, filename ]
+      else
+        [ language.strip, nil ]
+      end
+    end
+
+    # ファイル名付きコードブロックのHTMLを生成する
+    #
+    # @param code [String] コード内容
+    # @param language [String] プログラミング言語
+    # @param filename [String] ファイル名
+    # @return [String] 生成されたHTML
+    def self.generate_code_block_with_filename(code, language, filename)
+      escaped_code = CGI.escape_html(code)
+      escaped_language = CGI.escape_html(language)
+      escaped_filename = CGI.escape_html(filename)
+
+      %(<div class="code-block-container relative">
+  <div class="code-filename absolute top-0 left-0 bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded-tl-md rounded-br-md font-mono z-10">#{escaped_filename}</div>
+  <pre class="not-prose pt-8"><code class="language-#{escaped_language}">#{escaped_code}</code></pre>
+</div>)
+    end
+
+    # 通常のコードブロックのHTMLを生成する
+    #
+    # @param code [String] コード内容
+    # @param language [String] プログラミング言語
+    # @return [String] 生成されたHTML
+    def self.generate_code_block(code, language)
+      escaped_code = CGI.escape_html(code)
+      escaped_language = CGI.escape_html(language)
+
+      %(<pre class="not-prose"><code class="language-#{escaped_language}">#{escaped_code}</code></pre>)
     end
   end
 end
