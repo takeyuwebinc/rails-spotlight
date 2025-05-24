@@ -58,19 +58,8 @@ class Project < ApplicationRecord
           position_match = frontmatter_text.match(/position:\s*(\d+)$/)
           published_date_match = frontmatter_text.match(/published_date:\s*(.+)$/)
 
-          # Technologies might be a list, so handle differently
-          technologies = []
-          in_technologies = false
-          frontmatter_text.each_line do |line|
-            if line.strip == "technologies:"
-              in_technologies = true
-              next
-            end
-
-            if in_technologies && line.match(/^\s*-\s*(.+)$/)
-              technologies << $1.strip
-            end
-          end
+          # Extract technologies as comma-separated string
+          technologies_match = frontmatter_text.match(/technologies:\s*(.+)$/)
 
           # Find or create project by title
           title = title_match ? title_match[1].strip : "Untitled Project"
@@ -81,9 +70,11 @@ class Project < ApplicationRecord
           project.icon = icon_match ? icon_match[1].strip : "fa-code"
           project.color = color_match ? color_match[1].strip : "blue-600"
 
-          # Set technologies
-          if technologies.any?
-            project.technologies = technologies.join(", ")
+          # Set technologies from comma-separated string
+          if technologies_match
+            # Split by comma, trim whitespace, and rejoin with consistent formatting
+            tech_list = technologies_match[1].split(",").map(&:strip)
+            project.technologies = tech_list.join(", ")
           else
             project.technologies = ""
           end
