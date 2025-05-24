@@ -18,9 +18,9 @@ RSpec.configure do |config|
     'v1/swagger.yaml' => {
       openapi: '3.0.1',
       info: {
-        title: 'Spotlight Rails API',
+        title: 'TakeyuWeb Rails API',
         version: 'v1',
-        description: 'API documentation for Spotlight Rails application'
+        description: 'API documentation for TakeyuWeb Rails application'
       },
       paths: {},
       servers: [

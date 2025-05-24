@@ -10,10 +10,29 @@
         document.documentElement.style.colorScheme = savedTheme;
       }
     </script>
-    <title><%= content_for(:title) || "Spotlight" %></title>
+    <title><%= page_title(content_for(:title)) %></title>
+    <meta name="description" content="<%= page_description(content_for(:description)) %>">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= canonical_url(content_for(:canonical_url)) %>">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<%= page_title(content_for(:title)) %>">
+    <meta property="og:description" content="<%= page_description(content_for(:description)) %>">
+    <meta property="og:image" content="<%= og_image_url(content_for(:og_image)) %>">
+    <meta property="og:url" content="<%= canonical_url(content_for(:canonical_url)) %>">
+    <meta property="og:type" content="<%= content_for(:og_type) || 'website' %>">
+    <meta property="og:site_name" content="TakeyuWeb">
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= page_title(content_for(:title)) %>">
+    <meta name="twitter:description" content="<%= page_description(content_for(:description)) %>">
+    <meta name="twitter:image" content="<%= og_image_url(content_for(:og_image)) %>">
+    
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
     <%= javascript_importmap_tags %>

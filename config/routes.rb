@@ -35,4 +35,7 @@ Rails.application.routes.draw do
   get "projects" => "home#projects"
   get "speaking" => "home#speaking"
   get "uses" => "home#uses"
+
+  # Sitemap
+  get "sitemap.xml" => "sitemaps#index", defaults: { format: "xml" }
 end

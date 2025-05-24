@@ -1,8 +1,43 @@
+<%# SEO Meta Tags %>
+<% content_for :title, @article.title %>
+<% content_for :description, @article.description %>
+<% content_for :og_type, "article" %>
+<% content_for :canonical_url, article_url(@article) %>
+
 <% content_for :head do %>
   <%# highlight.js for syntax highlighting %>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  
+  <%# Article-specific structured data %>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "TechArticle",
+    "headline": "<%= j @article.title %>",
+    "description": "<%= j @article.description %>",
+    "author": {
+      "@type": "Person",
+      "name": "Yuichi Takeuchi"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "TakeyuWeb Inc.",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "<%= asset_url('logo.png') %>"
+      }
+    },
+    "datePublished": "<%= @article.published_at.iso8601 %>",
+    "dateModified": "<%= (@article.updated_at || @article.published_at).iso8601 %>",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": "<%= article_url(@article) %>"
+    },
+    "url": "<%= article_url(@article) %>"
+  }
+  </script>
 <% end %>
 
 <div class="sm:px-8 mt-16 lg:mt-32">

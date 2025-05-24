@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- ホームページ -->
+  <url>
+    <loc><%= root_url %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- 記事一覧ページ -->
+  <url>
+    <loc><%= articles_url %></loc>
+    <lastmod><%= @articles.maximum(:updated_at)&.iso8601 || Date.current.iso8601 %></lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 各記事ページ -->
+  <% @articles.each do |article| %>
+  <url>
+    <loc><%= article_url(article) %></loc>
+    <lastmod><%= article.updated_at.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <% end %>
+  
+  <!-- 静的ページ -->
+  <url>
+    <loc><%= url_for(controller: 'home', action: 'about', only_path: false) %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc><%= url_for(controller: 'home', action: 'projects', only_path: false) %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc><%= url_for(controller: 'home', action: 'speaking', only_path: false) %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc><%= url_for(controller: 'home', action: 'uses', only_path: false) %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
