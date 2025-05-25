@@ -37,3 +37,6 @@
 !/app/assets/builds/.keep
 
 /.clinerules/*
+
+# Ignore Kamal secrets
+/.kamal/secrets
