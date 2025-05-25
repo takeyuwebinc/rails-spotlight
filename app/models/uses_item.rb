@@ -78,6 +78,27 @@ class UsesItem < ApplicationRecord
       end
     end
 
+    # Mark items as unpublished if their markdown files no longer exist
+    existing_slugs = item_files.map do |file_path|
+      begin
+        file_content = File.read(file_path)
+        parsed_data = MetadataParser.parse(file_content)
+        metadata = parsed_data[:metadata]
+        metadata[:category] == "uses_item" ? metadata[:slug] : nil
+      rescue
+        nil
+      end
+    end.compact
+
+    # Find items that exist in database but not in files
+    missing_items = where.not(slug: existing_slugs)
+    missing_items.update_all(published: false)
+
+    if missing_items.any?
+      puts "Marked #{missing_items.count} items as unpublished (files not found):"
+      missing_items.each { |item| puts "  - #{item.name} (#{item.slug})" }
+    end
+
     imported_count
   end
 end
