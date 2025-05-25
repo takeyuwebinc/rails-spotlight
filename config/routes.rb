@@ -37,9 +37,9 @@ Rails.application.routes.draw do
   # Projects
   resources :projects, only: [ :index ]
 
-  # TODO: Add resources for speaking, and uses
+  # TODO: Add resources for speaking
   get "speaking" => "home#speaking"
-  get "uses" => "home#uses"
+  get "uses" => "uses#index"
 
   # Sitemap
   get "sitemap.xml" => "sitemaps#index", defaults: { format: "xml" }

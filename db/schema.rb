@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_24_203225) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_25_073625) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -95,6 +95,21 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_24_203225) do
     t.string "text_color", null: false
     t.index ["name"], name: "index_tags_on_name", unique: true
     t.index ["slug"], name: "index_tags_on_slug", unique: true
+  end
+
+  create_table "uses_items", force: :cascade do |t|
+    t.string "name", null: false
+    t.string "slug", null: false
+    t.string "category", null: false
+    t.text "description", null: false
+    t.string "url"
+    t.integer "position", default: 999
+    t.boolean "published", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category", "position"], name: "index_uses_items_on_category_and_position"
+    t.index ["category"], name: "index_uses_items_on_category"
+    t.index ["slug"], name: "index_uses_items_on_slug", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"

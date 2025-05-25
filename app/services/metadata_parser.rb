@@ -61,6 +61,8 @@ class MetadataParser < ApplicationService
       validate_article_metadata
     when "project"
       validate_project_metadata
+    when "uses_item"
+      validate_uses_item_metadata
     else
       raise MetadataParseError, "Unknown category: #{@metadata[:category]}"
     end
@@ -119,6 +121,15 @@ class MetadataParser < ApplicationService
     else
       raise MetadataParseError, "Tags must be an array or comma-separated string"
     end
+  end
+
+  def validate_uses_item_metadata
+    required_fields = [ :name, :slug, :item_category ]
+    validate_required_fields(required_fields)
+
+    # Type conversions and validations
+    @metadata[:position] = @metadata[:position]&.to_i || 999
+    @metadata[:published] = @metadata[:published] != false
   end
 
   def parse_technologies(tech_value)
