@@ -9,10 +9,7 @@ class HomeController < ApplicationController
                         .limit(5)
   end
 
-  # TODO: Add resources for articles and speaking
+  # TODO: Add resources for articles
   def about
-  end
-
-  def speaking
   end
 end

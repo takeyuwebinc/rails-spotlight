@@ -63,6 +63,8 @@ class MetadataParser < ApplicationService
       validate_project_metadata
     when "uses_item"
       validate_uses_item_metadata
+    when "speaking_engagement"
+      validate_speaking_engagement_metadata
     else
       raise MetadataParseError, "Unknown category: #{@metadata[:category]}"
     end
@@ -141,6 +143,17 @@ class MetadataParser < ApplicationService
     else
       raise MetadataParseError, "Technologies must be an array or comma-separated string"
     end
+  end
+
+  def validate_speaking_engagement_metadata
+    required_fields = [ :title, :slug, :event_name, :event_date ]
+    validate_required_fields(required_fields)
+
+    # Type conversions and validations
+    @metadata[:event_date] = parse_date(@metadata[:event_date])
+    @metadata[:position] = @metadata[:position]&.to_i || 999
+    @metadata[:published] = @metadata[:published] != false
+    @metadata[:tags] = parse_tags(@metadata[:tags]) if @metadata[:tags]
   end
 
   # Custom error class for metadata parsing errors

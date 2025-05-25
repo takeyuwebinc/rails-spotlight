@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_25_073625) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_25_083600) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -84,6 +84,25 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_073625) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.datetime "published_at"
+  end
+
+  create_table "speaking_engagements", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.string "event_name", null: false
+    t.date "event_date", null: false
+    t.string "location"
+    t.text "description"
+    t.string "event_url"
+    t.string "slides_url"
+    t.text "tags"
+    t.integer "position", default: 999
+    t.boolean "published", default: true
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["event_date"], name: "index_speaking_engagements_on_event_date"
+    t.index ["published", "event_date"], name: "index_speaking_engagements_on_published_and_event_date"
+    t.index ["slug"], name: "index_speaking_engagements_on_slug", unique: true
   end
 
   create_table "tags", force: :cascade do |t|

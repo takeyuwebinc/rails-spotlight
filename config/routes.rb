@@ -37,8 +37,8 @@ Rails.application.routes.draw do
   # Projects
   resources :projects, only: [ :index ]
 
-  # TODO: Add resources for speaking
-  get "speaking" => "home#speaking"
+  # Speaking engagements
+  get "speaking" => "speaking#index"
   get "uses" => "uses#index"
 
   # Sitemap
