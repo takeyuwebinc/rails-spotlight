@@ -122,5 +122,5 @@ end
 - `app/views/home/uses.html.erb` - UsesController に移動
 
 ### 更新されたドキュメント
-- `docs/spec/uses_items_feature.md` - コントローラー情報更新
+- `docs/specs/uses_items_feature.md` - コントローラー情報更新
 - `docs/adr/011_Uses項目のMarkdown管理システム実装.md` - 関連ファイル更新

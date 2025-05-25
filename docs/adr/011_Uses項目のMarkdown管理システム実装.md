@@ -116,4 +116,4 @@ published: true/false
 - `app/controllers/uses_controller.rb`
 - `app/views/uses/index.html.erb`
 - `lib/tasks/import.rake`
-- `docs/spec/uses_items_feature.md`
+- `docs/specs/uses_items_feature.md`

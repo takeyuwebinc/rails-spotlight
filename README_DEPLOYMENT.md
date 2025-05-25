@@ -43,7 +43,7 @@ kamal deploy
 3. **.gitignore** - Updated to exclude secrets
 4. **config/environments/production.rb** - Updated domain configuration
 5. **docs/adr/014_Kamalデプロイメント設定.md** - Architecture decision record
-6. **docs/spec/kamal_deployment_guide.md** - Detailed deployment guide
+6. **docs/specs/kamal_deployment_guide.md** - Detailed deployment guide
 
 ## Key Features
 
@@ -63,7 +63,7 @@ kamal deploy
 
 ## Documentation
 
-- See `docs/spec/kamal_deployment_guide.md` for detailed deployment instructions
+- See `docs/specs/kamal_deployment_guide.md` for detailed deployment instructions
 - See `docs/adr/014_Kamalデプロイメント設定.md` for architectural decisions
 
 ## Support
