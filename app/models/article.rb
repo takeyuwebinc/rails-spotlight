@@ -45,70 +45,47 @@ class Article < ApplicationRecord
         # Read the file content
         file_content = File.read(file_path)
 
-        # Extract frontmatter and content using regex
-        frontmatter_match = file_content.match(/\A---\s*\n(.*?)\n---\s*\n(.*)\z/m)
+        # Parse metadata using MetadataParser service
+        parsed_data = MetadataParser.parse(file_content)
+        metadata = parsed_data[:metadata]
+        markdown_content = parsed_data[:content]
 
-        if frontmatter_match
-          frontmatter_text = frontmatter_match[1]
-          markdown_content = frontmatter_match[2]
+        # Skip if not an article
+        next unless metadata[:category] == "article"
 
-          # Extract metadata using regex
-          title_match = frontmatter_text.match(/title:\s*(.+)$/)
-          slug_match = frontmatter_text.match(/slug:\s*(.+)$/)
-          description_match = frontmatter_text.match(/description:\s*(.+)$/)
-          published_date_match = frontmatter_text.match(/published_date:\s*(.+)$/)
-          tags_match = frontmatter_text.match(/tags:\s*(.+)$/)
+        # Convert markdown to HTML
+        html_content = markdown.render(markdown_content)
 
-          # Convert markdown to HTML
-          html_content = markdown.render(markdown_content)
+        # Find or create article by slug
+        article = find_or_initialize_by(slug: metadata[:slug])
 
-          # Find or create article by slug
-          slug = slug_match ? slug_match[1].strip : nil
+        # Update article attributes from parsed metadata
+        article.title = metadata[:title]
+        article.description = metadata[:description]
+        article.published_at = metadata[:published_date]
+        article.content = html_content
 
-          if slug.nil?
-            puts "  Error: No slug found in frontmatter: #{file_path}"
-            next
-          end
+        # Save the article
+        if article.save
+          # Process tags if present
+          if metadata[:tags]
+            article.tags.clear # Remove existing tags
 
-          article = find_or_initialize_by(slug: slug)
+            metadata[:tags].each do |tag_name|
+              next if tag_name.blank?
 
-          # Update article attributes
-          article.title = title_match ? title_match[1].strip : "Untitled"
-          article.description = description_match ? description_match[1].strip : ""
-
-          # Set the published date
-          if published_date_match
-            article.published_at = published_date_match[1].strip
-          else
-            article.published_at = Time.current
-          end
-
-          # Set the HTML content directly
-          article.content = html_content
-
-          # Save the article to create it if it's new
-          if article.save
-            # Process tags if present
-            if tags_match
-              tag_names = tags_match[1].split(",").map(&:strip)
-              article.tags.clear # Remove existing tags
-
-              tag_names.each do |tag_name|
-                next if tag_name.blank?
-
-                tag = Tag.find_or_create_by(name: tag_name)
-                article.tags << tag unless article.tags.include?(tag)
-              end
+              tag = Tag.find_or_create_by(name: tag_name)
+              article.tags << tag unless article.tags.include?(tag)
             end
-
-            puts "  Saved article: #{article.title}"
-            imported_count += 1
-          else
-            puts "  Error saving article: #{article.errors.full_messages.join(', ')}"
           end
+
+          puts "  Saved article: #{article.title}"
+          imported_count += 1
         else
-          puts "  Error: File does not contain valid frontmatter: #{file_path}"
+          puts "  Error saving article: #{article.errors.full_messages.join(', ')}"
         end
+      rescue MetadataParser::MetadataParseError => e
+        puts "  Metadata parsing error for #{file_path}: #{e.message}"
       rescue => e
         puts "  Error processing article #{file_path}: #{e.message}"
       end

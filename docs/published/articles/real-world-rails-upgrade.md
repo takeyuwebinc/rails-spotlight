@@ -3,6 +3,11 @@ title: 現実のRuby/Railsアップグレード
 slug: real-world-rails-upgrade
 category: article
 published_date: 2024-10-26
+tags:
+  - Rails
+  - Ruby
+  - アップグレード
+  - 保守
 description: Ruby on Railsアプリケーションを最新の状態に保つことの重要性と、実際のアップグレード事例から得られた知見を紹介します。Rails 5.0から7.1へのアップグレード過程で直面した課題と解決策、そして得られた成果について解説します。
 ---
 

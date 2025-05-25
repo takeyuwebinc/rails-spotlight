@@ -3,7 +3,11 @@ title: Real World Kamal
 slug: real-world-kamal
 category: article
 published_date: 2025-02-19
-tags: Rails, Kamal, DevOps, Docker
+tags:
+  - Rails
+  - Kamal
+  - DevOps
+  - Docker
 description: Kamal v2を実際に案件で使ってみてわかったことをもとに、実践的なKamalの使い方を紹介します。Kamalは特定のプラットフォームに依存せず、デプロイ先の環境構築が容易かつゼロダウンタイムのデプロイが簡単にできる特徴があります。
 ---
 

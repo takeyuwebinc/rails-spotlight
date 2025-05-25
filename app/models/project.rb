@@ -30,83 +30,34 @@ class Project < ApplicationRecord
         # Read the file content
         file_content = File.read(file_path)
 
-        # Extract frontmatter and content using regex
-        frontmatter_match = file_content.match(/\A---\s*\n(.*?)\n---\s*\n(.*)\z/m)
+        # Parse metadata using MetadataParser service
+        parsed_data = MetadataParser.parse(file_content)
+        metadata = parsed_data[:metadata]
+        content_text = parsed_data[:content]
 
-        if frontmatter_match
-          frontmatter_text = frontmatter_match[1]
-          content_text = frontmatter_match[2].strip
+        # Skip if not a project
+        next unless metadata[:category] == "project"
 
-          # Check if this is a project file
-          category_match = frontmatter_text.match(/category:\s*(.+)$/)
-          if category_match && category_match[1].strip != "project"
-            puts "  Skipping non-project file: #{file_path}"
-            next
-          end
+        # Find or create project by title
+        project = find_or_initialize_by(title: metadata[:title])
 
-          # Extract metadata using regex
-          title_match = frontmatter_text.match(/title:\s*(.+)$/)
-          icon_match = frontmatter_text.match(/icon:\s*(.+)$/)
-          color_match = frontmatter_text.match(/color:\s*(.+)$/)
-          position_match = frontmatter_text.match(/position:\s*(\d+)$/)
-          published_date_match = frontmatter_text.match(/published_date:\s*(.+)$/)
+        # Update project attributes from parsed metadata
+        project.description = content_text
+        project.icon = metadata[:icon]
+        project.color = metadata[:color]
+        project.technologies = metadata[:technologies] || "Unknown"
+        project.position = metadata[:position]
+        project.published_at = metadata[:published_date]
 
-          # Extract technologies (handle both YAML array and comma-separated string)
-          technologies_match = frontmatter_text.match(/technologies:\s*\n((?:\s*-\s*.+\n?)+)/m)
-          if !technologies_match
-            # Try single line format
-            technologies_match = frontmatter_text.match(/technologies:\s*(.+)$/)
-          end
-
-          # Find or create project by title
-          title = title_match ? title_match[1].strip : "Untitled Project"
-          project = find_or_initialize_by(title: title)
-
-          # For projects, the description is the content after the frontmatter
-          project.description = content_text
-          project.icon = icon_match ? icon_match[1].strip : "fa-code"
-          project.color = color_match ? color_match[1].strip : "blue-600"
-
-          # Set technologies (handle both YAML array and comma-separated string)
-          if technologies_match
-            tech_text = technologies_match[1].strip
-            if tech_text.include?("- ")
-              # YAML array format
-              tech_list = tech_text.scan(/- (.+)/).flatten.map(&:strip)
-              project.technologies = tech_list.join(", ")
-            else
-              # Comma-separated string format
-              tech_list = tech_text.split(",").map(&:strip)
-              project.technologies = tech_list.join(", ")
-            end
-          else
-            project.technologies = "Unknown"
-          end
-
-          # Set position
-          if position_match
-            project.position = position_match[1].to_i
-          else
-            project.position = 999
-          end
-
-          # Set the published date
-          if published_date_match
-            project.published_at = published_date_match[1].strip
-          else
-            project.published_at = Time.current
-          end
-
-          # Save the project
-          if project.save
-            puts "  Saved project: #{project.title}"
-            imported_count += 1
-          else
-            puts "  Error saving project: #{project.errors.full_messages.join(', ')}"
-          end
+        # Save the project
+        if project.save
+          puts "  Saved project: #{project.title}"
+          imported_count += 1
         else
-          puts "  Error: File does not contain valid frontmatter: #{file_path}"
+          puts "  Error saving project: #{project.errors.full_messages.join(', ')}"
         end
+      rescue MetadataParser::MetadataParseError => e
+        puts "  Metadata parsing error for #{file_path}: #{e.message}"
       rescue => e
         puts "  Error processing project #{file_path}: #{e.message}"
       end
