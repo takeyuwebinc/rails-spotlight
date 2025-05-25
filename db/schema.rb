@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_25_083600) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_25_084321) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -86,6 +86,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_083600) do
     t.datetime "published_at"
   end
 
+  create_table "speaking_engagement_tags", force: :cascade do |t|
+    t.integer "speaking_engagement_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["speaking_engagement_id", "tag_id"], name: "idx_on_speaking_engagement_id_tag_id_6ba35e291c", unique: true
+    t.index ["speaking_engagement_id"], name: "index_speaking_engagement_tags_on_speaking_engagement_id"
+    t.index ["tag_id"], name: "index_speaking_engagement_tags_on_tag_id"
+  end
+
   create_table "speaking_engagements", force: :cascade do |t|
     t.string "title", null: false
     t.string "slug", null: false
@@ -95,7 +105,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_083600) do
     t.text "description"
     t.string "event_url"
     t.string "slides_url"
-    t.text "tags"
     t.integer "position", default: 999
     t.boolean "published", default: true
     t.datetime "created_at", null: false
@@ -135,4 +144,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_083600) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "article_tags", "articles"
   add_foreign_key "article_tags", "tags"
+  add_foreign_key "speaking_engagement_tags", "speaking_engagements"
+  add_foreign_key "speaking_engagement_tags", "tags"
 end

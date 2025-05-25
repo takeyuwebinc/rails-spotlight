@@ -1,4 +1,7 @@
 class SpeakingEngagement < ApplicationRecord
+  has_many :speaking_engagement_tags, dependent: :destroy
+  has_many :tags, through: :speaking_engagement_tags
+
   validates :title, presence: true
   validates :slug, presence: true, uniqueness: true
   validates :event_name, presence: true
@@ -10,19 +13,6 @@ class SpeakingEngagement < ApplicationRecord
 
   def to_param
     slug
-  end
-
-  # Parse tags from JSON string
-  def parsed_tags
-    return [] if tags.blank?
-    JSON.parse(tags)
-  rescue JSON::ParserError
-    []
-  end
-
-  # Set tags from array
-  def tags_array=(tag_array)
-    self.tags = tag_array.to_json
   end
 
   # Import speaking engagements from markdown files
@@ -77,12 +67,23 @@ class SpeakingEngagement < ApplicationRecord
         engagement.description = html_content
         engagement.event_url = metadata[:event_url]
         engagement.slides_url = metadata[:slides_url]
-        engagement.tags = metadata[:tags]&.to_json
         engagement.position = metadata[:position] || 999
         engagement.published = metadata[:published] != false
 
         # Save the speaking engagement
         if engagement.save
+          # Process tags if present
+          if metadata[:tags]
+            engagement.tags.clear # Remove existing tags
+
+            metadata[:tags].each do |tag_name|
+              next if tag_name.blank?
+
+              tag = Tag.find_or_create_by(name: tag_name)
+              engagement.tags << tag unless engagement.tags.include?(tag)
+            end
+          end
+
           puts "  Saved speaking engagement: #{engagement.title}"
           imported_count += 1
         else

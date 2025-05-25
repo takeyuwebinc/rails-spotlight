@@ -43,10 +43,10 @@
                     <%= engagement.description.html_safe %>
                   </div>
                 <% end %>
-                <% if engagement.parsed_tags.any? %>
+                <% if engagement.tags.any? %>
                   <div class="relative z-10 mt-4 flex flex-wrap gap-2">
-                    <% engagement.parsed_tags.each do |tag| %>
-                      <%= render(BadgeComponent.new(text: tag, bg_color: "bg-blue-100", text_color: "text-blue-800")) %>
+                    <% engagement.tags.each do |tag| %>
+                      <%= render(BadgeComponent.new(text: tag.name, bg_color: tag.badge_colors[:bg_color], text_color: tag.badge_colors[:text_color])) %>
                     <% end %>
                   </div>
                 <% end %>

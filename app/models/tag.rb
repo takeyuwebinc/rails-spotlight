@@ -1,8 +1,10 @@
 class Tag < ApplicationRecord
   has_many :article_tags, dependent: :destroy
   has_many :articles, through: :article_tags
+  has_many :speaking_engagement_tags, dependent: :destroy
+  has_many :speaking_engagements, through: :speaking_engagement_tags
 
-  validates :name, presence: true, uniqueness: true
+  validates :name, presence: true, uniqueness: true, format: { with: /\A[a-zA-Z0-9\s]+\z/, message: "can only contain letters, numbers, and spaces" }
   validates :slug, presence: true, uniqueness: true
   validates :bg_color, presence: true
   validates :text_color, presence: true

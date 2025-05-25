@@ -7,7 +7,7 @@ event_date: "2024-10-24"
 location: "有明セントラルタワーホール & カンファレンス（東京）"
 event_url: "https://kaigionrails.org/2024/talks/takeyuweb/"
 slides_url: ""
-tags: ["Rails", "アップグレード", "保守開発", "トラブルシューティング"]
+tags: ["Rails"]
 position: 1
 published: true
 ---
