@@ -1,3 +1,52 @@
+<% content_for :title, @seo_title %>
+<% content_for :description, @seo_description %>
+<% content_for :og_type, @seo_og_type %>
+<% content_for :canonical_url, @seo_canonical_url %>
+
+<!-- 構造化データ: Organization -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "タケユー・ウェブ株式会社",
+  "alternateName": "TakeyuWeb Inc.",
+  "url": "<%= root_url %>",
+  "logo": "<%= asset_url('logo.png') %>",
+  "description": "Ruby on Railsに特化したWeb開発会社",
+  "sameAs": [
+    "https://github.com/takeyuweb",
+    "https://x.com/takeyuweb"
+  ],
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "url": "<%= root_url %>contact"
+  },
+  "areaServed": "JP",
+  "serviceType": [
+    "Ruby on Rails開発",
+    "Webアプリケーション開発",
+    "システム設計",
+    "技術コンサルティング"
+  ]
+}
+</script>
+
+<!-- 構造化データ: WebSite -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "タケユー・ウェブ株式会社",
+  "url": "<%= root_url %>",
+  "description": "Ruby on Rails受託開発専門のWeb開発会社",
+  "publisher": {
+    "@type": "Organization",
+    "name": "タケユー・ウェブ株式会社"
+  }
+}
+</script>
+
 <div class="sm:px-8 mt-9">
   <div class="mx-auto w-full max-w-7xl lg:px-8">
     <div class="relative px-4 sm:px-8 lg:px-12">
