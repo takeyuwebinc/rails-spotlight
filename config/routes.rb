@@ -9,6 +9,20 @@ Rails.application.routes.draw do
   # Can be used by load balancers and uptime monitors to verify that the app is live.
   get "up" => "rails/health#show", as: :rails_health_check
 
+  # Legacy URL redirects
+  get "/recruit", to: redirect("/", status: 301)
+  get "/jobs", to: redirect("/", status: 301)
+  get "/jobs/*path", to: redirect("/", status: 301)
+  get "/aboutus", to: redirect("/about", status: 301)
+  get "/company", to: redirect("/about", status: 301)
+  get "/services", to: redirect("/projects", status: 301)
+  get "/services/*path", to: redirect("/projects", status: 301)
+  get "/works", to: redirect("/projects", status: 301)
+  get "/works/*path", to: redirect("/projects", status: 301)
+  get "/announcements", to: redirect("/", status: 301)
+  get "/announcements/*path", to: redirect("/", status: 301)
+  get "/contacts", to: redirect("/about", status: 301)
+
   # API routes
   namespace :api do
     resources :link_cards, only: [] do
