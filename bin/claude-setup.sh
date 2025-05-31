@@ -4,5 +4,4 @@
 npm install -g @anthropic-ai/claude-code
 
 # Install Puppeteer/Chromium dependencies
-echo "Installing Puppeteer/Chromium dependencies..."
-./bin/install-puppeteer-deps.sh
+npm install -g puppeteer

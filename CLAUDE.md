@@ -7,7 +7,7 @@
 - gem の利用は最低限
 - メタプログラミング禁止（可読性低下のため）
 
-詳細: .claude/coding/style.md
+詳細: docs/claude/coding/style.md
 
 ## Rails
 
@@ -16,14 +16,14 @@
 - ActiveRecord リレーションでStrict Loading使用
 - 新しい抽象化レイヤーは基底クラス作成（ApplicationService等）
 
-詳細: .claude/frameworks/rails.md
+詳細: docs/claude/frameworks/rails.md
 
 ## TailwindCSS
 
 - Tailwind CSS でスタイリング
 - Tailwind Plus 利用可能
 
-詳細: .claude/frameworks/tailwindcss.md
+詳細: docs/claude/frameworks/tailwindcss.md
 
 ## テスト
 
@@ -31,7 +31,7 @@
 - Controller は Request specs でテスト
 - API は rswag で OpenAPI 3.0 生成
 
-詳細: .claude/frameworks/testing.md
+詳細: docs/claude/frameworks/testing.md
 
 ## ドキュメント
 
@@ -39,7 +39,7 @@
 - 調査結果: docs/reports にレポート作成（YYYYMMDD_[内容].md）
 - ADR: docs/adr に作成（主要な依存関係・アーキテクチャ変更時）
 
-詳細: .claude/documentation/documentation.md, .claude/documentation/adr.md
+詳細: docs/claude/documentation/documentation.md, docs/claude/documentation/adr.md
 
 ## 新機能開発プロセス
 
@@ -47,10 +47,10 @@
 - 調査→仕様書→実装→テストの順序で進行
 - 詳細な開発フローは docs/guidelines/development_process.md を参照
 
-詳細: .claude/guidelines/development_process.md
+詳細: docs/claude/guidelines/development_process.md
 
 ## AI利用
 
 - ユーザーはRails専門家（19年経験）
 - Claude Code（Maxプラン）を使用
-- 詳細な利用方針は .claude/tools/ai.md を参照
+- 詳細な利用方針は docs/claude/tools/ai.md を参照

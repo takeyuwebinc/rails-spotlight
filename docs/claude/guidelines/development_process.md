@@ -66,6 +66,7 @@
 - **Request specs**: Controllerのテスト
 - **System specs**: 重要なユーザーフローのE2Eテスト
 - **API仕様**: rswagでOpenAPI 3.0仕様を生成
+- **UI確認テスト**: PuppeteerによるUI要素の視覚的確認（詳細は下記参照）
 
 ### 5. ドキュメント更新
 
@@ -106,15 +107,88 @@
 - [ ] 仕様書に沿って実装しているか
 - [ ] テストを書いているか
 - [ ] コーディング規約に従っているか
+- [ ] UI変更がある場合、Puppeteerテストを準備したか
 
 実装後：
 - [ ] すべてのテストが通るか
+- [ ] UI要素の表示・動作をPuppeteerで確認したか（UI変更時）
 - [ ] 仕様書を最新化したか
 - [ ] 必要なドキュメントを更新したか
 - [ ] コードレビューを受けたか
+
+## PuppeteerによるUI確認テスト
+
+### 概要
+
+UI要素の表示や動作を視覚的に確認するため、Puppeteerを使用したテストを実施します。特に以下の場合に有効です：
+
+- レスポンシブデザインの確認（デスクトップ/モバイル）
+- インタラクティブな要素の動作確認（折りたたみ、展開など）
+- ダークモード対応の確認
+- スクリーンショットによる視覚的な記録
+
+### 実施方法
+
+1. **テストスクリプトの作成**
+   ```javascript
+   // script/check_[feature_name].js
+   const puppeteer = require('puppeteer');
+   // ... テストコード
+   ```
+
+2. **確認項目の例**
+   - 要素の表示/非表示
+   - クリックイベントの動作
+   - レスポンシブデザインの切り替わり
+   - アニメーションの完了
+   - フォームの入力と送信
+
+3. **スクリーンショットの保存**
+   - 保存先: `tmp/screenshots/`
+   - 命名規則: `[feature]-[state]-[viewport].png`
+   - 例: `mobile-toc-expanded-mobile.png`
+
+### 実践例
+
+```javascript
+// モバイル目次の展開/折りたたみテスト
+const browser = await puppeteer.launch({ headless: 'new' });
+const page = await browser.newPage();
+await page.setViewport({ width: 375, height: 667 }); // モバイルビュー
+
+// 目次の展開前
+await page.screenshot({ path: 'tmp/screenshots/toc-collapsed.png' });
+
+// クリックして展開
+await page.click('details summary');
+await page.waitForTimeout(500); // アニメーション待機
+
+// 展開後
+await page.screenshot({ path: 'tmp/screenshots/toc-expanded.png' });
+```
+
+### ベストプラクティス
+
+1. **環境設定**
+   - DevContainer内でのChromium依存関係をDockerfileに含める
+   - `--no-sandbox`オプションでコンテナ内実行に対応
+
+2. **待機処理**
+   - `waitForSelector`で要素の出現を待つ
+   - アニメーション完了のための適切な待機時間を設定
+
+3. **エラーハンドリング**
+   - try-finallyでブラウザのクローズを保証
+   - エラー時もスクリーンショットを保存して原因調査に活用
+
+4. **実行タイミング**
+   - 新機能実装後の確認
+   - UI関連のバグ修正後の検証
+   - デプロイ前の最終確認
 
 ## 参考資料
 
 - [CLAUDE.md](/CLAUDE.md) - コーディング規約とプロジェクトルール
 - [ADRテンプレート](/docs/adr/template.md) - ADR作成時のテンプレート
 - [既存の仕様書例](/docs/specs/) - 過去の仕様書サンプル
+- [Puppeteer公式ドキュメント](https://pptr.dev/) - Puppeteer APIリファレンス
