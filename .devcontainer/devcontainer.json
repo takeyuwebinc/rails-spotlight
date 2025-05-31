@@ -25,7 +25,7 @@
   // Configure tool-specific properties.
   "customizations": {
     "vscode": {
-      "extensions": ["saoudrizwan.claude-dev"]
+      "extensions": []
     }
   },
 
