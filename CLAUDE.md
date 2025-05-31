@@ -41,6 +41,14 @@
 
 詳細: .claude/documentation/documentation.md, .claude/documentation/adr.md
 
+## 新機能開発プロセス
+
+- **必須**: 実装前に仕様書を docs/specs に作成
+- 調査→仕様書→実装→テストの順序で進行
+- 詳細な開発フローは docs/guidelines/development_process.md を参照
+
+詳細: .claude/guidelines/development_process.md
+
 ## AI利用
 
 - ユーザーはRails専門家（19年経験）
