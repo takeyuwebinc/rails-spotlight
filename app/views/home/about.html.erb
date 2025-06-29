@@ -185,6 +185,37 @@
             </div>
           </div>
 
+          <!-- 稼働予定 -->
+          <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+            <h3 class="flex text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+              <i class="fa-solid fa-calendar-check h-6 w-6 mr-3 text-teal-500"></i>
+              稼働予定
+            </h3>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+              今後3カ月の稼働予定
+            </p>
+            
+            <div class="space-y-3">
+              <% 3.times do |i| %>
+              <div class="space-y-1">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-zinc-600 dark:text-zinc-400"><%= Date.current.next_month(i).strftime('%Y年%m月') %></span>
+                  <span class="text-sm font-medium text-red-600 dark:text-red-400">95%</span>
+                </div>
+                <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                  <div class="bg-red-500 h-2 rounded-full" style="width: 95%"></div>
+                </div>
+              </div>
+              <% end %>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+                長期プロジェクトや今後の空き状況については、お気軽にお問い合わせください。
+              </p>
+            </div>
+          </div>
+
           <!-- お問い合わせ -->
           <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
             <h3 class="flex text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
