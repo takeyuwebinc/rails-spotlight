@@ -9,5 +9,4 @@ published: true
 ---
 
 メインのコードエディタとして使用しています。拡張機能が豊富で、どんな言語やフレームワークでも快適に開発できます。
-
-**お気に入りの拡張機能:** CLINE, Ruby LSP, Dev Containers, WSL
+リモート開発機能が充実していて、WSL、Dev Containers、SSHなどでLinux開発環境の整備も行いやすく、非常に便利です。
