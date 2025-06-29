@@ -235,4 +235,4 @@ my_admin_engine_css: bin/rails tailwindcss:my_admin_engine:watch
 - **本番対応**: 自動化されたビルドプロセス
 - **保守性**: 明確な設定分離と構造化
 
-Rails Engineを使ったモジュラーモノリス構成において、この手法を用いることで、Engineごとに独立したスタイルを容易に管理可能になり、Railsアプリケーション全体の保守性向上に貢献します。
+Rails Engineを使ったモジュラーモノリス構成において、この手法を用いることで、Engineごとに独立したスタイルを容易に管理可能になります。
