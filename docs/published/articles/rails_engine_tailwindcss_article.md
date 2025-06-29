@@ -14,6 +14,10 @@ description: Rails Engineを使ったモジュラーモノリス構成におい�
 
 Rails Engineを使ったモジュラーモノリス構成において、各Engine独立したTailwindCSSの管理方法について、tailwindcss-rails gemを用いた実装方法を詳しく解説します。
 
+https://railsguides.jp/engines.html
+
+https://github.com/rails/tailwindcss-rails
+
 ## 課題
 
 Rails Engineでtailwindcss-railsを使う際の主要な課題：
