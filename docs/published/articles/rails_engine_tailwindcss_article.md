@@ -3,7 +3,11 @@ title: Rails Engine で tailwindcss-rails を使う方法
 slug: rails-engine-tailwindcss-implementation
 category: article
 published_date: 2025-06-29
-description: Rails Engineを使ったモジュラーモノリス構成において、各Engine独立したTailwindCSSを管理する実装方法を解説。
+tags:
+  - Rails
+  - Engine
+  - TailwindCSS
+description: Rails Engineを使ったモジュラーモノリス構成において、各Engine独立したTailwindCSSを管理する実装方法を解説します。
 ---
 
 ## はじめに
@@ -21,7 +25,7 @@ Rails Engineでtailwindcss-railsを使う際の主要な課題：
 
 ## 解決策の全体像
 
-本記事では親アプリケーションのディレクトリ直下に `engines` ディレクトリを設け、各Engineを配置しているものとします。
+本記事では親アプリケーションのディレクトリ直下に `engines` ディレクトリを設け、各Engineを配置しているものとしますが、本記事で紹介する設定方法はディレクトリ配置に影響なく機能するはずです。
 
 ```
 engines/
@@ -48,8 +52,7 @@ engines/
 
 ### 1. Engine gemspecでの依存関係設定
 
-```ruby
-# engines/my_engine/my_engine.gemspec
+```ruby:engines/my_engine/my_engine.gemspec
 Gem::Specification.new do |spec|
   spec.name        = "my_engine"
   spec.version     = "0.1.0"
@@ -62,8 +65,7 @@ end
 
 ### 2. TailwindCSSソースファイルの作成
 
-```css
-/* engines/my_engine/app/assets/tailwind/my_engine/application.css */
+```css:engines/my_engine/app/assets/tailwind/my_engine/application.css
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 ```
@@ -72,7 +74,7 @@ end
 
 EngineのTailwindCSSビルド用のRakeタスクを作成し、 `app/assets/tailwind/my_engine/application.css` から `app/assets/builds/my_engine/tailwind.css` を作成できるようにします。
 
-メインアプリケーションでは `app/assets/tailwind/application.css` `app/assets/builds/tailwind.css` というファイル名にしますが、Engineで使う場合は、 `app/assets/tailwind/my_engine/application.css` `app/assets/builds/my_engine/tailwind.css` というようにEngineを示す名前をパスに含めると便利です。アセット名としてEngineを含むようにした方が、衝突を気にせずに済むからです。
+メインアプリケーションでは `app/assets/tailwind/application.css` `app/assets/builds/tailwind.css` というファイル名にしますが、Engineで使う場合は、 `app/assets/tailwind/my_engine/application.css` `app/assets/builds/my_engine/tailwind.css` というように**Engineを示す名前をパスに含める**と便利です。アセット名としてEngineを含むようにした方が、衝突を気にせずに済むからです。
 
 ```bash
 # 実行イメージ
@@ -82,8 +84,7 @@ $ bin/rails tailwindcss:my_engine:watch
 
 作成した `tailwindcss:my_engine:build` タスクを、`bin/rails assets:precompile` の事前タスクとして指定することで、プリコンパイルの直前に、EngineのTailwindCSSのRakeタスクが実行されるようになり、プリコンパイル結果にビルド結果が含まれるようになります。
 
-```ruby
-# engines/my_engine/lib/tasks/tailwindcss_tasks.rake
+```ruby:engines/my_engine/lib/tasks/tailwindcss_tasks.rake
 require "tailwindcss-rails"
 
 namespace :tailwindcss do
@@ -124,7 +125,6 @@ end
 Rake::Task["assets:precompile"].enhance([ "tailwindcss:my_engine:build" ])
 ```
 
-
 :::message
 各Engineの `app/assets` 以下のディレクトリ（たとえば `builds`）は、自動でアセットのパス `Rails.application.assets.config.paths` に追加される為、特別な設定は不要です。
 :::
@@ -133,8 +133,7 @@ Rake::Task["assets:precompile"].enhance([ "tailwindcss:my_engine:build" ])
 
 `stylesheet_link_tag` ヘルパーに渡すアセット名は、 `app/assets/builds` 以下のファイルパスになります。
 
-```erb
-<!-- engines/my_engine/app/views/layouts/my_engine/application.html.erb -->
+```html:engines/my_engine/app/views/layouts/my_engine/application.html.erb
 <!DOCTYPE html>
 <html>
 <head>
@@ -163,8 +162,7 @@ Rake::Task["assets:precompile"].enhance([ "tailwindcss:my_engine:build" ])
 
 メインアプリケーションの `bin/dev` で開発サーバーと同時に、EngineのTailwindCSSの監視とビルドのためのタスクを起動するようにします。
 
-```
-# Procfile.dev
+```plaintext:Procfile.dev
 web: bin/rails server -b 0.0.0.0
 my_engine_css: bin/rails tailwindcss:my_engine:watch
 ```
@@ -173,8 +171,7 @@ my_engine_css: bin/rails tailwindcss:my_engine:watch
 
 Engine内のビルド結果をコミットに含めないように無視設定を追加します。
 
-```
-# engines/my_engine/.gitignore
+```plaintext:engines/my_engine/.gitignore
 /app/assets/builds/*
 !/app/assets/builds/.keep
 ```
@@ -196,10 +193,12 @@ MyEngine::Engine.root.join("app/assets/tailwind/my_engine/application.css").to_s
 ビルド結果のパスにEngine（ `my_engine` ）を含めることで、親アプリケーションの同名のファイルと衝突することを防ぎます。
 
 メインアプリケーション:
+
 - `app/assets/tailwind/application.css`
 - `app/assets/builds/tailwind.css`
 
 Engine:
+
 - `app/assets/tailwind/my_engine/application.css`
 - `app/assets/builds/my_engine/tailwind.css`
 
@@ -215,8 +214,7 @@ Rake::Task["assets:precompile"].enhance([ "tailwindcss:my_engine:build" ])
 
 複数のEngineで同様の構成を採用する場合：
 
-```
-# Procfile.dev
+```plaintext:Procfile.dev
 web: bin/rails server -b 0.0.0.0
 my_engine_css: bin/rails tailwindcss:my_engine:watch
 my_admin_engine_css: bin/rails tailwindcss:my_admin_engine:watch
