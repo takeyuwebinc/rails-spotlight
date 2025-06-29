@@ -69,6 +69,8 @@ end
 
 ### 2. TailwindCSSソースファイルの作成
 
+メインアプリケーションでは `app/assets/tailwind/application.css` というファイル名にしますが、Engineで使う場合は、 `app/assets/tailwind/my_engine/application.css` というように**Engineを示す名前をパスに含める**と便利です。アセット名としてEngineを含むようにした方が、衝突を気にせずに済むためです。
+
 ```css:engines/my_engine/app/assets/tailwind/my_engine/application.css
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
@@ -77,8 +79,6 @@ end
 ### 3. ビルド用のカスタムRakeタスクの実装
 
 EngineのTailwindCSSビルド用のRakeタスクを作成し、 `app/assets/tailwind/my_engine/application.css` から `app/assets/builds/my_engine/tailwind.css` を作成できるようにします。
-
-メインアプリケーションでは `app/assets/tailwind/application.css` `app/assets/builds/tailwind.css` というファイル名にしますが、Engineで使う場合は、 `app/assets/tailwind/my_engine/application.css` `app/assets/builds/my_engine/tailwind.css` というように**Engineを示す名前をパスに含める**と便利です。アセット名としてEngineを含むようにした方が、衝突を気にせずに済むからです。
 
 ```bash
 # 実行イメージ
