@@ -48,7 +48,7 @@ RSpec.describe CustomMarkdownExtensions::SyntaxHighlightExtension do
       html = described_class.send(:generate_code_block_with_filename, 'echo "OK"', 'bash', '~/.bash_profile')
 
       expect(html).to include('class="code-block-container relative"')
-      expect(html).to include('class="code-filename absolute top-0 left-0 bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded-tl-md rounded-br-md font-mono z-10"')
+      expect(html).to include('class="code-filename absolute top-0 left-0 bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded-tl-md rounded-tr-md font-mono z-10"')
       expect(html).to include('~/.bash_profile')
       expect(html).to include('class="language-bash"')
       expect(html).to include('echo &quot;OK&quot;')

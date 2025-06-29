@@ -286,7 +286,7 @@ module CustomMarkdownExtensions
       escaped_filename = CGI.escape_html(filename)
 
       %(<div class="code-block-container relative">
-  <div class="code-filename absolute top-0 left-0 bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded-tl-md rounded-br-md font-mono z-10">#{escaped_filename}</div>
+  <div class="code-filename absolute top-0 left-0 bg-gray-700 text-gray-200 text-xs px-3 py-1 rounded-tl-md rounded-tr-md font-mono z-10">#{escaped_filename}</div>
   <pre class="not-prose pt-8"><code class="language-#{escaped_language}">#{escaped_code}</code></pre>
 </div>)
     end
