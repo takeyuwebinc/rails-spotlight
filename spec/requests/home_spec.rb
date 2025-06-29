@@ -98,5 +98,48 @@ RSpec.describe "Home", type: :request do
         expect(response.body).to include("rounded")
       end
     end
+
+    context "availability status section" do
+      before { get root_path }
+
+      it "displays availability status section" do
+        expect(response.body).to include("Work Availability")
+      end
+
+      it "displays calendar icon" do
+        expect(response.body).to include("fa-calendar-check")
+      end
+
+      it "displays 100% capacity for all months" do
+        expect(response.body.scan("100%").count).to be >= 3
+      end
+
+      it "displays progress bars with full width" do
+        expect(response.body).to include('style="width: 100%"')
+      end
+
+      it "uses red color for full capacity" do
+        expect(response.body).to include("bg-red-500")
+        expect(response.body).to include("text-red-600")
+      end
+
+      it "displays contact information section" do
+        expect(response.body).to include("長期プロジェクトや今後の空き状況については、お気軽にお問い合わせください。")
+      end
+
+      it "includes contact form link" do
+        expect(response.body).to include("https://forms.gle/scwNEGrT196rFnD9A")
+        expect(response.body).to include("お問い合わせフォーム")
+      end
+
+      it "contact form link opens in new tab" do
+        expect(response.body).to include('target="_blank"')
+        expect(response.body).to include('rel="noopener noreferrer"')
+      end
+
+      it "includes external link icon" do
+        expect(response.body).to include("fa-external-link")
+      end
+    end
   end
 end

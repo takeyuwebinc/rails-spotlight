@@ -132,26 +132,44 @@
             <% end %>
           </div>
           <div class="space-y-10 lg:pl-16 xl:pl-24">
-            <form class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+            <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
               <h2 class="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 <span class="h-6 w-6">
-                  <i class="fa-regular fa-envelope"></i>
+                  <i class="fa-solid fa-calendar-check"></i>
                 </span>
-                <span class="ml-3">Subscribe to my newsletter</span>
+                <span class="ml-3">Work Availability</span>
               </h2>
               <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                2週間ごとに、最近の活動についてのメールをお送りします。
+                今後3カ月の稼働予定
               </p>
-              <p class="mt-2 text-sm text-zinc-500 dark:text-zinc-500 italic">
-                ※ ニュースレター購読機能は現在準備中です。今後実装予定ですので、しばらくお待ちください。
-              </p>
-              <div class="mt-6 flex">
-                <input type="email" placeholder="Email address" aria-label="email" disabled class="min-w-0 flex-auto appearance-none rounded-md border border-zinc-900/10 bg-white px-3 py-[calc(--spacing(2)-1px)] shadow-md shadow-zinc-800/5 placeholder:text-zinc-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 focus:outline-hidden sm:text-sm dark:border-zinc-700 dark:bg-zinc-700/[0.15] dark:text-zinc-200 dark:placeholder:text-zinc-500 dark:focus:border-teal-400 dark:focus:ring-teal-400/10 opacity-70 cursor-not-allowed" />
-                <button type="button" disabled class="inline-flex items-center gap-2 justify-center rounded-md py-2 px-3 text-sm outline-offset-2 transition active:transition-none bg-zinc-800 font-semibold text-zinc-100 hover:bg-zinc-700 active:bg-zinc-800 active:text-zinc-100/70 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:active:bg-zinc-700 dark:active:text-zinc-100/70 ml-4 flex-none opacity-70 cursor-not-allowed">
-                  Subscribe
-                </button>
+              
+              <div class="mt-4 space-y-3">
+                <% 3.times do |i| %>
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-zinc-600 dark:text-zinc-400"><%= Date.current.next_month(i).strftime('%Y年%m月') %></span>
+                    <span class="text-sm font-medium text-red-600 dark:text-red-400">100%</span>
+                  </div>
+                  <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                    <div class="bg-red-500 h-2 rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+                <% end %>
               </div>
-            </form>
+              
+              <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-3">
+                  長期プロジェクトや今後の空き状況については、お気軽にお問い合わせください。
+                </p>
+                <a href="https://forms.gle/scwNEGrT196rFnD9A" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="inline-flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium rounded-lg transition-colors">
+                  <i class="fa-solid fa-external-link mr-2"></i>
+                  お問い合わせフォーム
+                </a>
+              </div>
+            </div>
             <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
               <h2 class="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                 <span class="h-6 w-6">

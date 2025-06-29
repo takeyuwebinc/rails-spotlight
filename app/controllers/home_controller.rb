@@ -1,7 +1,7 @@
 class HomeController < ApplicationController
   def index
     @articles = Article.published.includes(:tags).limit(3)
-    @featured_projects = Project.published.limit(5)
+    @featured_projects = Project.published.limit(3)
     @featured_tags = Tag.joins(:articles)
                         .where("articles.published_at <= ?", Time.current)
                         .group("tags.id")
