@@ -4,6 +4,7 @@ slug: real-world-kamal
 category: article
 published_date: 2025-02-19
 tags:
+  - Tech
   - Rails
   - Kamal
   - DevOps

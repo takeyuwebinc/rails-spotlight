@@ -4,6 +4,7 @@ slug: real-world-rails-upgrade
 category: article
 published_date: 2024-10-26
 tags:
+  - Tech
   - Rails
   - Ruby
   - アップグレード

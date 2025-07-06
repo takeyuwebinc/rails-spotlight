@@ -2,6 +2,9 @@
 title: Claude Code で作業プロファイルを切り替える方法
 slug: claude-work-profile-system
 category: article
+tags:
+  - Tech
+  - Vibe Coding
 published_date: 2025-07-06
 description: Claude Code を Rails プロジェクトで活用する際の独自作業プロファイルシステムを実装し、開発プロセスにおける各作業モードを効率的に切り替える方法を解説します。
 ---
@@ -477,7 +480,7 @@ usage: /project:profile <profile_name>
 
 ## まとめ
 
-Claude Code を使った Rails 開発において、独自の作業プロファイルシステムを作業効率化と品質向上の手段として考案しました。
+Claude Code を使った開発において、独自の作業プロファイルシステムを作業効率化と品質向上の手段として考案しました。
 
 Claude Code の標準機能ではありませんが、設定ファイルを工夫することで実現でき、複数の作業種類を扱うプロジェクトや、品質の一貫性を重視する開発チームにおいて、その効果を発揮します。このようにLLMエージェントを活用した開発は、ユーザーの工夫次第で様々な拡張を、自然言語による指示で容易に実現でき、大きな可能性を感じます。
 

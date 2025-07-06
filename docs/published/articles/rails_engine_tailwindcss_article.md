@@ -4,6 +4,7 @@ slug: rails-engine-tailwindcss-implementation
 category: article
 published_date: 2025-06-29
 tags:
+  - Tech
   - Rails
   - Engine
   - TailwindCSS
