@@ -1,56 +1,23 @@
 # Claude Code ルール設定
 
-## コーディングスタイル
+## プロファイル機能
 
-- コメントは最小限に（業務知識やワークアラウンドなど、コードから読み取れない理由のみ）
-- YARDでメソッドドキュメンテーション
-- gem の利用は最低限
-- メタプログラミング禁止（可読性低下のため）
+コンテキストに応じた専用の作業モードを提供します。
 
-詳細: docs/claude/coding/style.md
+### 利用可能なプロファイル
 
-## Rails
+- `development` - 開発モード（Rails開発専用）
+- `review` - レビューモード（コードレビュー専用）
+- `writing` - 記事執筆モード（記事作成・編集専用）
 
-- Rails標準機能を使用
-- Controller にロジック記述禁止
-- ActiveRecord リレーションでStrict Loading使用
-- 新しい抽象化レイヤーは基底クラス作成（ApplicationService等）
+### 使用方法
 
-詳細: docs/claude/frameworks/rails.md
+```
+/project:profile development
+/project:profile review
+/project:profile writing
+```
 
-## TailwindCSS
+スラッシュコマンドを実行すると、該当プロファイルのコンテキストが適用され、作業に最適化された環境で作業できます。
 
-- Tailwind CSS でスタイリング
-- Tailwind Plus 利用可能
-
-詳細: docs/claude/frameworks/tailwindcss.md
-
-## テスト
-
-- ビジネスロジックのユニットテスト必須
-- Controller は Request specs でテスト
-- API は rswag で OpenAPI 3.0 生成
-
-詳細: docs/claude/frameworks/testing.md
-
-## ドキュメント
-
-- 新機能: docs/specs に仕様書作成
-- 調査結果: docs/reports にレポート作成（YYYYMMDD_[内容].md）
-- ADR: docs/adr に作成（主要な依存関係・アーキテクチャ変更時）
-
-詳細: docs/claude/documentation/documentation.md, docs/claude/documentation/adr.md
-
-## 新機能開発プロセス
-
-- **必須**: 実装前に仕様書を docs/specs に作成
-- 調査→仕様書→実装→テストの順序で進行
-- 詳細な開発フローは docs/guidelines/development_process.md を参照
-
-詳細: docs/claude/guidelines/development_process.md
-
-## AI利用
-
-- ユーザーはRails専門家（19年経験）
-- Claude Code（Maxプラン）を使用
-- 詳細な利用方針は docs/claude/tools/ai.md を参照
+詳細なルールや設定については、各プロファイルの `.claude/profiles/` ディレクトリ内の設定ファイルを参照してください。
