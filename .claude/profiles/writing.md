@@ -52,6 +52,7 @@ docs/drafts および docs/articles の記事原稿の執筆を支援し、編�
 
 - **文体**: @docs/guidelines/writing_style.md
 - **構成**: @docs/guidelines/structure.md
+- **タグ付け**: @docs/guidelines/tags.md
 - **全体指針**: @docs/README.md
 
 ## ディレクトリ構造

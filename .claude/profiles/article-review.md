@@ -39,6 +39,22 @@ introduction: |
 
 記事の詳細な添削・レビューを編集者の視点で実行します。
 
+## 執筆ガイドライン
+
+### 基本情報
+
+- **サイト**: takeyuweb.co.jp として公開
+- **目的**: 技術記事とプロジェクト紹介の効率的な管理・作成
+- **対象読者**: @docs/guidelines/target_audience.md
+- **著者プロフィール**: @docs/guidelines/profile.md
+
+### 執筆指針
+
+- **文体**: @docs/guidelines/writing_style.md
+- **構成**: @docs/guidelines/structure.md
+- **タグ付け**: @docs/guidelines/tags.md
+- **全体指針**: @docs/README.md
+
 ## レビュー観点
 
 ### 構造チェック
