@@ -3,8 +3,12 @@ title: Claude Code で作業プロファイルを切り替える方法
 slug: claude-work-profile-system
 category: article
 tags:
-  - Tech
-  - Vibe Coding
+  - Idea
+  - Claude Code
+  - AI Development
+  - Productivity
+  - Workflow Optimization
+  - Development Environment
 published_date: 2025-07-06
 description: Claude Code を活用する際の作業プロファイルを実装し、開発プロセスにおける各作業モードを効率的に切り替える方法を解説します。
 ---

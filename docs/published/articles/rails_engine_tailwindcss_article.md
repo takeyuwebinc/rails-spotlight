@@ -6,8 +6,11 @@ published_date: 2025-06-29
 tags:
   - Tech
   - Rails
-  - Engine
+  - Rails Engine
   - TailwindCSS
+  - Asset Pipeline
+  - Modular Monolith
+  - Docker Development
 description: Rails Engineを使ったモジュラーモノリス構成において、各Engine独立したTailwindCSSを管理する実装方法を解説します。
 ---
 

@@ -5,10 +5,13 @@ category: article
 published_date: 2025-02-19
 tags:
   - Tech
-  - Rails
   - Kamal
-  - DevOps
   - Docker
+  - Zero Downtime Deployment
+  - DevOps
+  - Container Orchestration
+  - Infrastructure Management
+  - Kamal Proxy
 description: Kamal v2を実際に案件で使ってみてわかったことをもとに、実践的なKamalの使い方を紹介します。Kamalは特定のプラットフォームに依存せず、デプロイ先の環境構築が容易かつゼロダウンタイムのデプロイが簡単にできる特徴があります。
 ---
 
