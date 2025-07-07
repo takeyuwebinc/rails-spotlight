@@ -4,6 +4,7 @@ class HomeController < ApplicationController
     @featured_projects = Project.published.limit(3)
     @featured_tags = Tag.joins(:articles)
                         .where("articles.published_at <= ?", Time.current)
+                        .where("tags.name NOT IN (?)", %w[Tech Review])
                         .group("tags.id")
                         .having("COUNT(articles.id) >= ?", 3)
                         .order("COUNT(articles.id) DESC")
