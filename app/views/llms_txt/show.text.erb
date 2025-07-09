@@ -1,0 +1,74 @@
+# Spotlight by タケユー・ウェブ株式会社
+
+> Ruby on Rails開発に特化した技術ブログと企業サイト。技術記事、プロジェクト実績、書評などを通じて、実践的なWeb開発の知見を共有しています。
+
+## 会社概要
+
+タケユー・ウェブ株式会社は、Ruby on Railsを中心としたWebアプリケーション開発を専門とする企業です。DHHが提唱する「One Person Framework」の理念に共感し、最新のAIエージェント技術を活用した効率的な開発を実践しています。
+
+- 設立: 2016年6月3日
+- 代表者: 竹内雄一  
+- 所在地: 埼玉県さいたま市
+- Ruby Association会員
+
+## コンテンツ
+
+### 技術記事
+
+技術的な知見、実装方法、考察などを共有しています。
+
+- [Articles](https://spotlight.takeyuweb.co.jp/articles): 技術記事、考察、アイデアなど
+- 最新記事数: <%= data[:articles_count] %>件
+- Tech記事: <%= data[:tech_articles_count] %>件
+- 書評: <%= data[:book_reviews_count] %>件
+
+<% if data[:last_article].present? %>
+最新記事: 「<%= data[:last_article][:title] %>」（<%= data[:last_article][:published_at].strftime('%Y年%m月%d日') %>公開）
+<% end %>
+
+### プロジェクト実績
+
+これまでに開発・運用してきたプロジェクトを紹介しています。
+
+- [Projects](https://spotlight.takeyuweb.co.jp/projects): クラウド管理システム、動画配信サービス、マッチングアプリなど
+- 公開実績数: <%= data[:projects_count] %>件
+
+### 書評
+
+技術書やビジネス書のレビューを掲載しています。
+
+- 書評記事数: <%= data[:book_reviews_count] %>件
+
+## 技術スタック
+
+- Ruby on Rails 8.0.1
+- Hotwire (Turbo + Stimulus)
+- TailwindCSS
+- PostgreSQL  
+- Kamal (デプロイメント)
+
+## 執筆者
+
+竹内雄一（代表取締役）
+- X (Twitter): [@takeyuweb](https://x.com/takeyuweb)
+- GitHub: [@takeyuweb](https://github.com/takeyuweb)
+
+## お仕事のご依頼
+
+### 稼働状況
+- 現在の稼働率: <%= data[:availability][:current_capacity] %>%
+- 次回受付可能時期: <%= data[:availability][:next_available] %>
+- ステータス: <%= data[:availability][:status] %>
+
+### お問い合わせ
+- [お問い合わせフォーム](https://forms.gle/scwNEGrT196rFnD9A)
+- お仕事のご依頼、技術相談、その他お問い合わせはフォームからお願いします
+
+## Optional
+
+- [Speaking](https://spotlight.takeyuweb.co.jp/speaking): カンファレンス登壇実績（<%= data[:speaking_count] %>件）
+- [Uses](https://spotlight.takeyuweb.co.jp/uses): 使用ツール・開発環境の紹介（<%= data[:uses_count] %>件）
+- [タグ一覧](https://spotlight.takeyuweb.co.jp/tags): 記事のカテゴリ分類
+
+---
+Generated at: <%= data[:generated_at].strftime('%Y-%m-%d %H:%M:%S %Z') %>

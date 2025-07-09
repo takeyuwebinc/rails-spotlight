@@ -57,4 +57,7 @@ Rails.application.routes.draw do
 
   # Sitemap
   get "sitemap.xml" => "sitemaps#index", defaults: { format: "xml" }
+
+  # llms.txt route
+  get "llms.txt", to: "llms_txt#show", format: false, as: :llms_txt
 end
