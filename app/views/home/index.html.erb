@@ -144,17 +144,33 @@
               </p>
               
               <div class="mt-4 space-y-3">
-                <% 3.times do |i| %>
                 <div class="space-y-1">
                   <div class="flex items-center justify-between text-sm">
-                    <span class="text-zinc-600 dark:text-zinc-400"><%= Date.current.next_month(i).strftime('%Y年%m月') %></span>
+                    <span class="text-zinc-600 dark:text-zinc-400">2025年7月</span>
+                    <span class="text-sm font-medium text-red-600 dark:text-red-400">100%</span>
+                  </div>
+                  <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                    <div class="bg-red-500 h-2 rounded-full" style="width: 100%"></div>
+                  </div>
+                </div>
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-zinc-600 dark:text-zinc-400">2025年8月</span>
                     <span class="text-sm font-medium text-red-600 dark:text-red-400">95%</span>
                   </div>
                   <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
                     <div class="bg-red-500 h-2 rounded-full" style="width: 95%"></div>
                   </div>
                 </div>
-                <% end %>
+                <div class="space-y-1">
+                  <div class="flex items-center justify-between text-sm">
+                    <span class="text-zinc-600 dark:text-zinc-400">2025年9月</span>
+                    <span class="text-sm font-medium text-red-600 dark:text-red-400">95%</span>
+                  </div>
+                  <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-2">
+                    <div class="bg-red-500 h-2 rounded-full" style="width: 95%"></div>
+                  </div>
+                </div>
               </div>
               
               <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
