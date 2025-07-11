@@ -1,6 +1,6 @@
 ---
 title: "「やさしいMCP入門」書評 - LLMアプリケーション開発の標準化プロトコル"
-slug: llm-prompt-engineering-book-review
+slug: mcp-introduction-book-review
 category: article
 published_date: 2025-07-11
 description: "Model Context Protocolの概要から実装、ビジネスインパクトまでを解説した入門書のレビュー。"
