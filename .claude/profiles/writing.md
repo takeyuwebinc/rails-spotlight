@@ -51,7 +51,7 @@ docs/drafts および docs/articles の記事原稿の執筆を支援し、編�
 ### 執筆指針
 
 - **文体**: @docs/guidelines/writing_style.md
-- **構成**: @docs/guidelines/structure.md
+- **記事種類別ガイド**: @docs/guidelines/article_types.md
 - **タグ付け**: @docs/guidelines/tags.md
 - **全体指針**: @docs/README.md
 
@@ -73,6 +73,33 @@ docs/drafts および docs/articles の記事原稿の執筆を支援し、編�
 - projects/: プロジェクト紹介
 - speaking/: 登壇実績
 - uses/: 使用ツール紹介
+
+## 記事種類別の執筆支援
+
+記事の種類を指定することで、適切なカテゴリータグ、目的、構成が自動的に適用されます：
+
+1. **Tech（技術記事）** - 実装方法、設定手順、技術解説
+2. **Idea（考察・意見）** - 技術的な考え方、アプローチ、提案
+3. **Book Review（書評）** - 技術書・ビジネス書のレビュー
+4. **Gadget Review（ガジェット）** - 開発環境のハードウェアレビュー
+5. **Project（プロジェクト）** - 開発実績の紹介
+6. **Speaking（登壇）** - カンファレンス発表の記録
+
+詳細は @docs/guidelines/article_types.md を参照してください。
+
+## カスタムMarkdownコンポーネントの活用
+
+記事の表現力を高めるため、以下のコンポーネントを積極的に活用します：
+
+- **リンクカード**: URLのみの行で参考資料を魅力的に表示
+- **詳細ブロック**: 長いコードや補足情報を折りたたみ可能に
+- **メッセージブロック**: 重要なポイントやTipsを強調
+- **アラートブロック**: セキュリティ警告や注意事項
+- **Mermaid図表**: アーキテクチャやフローを視覚化
+- **画像+キャプション**: スクリーンショットに説明を追加
+
+詳細な仕様は @docs/specs/custom_markdown_specification.md、
+具体的な活用例は @.claude/profiles/writing_examples.md を参照してください。
 
 ## 編集者視点での添削
 
