@@ -175,14 +175,29 @@ class CustomHtmlRenderer < Redcarpet::Render::HTML
       placeholder
     end
 
+    # Process :::rating blocks
+    text = text.gsub(/^:::rating\s+(\d+)(?:\s+(.+?))?\s*$/) do
+      rating = $1.to_i
+      description = $2
+      placeholder = SecureRandom.uuid
+
+      placeholders[placeholder] = {
+        type: :rating,
+        rating: rating,
+        description: description
+      }
+
+      placeholder
+    end
+
     text
   end
 
   def convert_custom_placeholder_to_html(text)
     # Now recursively process placeholders
     placeholders.each do |placeholder, data|
-      # Render the content with Redcarpet
-      html_content = render_markdown(data[:content])
+      # Render the content with Redcarpet (if content exists)
+      html_content = render_markdown(data[:content]) if data[:content]
 
       # Generate the final HTML based on the block type
       final_html = case data[:type]
@@ -213,6 +228,21 @@ class CustomHtmlRenderer < Redcarpet::Render::HTML
         end
 
         %(<div class="bg-red-50 dark:bg-red-900/20 border-l-4 border-red-400 dark:border-red-500 p-4 mb-4 rounded-r">#{content_with_class}</div>)
+      when :rating
+        # Generate star rating
+        rating = data[:rating].to_i
+        rating = [ [ rating, 1 ].max, 5 ].min # Clamp between 1 and 5
+
+        filled_stars = "★" * rating
+        empty_stars = "☆" * (5 - rating)
+        stars = filled_stars + empty_stars
+
+        # Build the rating HTML
+        rating_html = %(<span class="rating-stars text-xl text-amber-600 dark:text-amber-400">#{stars}</span>)
+        rating_html += %(<span class="rating-number text-gray-600 dark:text-gray-400">（#{rating}/5）</span>)
+        rating_html += %(<span class="rating-description"> - #{data[:description]}</span>) if data[:description]
+
+        %(<div class="rating-block mb-2">#{rating_html}</div>)
       end
 
       # Replace the placeholder with the final HTML

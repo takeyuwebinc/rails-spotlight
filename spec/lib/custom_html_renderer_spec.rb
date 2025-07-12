@@ -236,5 +236,70 @@ RSpec.describe CustomHtmlRenderer do
         end
       end
     end
+
+    context 'with :::rating syntax' do
+      context 'with rating only' do
+        let(:text) do
+          <<~MARKDOWN
+          # Book Review
+
+          ## おすすめ度
+
+          :::rating 3
+          MARKDOWN
+        end
+
+        it 'renders rating blocks with only rating value' do
+          result = markdown.render(text)
+          expect(result).to include('<div class="rating-block mb-2">')
+          expect(result).to include('<span class="rating-stars text-xl text-amber-600 dark:text-amber-400">★★★☆☆</span>')
+          expect(result).to include('<span class="rating-number text-gray-600 dark:text-gray-400">（3/5）</span>')
+          expect(result).not_to include('<span class="rating-description">')
+        end
+      end
+
+      context 'with rating and description' do
+        let(:text) do
+          <<~MARKDOWN
+          # Book Review
+
+          ## おすすめ度
+
+          :::rating 5 技術的成長に不可欠
+          MARKDOWN
+        end
+
+        it 'renders rating blocks with rating and description' do
+          result = markdown.render(text)
+          expect(result).to include('<div class="rating-block mb-2">')
+          expect(result).to include('<span class="rating-stars text-xl text-amber-600 dark:text-amber-400">★★★★★</span>')
+          expect(result).to include('<span class="rating-number text-gray-600 dark:text-gray-400">（5/5）</span>')
+          expect(result).to include('<span class="rating-description"> - 技術的成長に不可欠</span>')
+        end
+      end
+
+      context 'with edge cases' do
+        it 'clamps rating to minimum of 1' do
+          text = ":::rating 0"
+          result = markdown.render(text)
+          expect(result).to include('★☆☆☆☆')
+          expect(result).to include('（1/5）')
+        end
+
+        it 'clamps rating to maximum of 5' do
+          text = ":::rating 10"
+          result = markdown.render(text)
+          expect(result).to include('★★★★★')
+          expect(result).to include('（5/5）')
+        end
+
+        it 'handles rating with multiple words in description' do
+          text = ":::rating 4 実践力が大きく向上"
+          result = markdown.render(text)
+          expect(result).to include('★★★★☆')
+          expect(result).to include(' - 実践力が大きく向上')
+        end
+      end
+    end
   end
 end
