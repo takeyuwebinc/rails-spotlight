@@ -30,6 +30,9 @@ Rails.application.routes.draw do
         get :metadata
       end
     end
+
+    # MCP endpoint for article management
+    post "mcp", to: "mcp#handle"
   end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
