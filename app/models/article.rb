@@ -15,10 +15,10 @@ class Article < ApplicationRecord
     slug
   end
 
-  # Import articles from markdown files
-  # @param source_dir [String] Path to the directory containing article markdown files
-  # @return [Integer] Number of articles imported
-  def self.import_from_docs(source_dir)
+  # Import a single article from markdown content
+  # @param markdown_content [String] The markdown content with YAML frontmatter
+  # @return [Article, nil] The created/updated article, or nil if failed
+  def self.import_from_markdown(markdown_content)
     require "redcarpet"
 
     # Initialize Markdown renderer with custom renderer for special syntax
@@ -34,60 +34,75 @@ class Article < ApplicationRecord
       quote: true
     })
 
+    # Parse metadata using MetadataParser service
+    parsed_data = MetadataParser.parse(markdown_content)
+    metadata = parsed_data[:metadata]
+    content = parsed_data[:content]
+
+    # Only process articles
+    return nil unless metadata[:category] == "article"
+
+    # Convert markdown to HTML
+    html_content = markdown.render(content)
+
+    # Find or create article by slug
+    article = find_or_initialize_by(slug: metadata[:slug])
+
+    # Update article attributes from parsed metadata
+    article.title = metadata[:title]
+    article.description = metadata[:description]
+    article.published_at = metadata[:published_date]
+    article.content = html_content
+
+    # Save the article
+    if article.save
+      # Process tags if present
+      if metadata[:tags]
+        article.tags.clear # Remove existing tags
+
+        metadata[:tags].each do |tag_name|
+          next if tag_name.blank?
+
+          tag = Tag.find_or_create_by(name: tag_name)
+          article.tags << tag unless article.tags.include?(tag)
+        end
+      end
+
+      article
+    else
+      Rails.logger.error "Error saving article: #{article.errors.full_messages.join(', ')}"
+      nil
+    end
+  rescue MetadataParser::MetadataParseError => e
+    Rails.logger.error "Metadata parsing error: #{e.message}"
+    nil
+  rescue => e
+    Rails.logger.error "Error processing article: #{e.message}"
+    nil
+  end
+
+  # Import articles from markdown files
+  # @param source_dir [String] Path to the directory containing article markdown files
+  # @return [Integer] Number of articles imported
+  def self.import_from_docs(source_dir)
     # Find all markdown files in the source directory
     article_files = Dir.glob(File.join(source_dir, "**", "*.md"))
 
     imported_count = 0
     article_files.each do |file_path|
-      begin
-        puts "Processing article: #{file_path}"
+      puts "Processing article: #{file_path}"
 
-        # Read the file content
-        file_content = File.read(file_path)
+      # Read the file content
+      file_content = File.read(file_path)
 
-        # Parse metadata using MetadataParser service
-        parsed_data = MetadataParser.parse(file_content)
-        metadata = parsed_data[:metadata]
-        markdown_content = parsed_data[:content]
+      # Import the article from markdown content
+      article = import_from_markdown(file_content)
 
-        # Skip if not an article
-        next unless metadata[:category] == "article"
-
-        # Convert markdown to HTML
-        html_content = markdown.render(markdown_content)
-
-        # Find or create article by slug
-        article = find_or_initialize_by(slug: metadata[:slug])
-
-        # Update article attributes from parsed metadata
-        article.title = metadata[:title]
-        article.description = metadata[:description]
-        article.published_at = metadata[:published_date]
-        article.content = html_content
-
-        # Save the article
-        if article.save
-          # Process tags if present
-          if metadata[:tags]
-            article.tags.clear # Remove existing tags
-
-            metadata[:tags].each do |tag_name|
-              next if tag_name.blank?
-
-              tag = Tag.find_or_create_by(name: tag_name)
-              article.tags << tag unless article.tags.include?(tag)
-            end
-          end
-
-          puts "  Saved article: #{article.title}"
-          imported_count += 1
-        else
-          puts "  Error saving article: #{article.errors.full_messages.join(', ')}"
-        end
-      rescue MetadataParser::MetadataParseError => e
-        puts "  Metadata parsing error for #{file_path}: #{e.message}"
-      rescue => e
-        puts "  Error processing article #{file_path}: #{e.message}"
+      if article
+        puts "  Saved article: #{article.title}"
+        imported_count += 1
+      else
+        puts "  Failed to import article from #{file_path}"
       end
     end
 

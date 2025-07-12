@@ -41,3 +41,21 @@ bundle exec rails rswag:specs:swaggerize
 ```
 
 http://localhost:3000/api-docs/
+
+## MCP サーバー
+記事の更新のためのMCPサーバーを実装しています。
+
+```json:.mcp.json
+{
+  "mcpServers": {
+    "spotlight-rails": {
+      "type": "http",
+      "url": "https://takeyuweb.co.jp/api/mcp",
+      "method": "POST",
+      "headers": {
+        "Authorization": "Bearer token"
+      }
+    }
+  }
+}
+```

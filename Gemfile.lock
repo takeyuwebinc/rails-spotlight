@@ -163,6 +163,7 @@ GEM
     json-schema (5.1.1)
       addressable (~> 2.8)
       bigdecimal (~> 3.1)
+    json_rpc_handler (0.1.1)
     kamal (2.5.2)
       activesupport (>= 7.0)
       base64 (~> 0.2)
@@ -186,6 +187,8 @@ GEM
       net-pop
       net-smtp
     marcel (1.0.4)
+    mcp (0.1.0)
+      json_rpc_handler (~> 0.1)
     metainspector (5.15.0)
       addressable (~> 2.8.4)
       faraday (~> 2.5)
@@ -457,6 +460,7 @@ DEPENDENCIES
   importmap-rails
   jbuilder
   kamal
+  mcp
   metainspector (~> 5.15)
   propshaft
   puma (>= 5.0)

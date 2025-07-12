@@ -75,3 +75,6 @@ gem "metainspector", "~> 5.15"
 gem "rswag-api"
 gem "rswag-ui"
 gem "rswag-specs", group: [ :development, :test ]
+
+# Model Context Protocol (MCP) for LLM integration
+gem "mcp"
