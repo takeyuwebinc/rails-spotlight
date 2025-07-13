@@ -52,6 +52,7 @@ docs/drafts および docs/articles の記事原稿の執筆を支援し、編�
 
 - **文体**: @docs/guidelines/writing_style.md
 - **記事種類別ガイド**: @docs/guidelines/article_types.md
+- **書評記事の重要度判定**: @docs/guidelines/book_review_importance_criteria.md
 - **タグ付け**: @docs/guidelines/tags.md
 - **全体指針**: @docs/README.md
 
