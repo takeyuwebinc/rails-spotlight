@@ -3,6 +3,8 @@ class Tag < ApplicationRecord
   has_many :articles, through: :article_tags
   has_many :speaking_engagement_tags, dependent: :destroy
   has_many :speaking_engagements, through: :speaking_engagement_tags
+  has_many :slide_tags, dependent: :destroy
+  has_many :slides, through: :slide_tags
 
   validates :name, presence: true, uniqueness: true
   validates :slug, presence: true, uniqueness: true

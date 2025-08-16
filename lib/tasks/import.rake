@@ -1,12 +1,13 @@
 namespace :db do
   desc "Import content from docs/published directory (or specified directories)"
-  task :import, [ :articles_dir, :projects_dir, :uses_dir, :speaking_dir ] => :environment do |t, args|
+  task :import, [ :articles_dir, :projects_dir, :uses_dir, :speaking_dir, :slides_dir ] => :environment do |t, args|
     articles_dir = args[:articles_dir].presence || Rails.root.join("docs", "published", "articles")
     projects_dir = args[:projects_dir].presence || Rails.root.join("docs", "published", "projects")
     uses_dir = args[:uses_dir].presence || Rails.root.join("docs", "published", "uses")
     speaking_dir = args[:speaking_dir].presence || Rails.root.join("docs", "published", "speaking")
+    slides_dir = args[:slides_dir].presence || Rails.root.join("docs", "published", "slides")
 
-    source_message = if articles_dir || projects_dir || uses_dir || speaking_dir
+    source_message = if articles_dir || projects_dir || uses_dir || speaking_dir || slides_dir
       "Importing content from specified directories..."
     else
       "Importing content from docs/published directory..."
@@ -28,6 +29,10 @@ namespace :db do
     # Import speaking engagements
     speaking_count = SpeakingEngagement.import_from_docs(speaking_dir)
     puts "Imported #{speaking_count} speaking engagements"
+
+    # Import slides
+    slide_count = Slide.import_from_docs(slides_dir)
+    puts "Imported #{slide_count} slides"
 
     puts "Import completed"
   end

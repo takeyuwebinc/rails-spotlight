@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= page_title("#{@slide.title} - Page #{@slide_page.position}/#{@slide.page_count}") %></title>
+    <meta name="description" content="<%= page_description(@slide.description) %>">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    
+    <!-- SEO Keywords -->
+    <% if @slide.tags.any? %>
+      <meta name="keywords" content="<%= @slide.tags.pluck(:name).join(', ') %>">
+    <% end %>
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="<%= slide_url(@slide, page: @slide_page.position) %>">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="<%= page_title("#{@slide.title} - Page #{@slide_page.position}/#{@slide.page_count}") %>">
+    <meta property="og:description" content="<%= page_description(@slide.description) %>">
+    <meta property="og:image" content="<%= og_image_url %>">
+    <meta property="og:url" content="<%= slide_url(@slide, page: @slide_page.position) %>">
+    <meta property="og:type" content="article">
+    <meta property="og:site_name" content="タケユー・ウェブ株式会社">
+    <meta property="article:published_time" content="<%= @slide.published_at.iso8601 %>">
+    <% if @slide.tags.any? %>
+      <% @slide.tags.each do |tag| %>
+        <meta property="article:tag" content="<%= tag.name %>">
+      <% end %>
+    <% end %>
+    
+    <!-- Twitter Card Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="<%= page_title("#{@slide.title} - Page #{@slide_page.position}/#{@slide.page_count}") %>">
+    <meta name="twitter:description" content="<%= page_description(@slide.description) %>">
+    <meta name="twitter:image" content="<%= og_image_url %>">
+    
+    <!-- Slide Navigation Links for SEO -->
+    <% unless @slide_page.first? %>
+      <link rel="prev" href="<%= slide_url(@slide, page: @slide_page.position - 1) %>">
+    <% end %>
+    <% unless @slide_page.last? %>
+      <link rel="next" href="<%= slide_url(@slide, page: @slide_page.position + 1) %>">
+    <% end %>
+    
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+    <%= javascript_importmap_tags %>
+    
+    <link rel="icon" href="/favicon.ico" type="image/ico">
+    <link rel="apple-touch-icon" href="/favicon.ico">
+    
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <script src="https://kit.fontawesome.com/9dc685ee75.js" crossorigin="anonymous"></script>
+    <%# highlight.js for syntax highlighting %>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-JZ4PDP11MX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-JZ4PDP11MX');
+    </script>
+  </head>
+  <body class="slide-view">
+    <div data-controller="slide-viewer" 
+         data-slide-viewer-total-value="<%= @slide.page_count %>"
+         data-slide-viewer-current-value="<%= @slide_page.position %>">
+      <div data-controller="syntax-highlight">
+        <%= yield %>
+      </div>
+    </div>
+  </body>
+</html>

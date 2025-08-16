@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_05_25_084321) do
+ActiveRecord::Schema[8.0].define(version: 2025_08_16_045544) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -86,6 +86,37 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_084321) do
     t.datetime "published_at"
   end
 
+  create_table "slide_pages", force: :cascade do |t|
+    t.integer "slide_id", null: false
+    t.text "content", null: false
+    t.integer "position", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slide_id", "position"], name: "index_slide_pages_on_slide_id_and_position", unique: true
+    t.index ["slide_id"], name: "index_slide_pages_on_slide_id"
+  end
+
+  create_table "slide_tags", force: :cascade do |t|
+    t.integer "slide_id", null: false
+    t.integer "tag_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["slide_id", "tag_id"], name: "index_slide_tags_on_slide_id_and_tag_id", unique: true
+    t.index ["slide_id"], name: "index_slide_tags_on_slide_id"
+    t.index ["tag_id"], name: "index_slide_tags_on_tag_id"
+  end
+
+  create_table "slides", force: :cascade do |t|
+    t.string "title", null: false
+    t.string "slug", null: false
+    t.text "description", null: false
+    t.datetime "published_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["published_at"], name: "index_slides_on_published_at"
+    t.index ["slug"], name: "index_slides_on_slug", unique: true
+  end
+
   create_table "speaking_engagement_tags", force: :cascade do |t|
     t.integer "speaking_engagement_id", null: false
     t.integer "tag_id", null: false
@@ -144,6 +175,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_05_25_084321) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "article_tags", "articles"
   add_foreign_key "article_tags", "tags"
+  add_foreign_key "slide_pages", "slides"
+  add_foreign_key "slide_tags", "slides"
+  add_foreign_key "slide_tags", "tags"
   add_foreign_key "speaking_engagement_tags", "speaking_engagements"
   add_foreign_key "speaking_engagement_tags", "tags"
 end

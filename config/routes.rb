@@ -48,6 +48,9 @@ Rails.application.routes.draw do
   get "articles" => "articles#index"
   get "articles/:slug" => "articles#show", as: :article
 
+  # Slides
+  resources :slides, only: [ :show ]
+
   # Tags
   get "tags/:slug/articles" => "tags#show", as: :tag_articles
 

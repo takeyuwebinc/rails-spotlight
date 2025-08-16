@@ -65,6 +65,8 @@ class MetadataParser < ApplicationService
       validate_uses_item_metadata
     when "speaking_engagement"
       validate_speaking_engagement_metadata
+    when "slide"
+      validate_slide_metadata
     else
       raise MetadataParseError, "Unknown category: #{@metadata[:category]}"
     end
@@ -153,6 +155,15 @@ class MetadataParser < ApplicationService
     @metadata[:event_date] = parse_date(@metadata[:event_date])
     @metadata[:position] = @metadata[:position]&.to_i || 999
     @metadata[:published] = @metadata[:published] != false
+    @metadata[:tags] = parse_tags(@metadata[:tags]) if @metadata[:tags]
+  end
+
+  def validate_slide_metadata
+    required_fields = [ :title, :slug, :description, :published_date ]
+    validate_required_fields(required_fields)
+
+    # Type conversions and validations
+    @metadata[:published_date] = parse_date(@metadata[:published_date])
     @metadata[:tags] = parse_tags(@metadata[:tags]) if @metadata[:tags]
   end
 
