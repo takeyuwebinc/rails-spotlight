@@ -7,9 +7,9 @@ RSpec.describe "LlmsTxt", type: :request do
       create_list(:article, 3)
       tech_tag = create(:tag, name: 'Tech')
       book_review_tag = create(:tag, name: 'Book Review')
-      create(:article, tags: [tech_tag])
-      create(:article, tags: [book_review_tag])
-      
+      create(:article, tags: [ tech_tag ])
+      create(:article, tags: [ book_review_tag ])
+
       # Projectのテストデータ
       2.times do |i|
         Project.create!(
@@ -22,7 +22,7 @@ RSpec.describe "LlmsTxt", type: :request do
           published_at: 1.day.ago
         )
       end
-      
+
       # Speakingのテストデータ（SpeakingEngagementモデル）
       SpeakingEngagement.create!(
         title: "Test Speaking",
@@ -32,7 +32,7 @@ RSpec.describe "LlmsTxt", type: :request do
         description: "Test speaking engagement",
         published: true
       )
-      
+
       # UsesItemのテストデータ
       4.times do |i|
         UsesItem.create!(
@@ -44,76 +44,76 @@ RSpec.describe "LlmsTxt", type: :request do
         )
       end
     end
-    
+
     it "returns successful response" do
       get "/llms.txt"
       expect(response).to have_http_status(200)
     end
-    
+
     it "returns text/plain content type" do
       get "/llms.txt"
       expect(response.content_type).to match(/text\/plain/)
     end
-    
+
     it "includes site title" do
       get "/llms.txt"
       expect(response.body).to include("# Spotlight by タケユー・ウェブ株式会社")
     end
-    
+
     it "includes correct article count" do
       get "/llms.txt"
       expect(response.body).to include("最新記事数: 5件")
       expect(response.body).to include("Tech記事: 1件")
       expect(response.body).to include("書評: 1件")
     end
-    
+
     it "includes correct project count" do
       get "/llms.txt"
       expect(response.body).to include("公開実績数: 2件")
     end
-    
+
     it "includes correct speaking count" do
       get "/llms.txt"
       expect(response.body).to include("カンファレンス登壇実績（1件）")
     end
-    
+
     it "includes correct uses count" do
       get "/llms.txt"
       expect(response.body).to include("使用ツール・開発環境の紹介（4件）")
     end
-    
+
     it "includes availability information" do
       get "/llms.txt"
       expect(response.body).to include("現在の稼働率:")
       expect(response.body).to include("次回受付可能時期:")
       expect(response.body).to include("ステータス:")
     end
-    
+
     it "includes generation timestamp" do
       get "/llms.txt"
       expect(response.body).to match(/Generated at: \d{4}-\d{2}-\d{2}/)
     end
-    
+
     it "sets appropriate cache headers" do
       get "/llms.txt"
       expect(response.headers["Cache-Control"]).to include("public")
       expect(response.headers["Cache-Control"]).to include("max-age=3600")
     end
-    
+
     it "sets ETag header" do
       get "/llms.txt"
       expect(response.headers["ETag"]).to be_present
     end
-    
+
     it "sets Last-Modified header" do
       get "/llms.txt"
       expect(response.headers["Last-Modified"]).to be_present
     end
-    
+
     it "responds with 304 Not Modified for conditional requests" do
       get "/llms.txt"
       etag = response.headers["ETag"]
-      
+
       get "/llms.txt", headers: { "If-None-Match" => etag }
       expect(response).to have_http_status(304)
     end
