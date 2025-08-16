@@ -32,6 +32,12 @@ RSpec.describe Tools::FindSlideTool do
         expect(response.content.first[:text]).to include("Pages: 3")
         expect(response.content.first[:text]).to include("Status: Published")
       end
+
+      it 'includes public URL' do
+        response = described_class.call(slug: "test-slide", server_context: {})
+
+        expect(response.content.first[:text]).to include("URL: https://example.com/slides/test-slide")
+      end
     end
 
     context 'with draft slide' do

@@ -23,6 +23,7 @@ module Tools
           text: "Slide found:\n" \
                 "- Title: #{slide.title}\n" \
                 "- Slug: #{slide.slug}\n" \
+                "- URL: #{slide.public_url}\n" \
                 "- Description: #{slide.description}\n" \
                 "- Published at: #{slide.published_at}\n" \
                 "- Pages: #{slide.page_count}\n" \

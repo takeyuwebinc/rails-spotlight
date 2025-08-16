@@ -32,6 +32,13 @@ class Slide < ApplicationRecord
     slide_pages.find_by(position: position)
   end
 
+  def public_url
+    default_options = Rails.application.config.action_mailer.default_url_options || {}
+    host = default_options[:host] || "takeyuweb.co.jp"
+    protocol = default_options[:protocol] || "https"
+    Rails.application.routes.url_helpers.slide_url(self, host: host, protocol: protocol)
+  end
+
   # Import a single slide from markdown content
   # @param markdown_content [String] The markdown content with YAML frontmatter
   # @return [Slide, nil] The created/updated slide, or nil if failed

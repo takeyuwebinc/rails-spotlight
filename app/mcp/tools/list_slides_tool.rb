@@ -35,6 +35,7 @@ module Tools
         slide_list = slides.map do |slide|
           "- #{slide.title}\n" \
           "  Slug: #{slide.slug}\n" \
+          "  URL: #{slide.public_url}\n" \
           "  Pages: #{slide.page_count}\n" \
           "  Status: #{slide.published? ? 'Published' : 'Draft'}\n" \
           "  Published at: #{slide.published_at.strftime('%Y-%m-%d')}\n" \

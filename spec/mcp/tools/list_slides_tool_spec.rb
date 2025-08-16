@@ -96,10 +96,20 @@ RSpec.describe Tools::ListSlidesTool do
 
         text = response.content.first[:text]
         expect(text).to include("Slug:")
+        expect(text).to include("URL:")
         expect(text).to include("Pages:")
         expect(text).to include("Status:")
         expect(text).to include("Published at:")
         expect(text).to include("Tags:")
+      end
+
+      it 'includes public URL for each slide' do
+        response = described_class.call(status: "published", server_context: {})
+
+        text = response.content.first[:text]
+        expect(text).to include("URL: https://example.com/slides/published-1")
+        expect(text).to include("URL: https://example.com/slides/published-2")
+        expect(text).to include("URL: https://example.com/slides/tagged-1")
       end
     end
 
