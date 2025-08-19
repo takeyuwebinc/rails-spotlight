@@ -1,5 +1,5 @@
 ---
-title: 生成AIのプロンプトエンジニアリング - プロンプト設計の基本原則から実践まで
+title: 「生成AIのプロンプトエンジニアリング」を読んだ
 slug: prompt-engineering-for-generative-ai
 category: article
 published_date: 2025-07-19

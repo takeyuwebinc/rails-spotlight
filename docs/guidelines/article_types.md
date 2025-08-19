@@ -190,7 +190,7 @@
 ### 基本構成
 ```markdown
 ---
-title: [書籍タイトル] - [書評]
+title: 「[書籍タイトル]」を読んだ
 slug: [書籍タイトルから作成するslug文字列]
 category: article
 published_date: [初回読了日]

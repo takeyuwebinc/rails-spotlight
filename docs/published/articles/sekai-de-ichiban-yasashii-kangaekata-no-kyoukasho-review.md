@@ -1,5 +1,5 @@
 ---
-title: 「世界で一番やさしい考え方の教科書」書評 - 考えることを体系化する
+title: 「世界で一番やさしい考え方の教科書」を読んだ
 slug: sekai-de-ichiban-yasashii-kangaekata-no-kyoukasho-review
 category: article
 published_date: 2025-07-16

@@ -1,5 +1,5 @@
 ---
-title: "「やさしいMCP入門」書評 - LLMアプリケーション開発の標準化プロトコル"
+title: 「やさしいMCP入門」を読んだ
 slug: mcp-introduction-book-review
 category: article
 published_date: 2025-07-11

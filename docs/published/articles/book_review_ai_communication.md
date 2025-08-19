@@ -1,5 +1,5 @@
 ---
-title: AIとコミュニケーションする技術 - プロンプティングの基礎から実践まで
+title: 「AIとコミュニケーションする技術」を読んだ
 slug: ai-communication-techniques
 category: article
 published_date: 2025-07-20

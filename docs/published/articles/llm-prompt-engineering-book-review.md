@@ -1,5 +1,5 @@
 ---
-title: 「LLMのプロンプトエンジニアリング」- 単なる補完エンジンから実用的なアプリケーションへ
+title: 「LLMのプロンプトエンジニアリング」を読んだ
 slug: llm-prompt-engineering-book-review
 category: article
 published_date: 2025-07-07
