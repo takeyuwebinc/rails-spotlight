@@ -7,4 +7,5 @@ Sentry.init do |config|
   config.send_default_pii = true
   config.enable_logs = true
   config.enabled_patches << :logger
+  config.rails.structured_logging.enabled = true
 end
