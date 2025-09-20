@@ -78,3 +78,6 @@ gem "rswag-specs", group: [ :development, :test ]
 
 # Model Context Protocol (MCP) for LLM integration
 gem "mcp"
+
+gem "sentry-ruby"
+gem "sentry-rails"
