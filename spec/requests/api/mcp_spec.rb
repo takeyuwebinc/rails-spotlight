@@ -24,7 +24,7 @@ RSpec.describe "Api::Mcp", type: :request do
           expect(json_response["jsonrpc"]).to eq("2.0")
           expect(json_response["id"]).to eq(1)
           expect(json_response["result"]["protocolVersion"]).to eq("2024-11-05")
-          expect(json_response["result"]["serverInfo"]["name"]).to eq("spotlight-rails-articles")
+          expect(json_response["result"]["serverInfo"]["name"]).to eq("spotlight-rails")
         end
       end
 

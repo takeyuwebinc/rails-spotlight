@@ -7,15 +7,15 @@ module ApplicationHelper
   # @param title [String] ページ固有のタイトル
   # @return [String] 完全なページタイトル
   def page_title(title = nil)
-    base_title = "タケユー・ウェブ株式会社"
-    title.present? ? "#{title} | #{base_title}" : "Ruby on Rails受託開発 | #{base_title}"
+    base_title = "TakeyuWeb"
+    title.present? ? "#{title} | #{base_title}" : base_title
   end
 
   # ページ説明文を生成する
   # @param description [String] ページ固有の説明文
   # @return [String] ページの説明文
   def page_description(description = nil)
-    description.presence || "タケユー・ウェブ株式会社は、Ruby on Railsに特化したWeb開発会社です。高品質なWebアプリケーション開発、システム設計、技術コンサルティングを提供しています。"
+    description.presence || "技術ブログ - Rails、JavaScript、Web開発に関する記事を発信しています"
   end
 
   # canonical URLを生成する
