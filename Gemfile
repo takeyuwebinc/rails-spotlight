@@ -63,7 +63,7 @@ end
 
 
 gem "tailwindcss-rails", "~> 4.1"
-gem "view_component", "~> 3.10"
+gem "view_component", "~> 4.1"
 
 # Markdown parsing and frontmatter extraction
 gem "front_matter_parser", "~> 1.0.1"
