@@ -25,6 +25,7 @@ Rails.application.routes.draw do
 
   # API routes
   namespace :api do
+    post "mcp", to: "mcp#handle"
     resources :link_cards, only: [] do
       collection do
         get :metadata
