@@ -7,7 +7,6 @@ icon: fa-shopping-cart
 color: green-600
 technologies:
   - Rails
-  - Backend
 ---
 
 中古品の査定・買取アプリのバックエンド開発を担当。
