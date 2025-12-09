@@ -35,7 +35,8 @@ module Tools
           "  Category: #{item.category}\n" \
           "  URL: #{item.url || 'N/A'}\n" \
           "  Position: #{item.position}\n" \
-          "  Published: #{item.published}"
+          "  Published: #{item.published}\n" \
+          "  Discontinued: #{item.discontinued}"
         end.join("\n\n")
 
         MCP::Tool::Response.new([ {

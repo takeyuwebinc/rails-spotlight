@@ -8,7 +8,7 @@ module Tools
       properties: {
         content: {
           type: "string",
-          description: "The markdown content with YAML frontmatter (including name, slug, category: uses_item, item_category, url, position, published)"
+          description: "The markdown content with YAML frontmatter (including name, slug, category: uses_item, item_category, url, position, published, discontinued)"
         }
       },
       required: [ "content" ]
@@ -26,7 +26,8 @@ module Tools
                 "- Category: #{uses_item.category}\n" \
                 "- URL: #{uses_item.url || 'N/A'}\n" \
                 "- Position: #{uses_item.position}\n" \
-                "- Published: #{uses_item.published}"
+                "- Published: #{uses_item.published}\n" \
+                "- Discontinued: #{uses_item.discontinued}"
         } ])
       else
         MCP::Tool::Response.new([ {

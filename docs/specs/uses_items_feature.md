@@ -16,6 +16,7 @@
 - `url` (string, optional) - 商品・サービスURL
 - `position` (integer, default: 999) - カテゴリ内での表示順序
 - `published` (boolean, default: true) - 公開フラグ
+- `discontinued` (boolean, default: false) - 使用終了フラグ（trueの場合、現在は使用していないアイテムとして扱う）
 
 ### 2. Markdownファイル管理
 
@@ -50,6 +51,7 @@ item_category: "workstation"
 url: "https://www.apple.com/macbook-pro/"
 position: 1
 published: true
+discontinued: false  # 使用終了の場合はtrue
 ---
 
 アイテムの説明文をMarkdownで記述。
@@ -103,6 +105,7 @@ CREATE TABLE uses_items (
   url VARCHAR(255),
   position INTEGER DEFAULT 999,
   published BOOLEAN DEFAULT true,
+  discontinued BOOLEAN DEFAULT false NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP NOT NULL
 );
@@ -126,6 +129,8 @@ validates :description, presence: true
 ```ruby
 scope :by_category, ->(category) { where(category: category) }
 scope :published, -> { where(published: true) }
+scope :active, -> { where(discontinued: false) }
+scope :discontinued, -> { where(discontinued: true) }
 scope :ordered, -> { order(:position, :created_at) }
 ```
 

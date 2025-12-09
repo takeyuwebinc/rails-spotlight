@@ -27,6 +27,7 @@ module Tools
                 "- URL: #{uses_item.url || 'N/A'}\n" \
                 "- Position: #{uses_item.position}\n" \
                 "- Published: #{uses_item.published}\n" \
+                "- Discontinued: #{uses_item.discontinued}\n" \
                 "- Description:\n#{uses_item.description}\n" \
                 "- Created at: #{uses_item.created_at}\n" \
                 "- Updated at: #{uses_item.updated_at}"

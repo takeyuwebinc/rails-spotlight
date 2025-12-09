@@ -6,6 +6,8 @@ class UsesItem < ApplicationRecord
 
   scope :by_category, ->(category) { where(category: category) }
   scope :published, -> { where(published: true) }
+  scope :active, -> { where(discontinued: false) }
+  scope :discontinued, -> { where(discontinued: true) }
   scope :ordered, -> { order(:position, :created_at) }
 
   def to_param
@@ -51,7 +53,8 @@ class UsesItem < ApplicationRecord
       description: html_content,
       url: metadata[:url],
       position: metadata[:position] || 999,
-      published: metadata[:published] != false
+      published: metadata[:published] != false,
+      discontinued: metadata[:discontinued] == true
     )
 
     uses_item.save ? uses_item : nil
@@ -114,6 +117,7 @@ class UsesItem < ApplicationRecord
         uses_item.url = metadata[:url]
         uses_item.position = metadata[:position] || 999
         uses_item.published = metadata[:published] != false
+        uses_item.discontinued = metadata[:discontinued] == true
 
         # Save the uses item
         if uses_item.save

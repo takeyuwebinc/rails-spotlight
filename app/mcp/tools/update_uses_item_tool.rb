@@ -41,7 +41,8 @@ module Tools
                 "- Category: #{updated_item.category}\n" \
                 "- URL: #{updated_item.url || 'N/A'}\n" \
                 "- Position: #{updated_item.position}\n" \
-                "- Published: #{updated_item.published}"
+                "- Published: #{updated_item.published}\n" \
+                "- Discontinued: #{updated_item.discontinued}"
         } ])
       else
         MCP::Tool::Response.new([ {
