@@ -54,6 +54,9 @@ group :development, :test do
   gem "rspec-rails", "~> 6.0"
   gem "factory_bot_rails"
   gem "faker"
+
+  # HTTP request stubbing
+  gem "webmock"
 end
 
 group :development do
@@ -81,3 +84,6 @@ gem "mcp"
 
 gem "sentry-ruby"
 gem "sentry-rails"
+
+# RSS parsing
+gem "rss"
