@@ -15,6 +15,39 @@ class Project < ApplicationRecord
     technologies.split(",").map(&:strip)
   end
 
+  # Import a single project from markdown content
+  # @param markdown_content [String] The markdown content with YAML frontmatter
+  # @return [Project, nil] The created/updated project, or nil if failed
+  def self.import_from_markdown(markdown_content)
+    parsed_data = MetadataParser.parse(markdown_content)
+    metadata = parsed_data[:metadata]
+    content_text = parsed_data[:content]
+
+    # カテゴリがprojectの場合のみ処理
+    return nil unless metadata[:category] == "project"
+
+    # プロジェクトの検索または初期化
+    project = find_or_initialize_by(title: metadata[:title])
+
+    # 属性の更新
+    project.assign_attributes(
+      description: content_text,
+      icon: metadata[:icon],
+      color: metadata[:color],
+      technologies: metadata[:technologies] || "Unknown",
+      position: metadata[:position],
+      published_at: metadata[:published_date]
+    )
+
+    project.save ? project : nil
+  rescue MetadataParser::MetadataParseError => e
+    Rails.logger.error "Metadata parsing error: #{e.message}"
+    nil
+  rescue => e
+    Rails.logger.error "Error processing project: #{e.message}"
+    nil
+  end
+
   # Import projects from markdown files
   # @param source_dir [String] Path to the directory containing project markdown files
   # @return [Integer] Number of projects imported

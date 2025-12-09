@@ -7,7 +7,7 @@ module Api
 
     def handle
       # Create MCP server instance
-      server = SlideServer.create
+      server = ContentServer.create
 
       # Handle the JSON-RPC request
       response = server.handle_json(request.raw_post)

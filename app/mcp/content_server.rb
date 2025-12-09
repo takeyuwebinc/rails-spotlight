@@ -1,15 +1,21 @@
 # frozen_string_literal: true
 
-class SlideServer
+class ContentServer
   def self.create
     MCP::Server.new(
       name: "spotlight-rails",
-      version: "1.2.0",
+      version: "1.3.0",
       tools: [
+        # Slide tools
         Tools::CreateSlideTool,
         Tools::UpdateSlideTool,
         Tools::FindSlideTool,
-        Tools::ListSlidesTool
+        Tools::ListSlidesTool,
+        # Project tools
+        Tools::CreateProjectTool,
+        Tools::UpdateProjectTool,
+        Tools::FindProjectTool,
+        Tools::ListProjectsTool
       ],
       server_context: {}
     )
