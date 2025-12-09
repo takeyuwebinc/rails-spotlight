@@ -50,7 +50,8 @@ docs/drafts および docs/articles の記事原稿の執筆を支援し、編�
 
 ### 執筆指針
 
-- **文体**: @docs/guidelines/writing_style.md
+- **文体（重要）**: @.claude/writing-style-guide.md - AIっぽい表現を避け、人間らしい文章を書くためのガイド
+- **文体（詳細）**: @docs/guidelines/writing_style.md
 - **記事種類別ガイド**: @docs/guidelines/article_types.md
 - **書評記事の重要度判定**: @docs/guidelines/book_review_importance_criteria.md
 - **タグ付け**: @docs/guidelines/tags.md
