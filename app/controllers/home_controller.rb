@@ -1,21 +1,6 @@
 class HomeController < ApplicationController
-  CATEGORY_TAGS = [
-    "Tech",
-    "Idea",
-    "Book Review",
-    "Gadget Review"
-  ].freeze
-
   def index
-    @articles = Article.published.includes(:tags).limit(3)
     @featured_projects = Project.published.limit(3)
-    @featured_tags = Tag.joins(:articles)
-                        .where("articles.published_at <= ?", Time.current)
-                        .where("tags.name NOT IN (?)", CATEGORY_TAGS)
-                        .group("tags.id")
-                        .having("COUNT(articles.id) >= ?", 3)
-                        .order("COUNT(articles.id) DESC")
-                        .limit(5)
 
     # Ruby on Rails受託開発に特化したSEOメタデータ
     @seo_title = "Ruby on Rails受託開発"

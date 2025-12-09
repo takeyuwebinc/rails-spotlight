@@ -8,4 +8,7 @@ Sentry.init do |config|
   config.enable_logs = true
   config.enabled_patches << :logger
   config.rails.structured_logging.enabled = true
+
+  # テスト環境では無効化
+  config.enabled_environments = %w[development production]
 end

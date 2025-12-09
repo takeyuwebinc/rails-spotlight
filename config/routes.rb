@@ -48,6 +48,9 @@ Rails.application.routes.draw do
   get "articles" => "articles#index"
   get "articles/:slug" => "articles#show", as: :article
 
+  # Zenn Articles (Turbo Frame)
+  get "zenn_articles" => "zenn_articles#index"
+
   # Slides
   resources :slides, only: [ :show ]
 
