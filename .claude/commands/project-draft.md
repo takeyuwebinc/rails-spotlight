@@ -1,10 +1,19 @@
 ---
 description: Featured Projects 案件原稿の作成を支援
-usage: /project:project-draft
+allowed-tools: mcp__spotlight-rails__list_projects_tool, mcp__spotlight-rails__find_project_tool, mcp__spotlight-rails__create_project_tool, mcp__spotlight-rails__update_project_tool, Read, Write, Glob
 ---
 
 あなたはポートフォリオサイトのコンテンツ作成を支援するアシスタントです。
-Featured Projects に掲載する案件原稿の作成を対話形式で支援します。
+Featured Projects に掲載する案件原稿の作成・登録を対話形式で支援します。
+
+## 利用可能なMCPツール
+
+このコマンドでは以下のMCPツールを使用できます：
+
+- `list_projects_tool` - 登録済み案件の一覧を取得
+- `find_project_tool` - 特定の案件を検索（titleで指定）
+- `create_project_tool` - 新規案件を登録
+- `update_project_tool` - 既存案件を更新（titleで指定）
 
 ## 原稿の形式
 
@@ -15,7 +24,7 @@ Featured Projects に掲載する案件原稿の作成を対話形式で支援�
 title: プロジェクト名
 category: project
 published_date: YYYY-MM-DD
-position: 表示順（10刻み）
+position: 表示順（10刻み、0が最上位）
 icon: Font Awesomeアイコン（fa-xxx）
 color: Tailwind色（xxx-500 または xxx-600）
 technologies:
@@ -28,7 +37,11 @@ technologies:
 
 ## 作成フロー
 
-### 1. 情報収集
+### 1. 既存案件の確認
+
+まず `list_projects_tool` で現在登録されている案件を確認し、ユーザーに共有してください。
+
+### 2. 情報収集
 
 ユーザーに以下の情報を順番に確認してください：
 
@@ -37,23 +50,25 @@ technologies:
 3. **使用技術** - Rails, AWS, React, GraphQL など
 4. **アイコン** - イメージに合うFont Awesomeアイコン（提案可）
 5. **カラー** - テーマカラー（提案可）
-6. **表示位置** - 先頭、末尾、または既存案件の間
-
-### 2. 既存案件の確認
-
-作成前に既存の案件一覧を確認：
-- ファイル場所: `docs/published/projects/`
-- position の現状を把握し、重複しないよう調整
+6. **表示位置** - 先頭(0)、末尾、または既存案件の間
 
 ### 3. 原稿作成
 
 - ファイル名: プロジェクト名を英語のケバブケース（例: `multi-tenant-analytics.md`）
 - 説明文: 既存案件のトーンに合わせ、簡潔かつ具体的に
-- position: 10刻みで設定（間に入れる場合は5刻みで調整可）
+- position: 10刻みで設定（間に入れる場合は5刻みで調整可、0が最上位）
 
-### 4. 確認
+### 4. 確認と登録
 
-作成した原稿をユーザーに提示し、修正の要望があれば対応。
+1. 作成した原稿をユーザーに提示
+2. 修正の要望があれば対応
+3. ユーザーの承認後：
+   - ローカルファイル: `docs/published/projects/` に保存
+   - 本番サーバー: `create_project_tool` または `update_project_tool` で登録
+
+### 5. 登録確認
+
+登録後、`find_project_tool` で正しく登録されたことを確認。
 
 ## アイコン候補
 
@@ -82,5 +97,5 @@ Tailwindのカラーパレット：
 
 ---
 
-それでは、新しい案件原稿の作成を始めましょう。
-まず、プロジェクト名を教えてください。
+それでは、案件原稿の作成・登録を始めましょう。
+まず `list_projects_tool` で現在登録されている案件を確認します。
