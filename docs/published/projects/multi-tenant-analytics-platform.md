@@ -2,7 +2,7 @@
 title: マルチテナント分析プラットフォーム
 category: project
 published_date: 2025-12-09
-position: 10
+position: 0
 icon: fa-chart-line
 color: indigo-500
 technologies:
