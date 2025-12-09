@@ -12,6 +12,57 @@ class UsesItem < ApplicationRecord
     slug
   end
 
+  # Import a single uses item from markdown content
+  # @param markdown_content [String] The markdown content with YAML frontmatter
+  # @return [UsesItem, nil] The created/updated uses item, or nil if failed
+  def self.import_from_markdown(markdown_content)
+    require "redcarpet"
+
+    # Initialize Markdown renderer with custom renderer for special syntax
+    renderer = CustomHtmlRenderer.new(hard_wrap: true)
+    markdown = Redcarpet::Markdown.new(renderer, {
+      autolink: true,
+      tables: true,
+      fenced_code_blocks: true,
+      strikethrough: true,
+      highlight: true,
+      superscript: true,
+      underline: true,
+      quote: true
+    })
+
+    parsed_data = MetadataParser.parse(markdown_content)
+    metadata = parsed_data[:metadata]
+    markdown_text = parsed_data[:content]
+
+    # カテゴリがuses_itemの場合のみ処理
+    return nil unless metadata[:category] == "uses_item"
+
+    # Convert markdown to HTML
+    html_content = markdown.render(markdown_text)
+
+    # uses_itemの検索または初期化
+    uses_item = find_or_initialize_by(slug: metadata[:slug])
+
+    # 属性の更新
+    uses_item.assign_attributes(
+      name: metadata[:name],
+      category: metadata[:item_category],
+      description: html_content,
+      url: metadata[:url],
+      position: metadata[:position] || 999,
+      published: metadata[:published] != false
+    )
+
+    uses_item.save ? uses_item : nil
+  rescue MetadataParser::MetadataParseError => e
+    Rails.logger.error "Metadata parsing error: #{e.message}"
+    nil
+  rescue => e
+    Rails.logger.error "Error processing uses item: #{e.message}"
+    nil
+  end
+
   # Import uses items from markdown files
   # @param source_dir [String] Path to the directory containing uses item markdown files
   # @return [Integer] Number of uses items imported
