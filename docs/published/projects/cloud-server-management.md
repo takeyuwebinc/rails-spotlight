@@ -2,7 +2,7 @@
 title: クラウドサーバー管理システム
 category: project
 published_date: 2025-02-15
-position: 3
+position: 40
 icon: fa-cloud
 color: blue-500
 technologies:

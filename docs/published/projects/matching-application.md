@@ -2,7 +2,7 @@
 title: マッチングアプリ
 category: project
 published_date: 2025-03-15
-position: 5
+position: 60
 icon: fa-heart
 color: pink-500
 technologies:

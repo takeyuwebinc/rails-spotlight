@@ -2,7 +2,7 @@
 title: ライブストリーミングサービス
 category: project
 published_date: 2025-02-01
-position: 2
+position: 30
 icon: fa-video
 color: purple-600
 technologies:

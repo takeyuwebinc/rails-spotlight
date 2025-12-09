@@ -2,7 +2,7 @@
 title: 中古品買取アプリ
 category: project
 published_date: 2025-04-01
-position: 6
+position: 70
 icon: fa-shopping-cart
 color: green-600
 technologies:

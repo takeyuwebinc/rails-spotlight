@@ -2,7 +2,7 @@
 title: ものづくり制作日記共有システム
 category: project
 published_date: 2025-01-15
-position: 1
+position: 20
 icon: fa-industry
 color: blue-600
 technologies:
