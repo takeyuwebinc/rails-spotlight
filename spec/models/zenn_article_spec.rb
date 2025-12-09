@@ -195,4 +195,62 @@ RSpec.describe ZennArticle do
       expect(article.published_at).to eq(Time.zone.parse("2024-12-09 10:00:00"))
     end
   end
+
+  describe "#safe_url" do
+    context "when URL is a valid Zenn URL" do
+      it "returns the URL" do
+        article = described_class.new(url: "https://zenn.dev/takeyuwebinc/articles/test")
+        expect(article.safe_url).to eq("https://zenn.dev/takeyuwebinc/articles/test")
+      end
+    end
+
+    context "when URL is not a Zenn URL" do
+      it "returns nil for different domain" do
+        article = described_class.new(url: "https://evil.com/phishing")
+        expect(article.safe_url).to be_nil
+      end
+
+      it "returns nil for javascript URL" do
+        article = described_class.new(url: "javascript:alert('xss')")
+        expect(article.safe_url).to be_nil
+      end
+
+      it "returns nil for data URL" do
+        article = described_class.new(url: "data:text/html,<script>alert('xss')</script>")
+        expect(article.safe_url).to be_nil
+      end
+    end
+
+    context "when URL is nil" do
+      it "returns nil" do
+        article = described_class.new(url: nil)
+        expect(article.safe_url).to be_nil
+      end
+    end
+
+    context "when URL is blank" do
+      it "returns nil" do
+        article = described_class.new(url: "")
+        expect(article.safe_url).to be_nil
+      end
+    end
+  end
+
+  describe "url validation" do
+    it "is valid with a Zenn URL" do
+      article = described_class.new(url: "https://zenn.dev/test")
+      expect(article).to be_valid
+    end
+
+    it "is invalid with a non-Zenn URL" do
+      article = described_class.new(url: "https://evil.com/test")
+      expect(article).not_to be_valid
+      expect(article.errors[:url]).to include("must be a Zenn URL")
+    end
+
+    it "is valid with blank URL" do
+      article = described_class.new(url: "")
+      expect(article).to be_valid
+    end
+  end
 end

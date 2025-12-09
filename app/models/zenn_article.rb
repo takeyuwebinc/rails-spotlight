@@ -28,6 +28,14 @@ class ZennArticle
   attribute :url, :string
   attribute :published_at, :datetime
 
+  validates :url, format: { with: %r{\Ahttps://zenn\.dev/}, message: "must be a Zenn URL" }, allow_blank: true
+
+  # Returns the URL only if it's a valid Zenn URL, otherwise returns nil
+  # This provides an additional layer of protection against open redirect vulnerabilities
+  def safe_url
+    url if url&.match?(%r{\Ahttps://zenn\.dev/})
+  end
+
   class << self
     def all(limit: nil)
       articles = fetch_from_cache || fetch_from_feed

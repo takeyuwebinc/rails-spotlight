@@ -12,7 +12,7 @@
   <main class="flex-1 flex items-center justify-center p-8">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl aspect-[16/9] flex items-center justify-center p-12">
       <div class="slide-content prose prose-lg max-w-none" data-slide-viewer-target="content">
-        <%= @slide_page.content.html_safe %>
+        <%= sanitize @slide_page.content, tags: %w[p br h1 h2 h3 h4 h5 h6 ul ol li a strong em code pre blockquote img span div table thead tbody tr th td], attributes: %w[href src alt class id target rel] %>
       </div>
     </div>
   </main>

@@ -1,0 +1,10 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "cc71c346747c68eabb496911d11cb9cbc57c412fc20cdb2f9fb9a8fc1f5e322e",
+      "note": "ZennArticle.safe_url is validated to only return URLs from zenn.dev domain. The URL comes from Zenn's official RSS feed and is validated with a regex pattern."
+    }
+  ],
+  "updated": "2025-12-09",
+  "brakeman_version": "7.1.1"
+}
