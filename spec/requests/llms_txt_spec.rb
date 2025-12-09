@@ -3,13 +3,6 @@ require 'rails_helper'
 RSpec.describe "LlmsTxt", type: :request do
   describe "GET /llms.txt" do
     before do
-      # テストデータの準備
-      create_list(:article, 3)
-      tech_tag = create(:tag, name: 'Tech')
-      book_review_tag = create(:tag, name: 'Book Review')
-      create(:article, tags: [ tech_tag ])
-      create(:article, tags: [ book_review_tag ])
-
       # Projectのテストデータ
       2.times do |i|
         Project.create!(
@@ -58,13 +51,6 @@ RSpec.describe "LlmsTxt", type: :request do
     it "includes site title" do
       get "/llms.txt"
       expect(response.body).to include("# Spotlight by タケユー・ウェブ株式会社")
-    end
-
-    it "includes correct article count" do
-      get "/llms.txt"
-      expect(response.body).to include("最新記事数: 5件")
-      expect(response.body).to include("Tech記事: 1件")
-      expect(response.body).to include("書評: 1件")
     end
 
     it "includes correct project count" do

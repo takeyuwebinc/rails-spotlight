@@ -7,25 +7,7 @@
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- 記事一覧ページ -->
-  <url>
-    <loc><%= articles_url %></loc>
-    <lastmod><%= @articles.maximum(:updated_at)&.iso8601 || Date.current.iso8601 %></lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <!-- 各記事ページ -->
-  <% @articles.each do |article| %>
-  <url>
-    <loc><%= article_url(article) %></loc>
-    <lastmod><%= article.updated_at.iso8601 %></lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <% end %>
-  
+
   <!-- 静的ページ -->
   <url>
     <loc><%= about_url %></loc>
@@ -33,21 +15,21 @@
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  
+
   <url>
     <loc><%= projects_url %></loc>
     <lastmod><%= Date.current.iso8601 %></lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  
+
   <url>
     <loc><%= speaking_url %></loc>
     <lastmod><%= Date.current.iso8601 %></lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  
+
   <url>
     <loc><%= uses_url %></loc>
     <lastmod><%= Date.current.iso8601 %></lastmod>

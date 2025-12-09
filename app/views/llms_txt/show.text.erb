@@ -7,7 +7,7 @@
 タケユー・ウェブ株式会社は、Ruby on Railsを中心としたWebアプリケーション開発を専門とする企業です。DHHが提唱する「One Person Framework」の理念に共感し、最新のAIエージェント技術を活用した効率的な開発を実践しています。
 
 - 設立: 2016年6月3日
-- 代表者: 竹内雄一  
+- 代表者: 竹内雄一
 - 所在地: 埼玉県さいたま市
 - Ruby Association会員
 
@@ -15,16 +15,9 @@
 
 ### 技術記事
 
-技術的な知見、実装方法、考察などを共有しています。
+技術的な知見、実装方法、考察などはZenn Publicationで公開しています。
 
-- [Articles](https://spotlight.takeyuweb.co.jp/articles): 技術記事、考察、アイデアなど
-- 最新記事数: <%= data[:articles_count] %>件
-- Tech記事: <%= data[:tech_articles_count] %>件
-- 書評: <%= data[:book_reviews_count] %>件
-
-<% if data[:last_article].present? %>
-最新記事: 「<%= data[:last_article][:title] %>」（<%= data[:last_article][:published_at].strftime('%Y年%m月%d日') %>公開）
-<% end %>
+- [Zenn Publication](https://zenn.dev/p/takeyuwebinc): 技術記事、考察、アイデアなど
 
 ### プロジェクト実績
 
@@ -33,18 +26,12 @@
 - [Projects](https://spotlight.takeyuweb.co.jp/projects): クラウド管理システム、動画配信サービス、マッチングアプリなど
 - 公開実績数: <%= data[:projects_count] %>件
 
-### 書評
-
-技術書やビジネス書のレビューを掲載しています。
-
-- 書評記事数: <%= data[:book_reviews_count] %>件
-
 ## 技術スタック
 
 - Ruby on Rails 8.0.1
 - Hotwire (Turbo + Stimulus)
 - TailwindCSS
-- PostgreSQL  
+- PostgreSQL
 - Kamal (デプロイメント)
 
 ## 執筆者
@@ -68,7 +55,6 @@
 
 - [Speaking](https://spotlight.takeyuweb.co.jp/speaking): カンファレンス登壇実績（<%= data[:speaking_count] %>件）
 - [Uses](https://spotlight.takeyuweb.co.jp/uses): 使用ツール・開発環境の紹介（<%= data[:uses_count] %>件）
-- [タグ一覧](https://spotlight.takeyuweb.co.jp/tags): 記事のカテゴリ分類
 
 ---
 Generated at: <%= data[:generated_at].strftime('%Y-%m-%d %H:%M:%S %Z') %>

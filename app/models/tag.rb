@@ -1,6 +1,4 @@
 class Tag < ApplicationRecord
-  has_many :article_tags, dependent: :destroy
-  has_many :articles, through: :article_tags
   has_many :speaking_engagement_tags, dependent: :destroy
   has_many :speaking_engagements, through: :speaking_engagement_tags
   has_many :slide_tags, dependent: :destroy

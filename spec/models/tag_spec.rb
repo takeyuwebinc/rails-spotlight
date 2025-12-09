@@ -1,28 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Tag, type: :model do
-  describe "associations" do
-    it "has many article_tags" do
-      tag = create(:tag)
-      expect(tag.article_tags).to be_empty
-      expect(tag).to respond_to(:article_tags)
-    end
-
-    it "has many articles through article_tags" do
-      tag = create(:tag)
-      expect(tag.articles).to be_empty
-      expect(tag).to respond_to(:articles)
-    end
-
-    it "destroys dependent article_tags when destroyed" do
-      tag = create(:tag)
-      article = create(:article)
-      tag.articles << article
-
-      expect { tag.destroy }.to change { ArticleTag.count }.by(-1)
-    end
-  end
-
   describe "validations" do
     it "validates presence of name" do
       tag = build(:tag, name: nil)

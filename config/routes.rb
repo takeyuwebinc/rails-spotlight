@@ -30,9 +30,6 @@ Rails.application.routes.draw do
         get :metadata
       end
     end
-
-    # MCP endpoint for article management
-    post "mcp", to: "mcp#handle"
   end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
@@ -44,18 +41,11 @@ Rails.application.routes.draw do
   root "home#index"
   get "about" => "home#about"
 
-  # Articles
-  get "articles" => "articles#index"
-  get "articles/:slug" => "articles#show", as: :article
-
   # Zenn Articles (Turbo Frame)
   get "zenn_articles" => "zenn_articles#index"
 
   # Slides
   resources :slides, only: [ :show ]
-
-  # Tags
-  get "tags/:slug/articles" => "tags#show", as: :tag_articles
 
   # Projects
   resources :projects, only: [ :index ]

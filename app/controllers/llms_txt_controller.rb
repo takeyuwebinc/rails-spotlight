@@ -15,14 +15,10 @@ class LlmsTxtController < ApplicationController
 
   def gather_site_data
     {
-      articles_count: Article.published.count,
-      tech_articles_count: Article.tagged_with("tech").published.count,
-      book_reviews_count: Article.tagged_with("book-review").published.count,
       projects_count: Project.published.count,
       speaking_count: SpeakingEngagement.published.count,
       uses_count: UsesItem.count,
       availability: calculate_availability,
-      last_article: get_last_article,
       generated_at: Time.current
     }
   end
@@ -33,16 +29,6 @@ class LlmsTxtController < ApplicationController
       current_capacity: 95,
       next_available: "3ヶ月後",
       status: "相談可"
-    }
-  end
-
-  def get_last_article
-    article = Article.published.order(published_at: :desc).first
-    return nil unless article
-
-    {
-      title: article.title,
-      published_at: article.published_at
     }
   end
 
@@ -67,7 +53,6 @@ class LlmsTxtController < ApplicationController
 
   def calculate_last_modified
     [
-      Article.published.maximum(:updated_at),
       Project.published.maximum(:updated_at),
       SpeakingEngagement.published.maximum(:updated_at),
       UsesItem.maximum(:updated_at)
@@ -76,7 +61,6 @@ class LlmsTxtController < ApplicationController
 
   def calculate_etag
     Digest::MD5.hexdigest([
-      Article.published.count,
       Project.published.count,
       SpeakingEngagement.published.count,
       UsesItem.count,
