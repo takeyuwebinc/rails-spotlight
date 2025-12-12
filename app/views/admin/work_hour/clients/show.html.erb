@@ -1,0 +1,11 @@
+<% content_for(:title) { @client.name } %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900"><%= @client.name %></h1>
+  <p class="text-sm text-zinc-500">コード: <%= @client.code %></p>
+</div>
+
+<div class="flex space-x-3">
+  <%= link_to "編集", edit_admin_work_hour_client_path(@client), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+  <%= link_to "一覧に戻る", admin_work_hour_clients_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+</div>

@@ -24,11 +24,11 @@ class LlmsTxtController < ApplicationController
   end
 
   def calculate_availability
-    # TODO: 実際の稼働状況を計算するロジックを実装
+    calculator = WorkHour::AvailabilityCalculator.new
     {
-      current_capacity: 95,
-      next_available: "3ヶ月後",
-      status: "相談可"
+      current_capacity: calculator.current_rate,
+      next_available: calculator.next_available_month,
+      status: calculator.status
     }
   end
 
