@@ -4,7 +4,7 @@ class ContentServer
   def self.create
     MCP::Server.new(
       name: "spotlight-rails",
-      version: "1.4.0",
+      version: "1.5.0",
       tools: [
         # Slide tools
         Tools::CreateSlideTool,
@@ -20,7 +20,21 @@ class ContentServer
         Tools::CreateUsesItemTool,
         Tools::UpdateUsesItemTool,
         Tools::FindUsesItemTool,
-        Tools::ListUsesItemsTool
+        Tools::ListUsesItemsTool,
+        # WorkHour Client tools
+        Tools::ListWorkHourClientsTool,
+        Tools::FindWorkHourClientTool,
+        Tools::CreateWorkHourClientTool,
+        # WorkHour Project tools
+        Tools::ListWorkHourProjectsTool,
+        Tools::FindWorkHourProjectTool,
+        Tools::CreateWorkHourProjectTool,
+        # WorkHour Estimate tools
+        Tools::ListWorkHourEstimatesTool,
+        Tools::CreateWorkHourEstimateTool,
+        # WorkHour Entry tools
+        Tools::ListWorkHourEntriesTool,
+        Tools::CreateWorkHourEntryTool
       ],
       server_context: {}
     )
