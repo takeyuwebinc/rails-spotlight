@@ -8,6 +8,9 @@ module WorkHour
     validates :target_month, presence: true
     validates :minutes, presence: true, numericality: { only_integer: true, greater_than: 0 }
 
+    # month_fieldから送信される "YYYY-MM" 形式を Date に変換
+    attribute :target_month, :month_date
+
     scope :for_month, ->(year_month) { where(target_month: year_month.beginning_of_month) }
     scope :for_date, ->(date) { where(worked_on: date) }
     scope :for_period, ->(start_month, end_month) {
