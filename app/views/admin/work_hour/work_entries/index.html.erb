@@ -1,0 +1,52 @@
+<% content_for(:title) { "工数カレンダー" } %>
+
+<%
+  if @view_mode == "month"
+    start_date = @date.beginning_of_month
+    end_date = @date.end_of_month
+    prev_date = @date - 1.month
+    next_date = @date + 1.month
+    date_label = @date.strftime("%Y 年 %m 月")
+  else
+    start_date = @date.beginning_of_week
+    end_date = @date.end_of_week
+    prev_date = @date - 1.week
+    next_date = @date + 1.week
+    date_label = "#{start_date.strftime('%Y年%m月%d日')} 〜 #{end_date.strftime('%m月%d日')}"
+  end
+  entries_by_date = @work_entries.group_by(&:worked_on)
+  total_minutes = @work_entries.sum(&:minutes)
+  total_hours = total_minutes / 60
+  total_mins = total_minutes % 60
+%>
+
+<div class="mb-6">
+  <div class="flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="flex rounded-md shadow-sm">
+        <%= link_to "週", admin_work_hour_work_entries_path(date: @date, view_mode: "week"), class: "rounded-l-md px-4 py-2 text-sm font-medium #{@view_mode == 'week' ? 'bg-white text-zinc-900 ring-1 ring-inset ring-zinc-300' : 'bg-blue-600 text-white'}" %>
+        <%= link_to "月", admin_work_hour_work_entries_path(date: @date, view_mode: "month"), class: "rounded-r-md px-4 py-2 text-sm font-medium #{@view_mode == 'month' ? 'bg-blue-600 text-white' : 'bg-white text-zinc-900 ring-1 ring-inset ring-zinc-300'}" %>
+      </div>
+      <div class="flex items-center space-x-2">
+        <%= link_to admin_work_hour_work_entries_path(date: prev_date, view_mode: @view_mode), class: "text-zinc-500 hover:text-zinc-700" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+        <% end %>
+        <span class="text-lg font-medium text-zinc-900 min-w-[140px] text-center"><%= date_label %></span>
+        <%= link_to admin_work_hour_work_entries_path(date: next_date, view_mode: @view_mode), class: "text-zinc-500 hover:text-zinc-700" do %>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <% end %>
+      </div>
+      <%= link_to "今日", admin_work_hour_work_entries_path(date: Date.current, view_mode: @view_mode), class: "rounded-md bg-white px-3 py-2 text-sm font-medium text-zinc-700 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+      <span class="text-sm text-zinc-600">合計：<span class="font-semibold text-zinc-900"><%= total_hours %>時間<%= total_mins > 0 ? "%02d分" % total_mins : "00分" %></span></span>
+    </div>
+    <div>
+      <%= link_to "エクスポート", export_work_entries_admin_work_hour_csv_index_path(start_month: @date.strftime("%Y-%m"), end_month: @date.strftime("%Y-%m")), class: "rounded-md bg-white px-4 py-2 text-sm font-medium text-zinc-700 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+    </div>
+  </div>
+</div>
+
+<% if @view_mode == "month" %>
+  <%= render "month_calendar", date: @date, entries_by_date: entries_by_date %>
+<% else %>
+  <%= render "week_calendar", start_date: start_date, end_date: end_date, entries_by_date: entries_by_date %>
+<% end %>

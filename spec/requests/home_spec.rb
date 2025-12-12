@@ -31,19 +31,19 @@ RSpec.describe "Home", type: :request do
         expect(response.body).to include("fa-calendar-check")
       end
 
-      it "displays 100% capacity for all months" do
-        # Checking for any high capacity percentage (95% or 100%)
-        expect(response.body).to include("100%")
-        expect(response.body).to include("95%")
+      it "displays availability percentage" do
+        # With no estimates, shows 0% (green color)
+        expect(response.body).to include("0%")
       end
 
-      it "displays progress bars with full width" do
-        expect(response.body).to include('style="width: 100%"')
+      it "displays progress bars" do
+        expect(response.body).to match(/style="width: \d+%"/)
       end
 
-      it "uses red color for full capacity" do
-        expect(response.body).to include("bg-red-500")
-        expect(response.body).to include("text-red-600")
+      it "uses appropriate color for capacity" do
+        # With no estimates (0%), uses green color
+        expect(response.body).to include("bg-green-500")
+        expect(response.body).to include("text-green-600")
       end
 
       it "displays contact information section" do
@@ -62,6 +62,29 @@ RSpec.describe "Home", type: :request do
 
       it "includes external link icon" do
         expect(response.body).to include("fa-external-link")
+      end
+    end
+
+    context "availability status section with estimates" do
+      let(:project) { create(:work_hour_project, status: "active") }
+
+      before do
+        3.times do |i|
+          create(:work_hour_project_monthly_estimate,
+                 project: project,
+                 year_month: Date.current.next_month(i).beginning_of_month,
+                 estimated_hours: 160)
+        end
+        get root_path
+      end
+
+      it "displays 100% for fully booked months" do
+        expect(response.body).to include("100%")
+      end
+
+      it "uses red color for full capacity" do
+        expect(response.body).to include("bg-red-500")
+        expect(response.body).to include("text-red-600")
       end
     end
   end

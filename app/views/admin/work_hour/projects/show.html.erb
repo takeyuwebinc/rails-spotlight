@@ -1,0 +1,61 @@
+<% content_for(:title) { @project.name } %>
+
+<div class="flex justify-between items-start mb-6">
+  <div>
+    <div class="flex items-center space-x-3">
+      <div class="w-6 h-6 rounded" style="background-color: <%= @project.color %>"></div>
+      <h1 class="text-2xl font-bold text-zinc-900"><%= @project.name %></h1>
+      <% if @project.active? %>
+        <span class="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">運用中</span>
+      <% else %>
+        <span class="inline-flex items-center rounded-md bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-inset ring-zinc-500/10">終了</span>
+      <% end %>
+    </div>
+    <p class="mt-1 text-sm text-zinc-500">
+      コード: <%= @project.code %>
+      <% if @project.client %>
+        | クライアント: <%= @project.client.name %>
+      <% end %>
+      <% if @project.start_date && @project.end_date %>
+        | 期間: <%= @project.start_date.strftime("%Y/%m/%d") %> 〜 <%= @project.end_date.strftime("%Y/%m/%d") %>
+      <% end %>
+    </p>
+  </div>
+  <div class="flex space-x-3">
+    <%= link_to "編集", edit_admin_work_hour_project_path(@project), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+    <%= link_to "一覧に戻る", admin_work_hour_projects_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded-lg">
+  <div class="px-6 py-4 border-b border-zinc-200 flex justify-between items-center">
+    <h2 class="text-lg font-medium text-zinc-900">月別見込み工数</h2>
+    <%= link_to "追加", new_admin_work_hour_project_monthly_estimate_path(@project), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+  </div>
+  <table class="min-w-full divide-y divide-zinc-200">
+    <thead class="bg-zinc-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">対象月</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">見込み工数</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">操作</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-zinc-200">
+      <% @monthly_estimates.each do |estimate| %>
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900"><%= estimate.year_month.strftime("%Y年%m月") %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900"><%= estimate.estimated_hours %>時間</td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <%= link_to "編集", edit_admin_work_hour_project_monthly_estimate_path(@project, estimate), class: "text-indigo-600 hover:text-indigo-900 mr-4" %>
+            <%= link_to "削除", admin_work_hour_project_monthly_estimate_path(@project, estimate), method: :delete, data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "text-red-600 hover:text-red-900" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @monthly_estimates.empty? %>
+        <tr>
+          <td colspan="3" class="px-6 py-4 text-center text-sm text-zinc-500">見込み工数が登録されていません</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

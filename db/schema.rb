@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_12_09_143052) do
+ActiveRecord::Schema[8.0].define(version: 2025_12_12_100730) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.string "name", null: false
     t.string "record_type", null: false
@@ -150,6 +150,51 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_143052) do
     t.index ["slug"], name: "index_uses_items_on_slug", unique: true
   end
 
+  create_table "work_hour_clients", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_work_hour_clients_on_code", unique: true
+  end
+
+  create_table "work_hour_project_monthly_estimates", force: :cascade do |t|
+    t.integer "project_id", null: false
+    t.date "year_month", null: false
+    t.decimal "estimated_hours", precision: 5, scale: 1, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id", "year_month"], name: "idx_work_hour_estimates_on_project_and_month", unique: true
+    t.index ["project_id"], name: "index_work_hour_project_monthly_estimates_on_project_id"
+  end
+
+  create_table "work_hour_projects", force: :cascade do |t|
+    t.string "code", null: false
+    t.string "name", null: false
+    t.integer "client_id"
+    t.string "color", default: "#6366f1", null: false
+    t.date "start_date"
+    t.date "end_date"
+    t.string "status", default: "active", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_work_hour_projects_on_client_id"
+    t.index ["code"], name: "index_work_hour_projects_on_code", unique: true
+  end
+
+  create_table "work_hour_work_entries", force: :cascade do |t|
+    t.integer "project_id"
+    t.date "worked_on", null: false
+    t.date "target_month", null: false
+    t.text "description"
+    t.integer "minutes", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["project_id"], name: "index_work_hour_work_entries_on_project_id"
+    t.index ["target_month"], name: "index_work_hour_work_entries_on_target_month"
+    t.index ["worked_on"], name: "index_work_hour_work_entries_on_worked_on"
+  end
+
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "slide_pages", "slides"
@@ -157,4 +202,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_12_09_143052) do
   add_foreign_key "slide_tags", "tags"
   add_foreign_key "speaking_engagement_tags", "speaking_engagements"
   add_foreign_key "speaking_engagement_tags", "tags"
+  add_foreign_key "work_hour_project_monthly_estimates", "work_hour_projects", column: "project_id"
+  add_foreign_key "work_hour_projects", "work_hour_clients", column: "client_id"
+  add_foreign_key "work_hour_work_entries", "work_hour_projects", column: "project_id"
 end

@@ -1,0 +1,129 @@
+<%
+  # カレンダーグリッドの開始日（月の最初の週の日曜日）と終了日（月の最後の週の土曜日）
+  calendar_start = date.beginning_of_month.beginning_of_week(:sunday)
+  calendar_end = date.end_of_month.end_of_week(:sunday)
+  current_month = date.month
+
+  # 生産・非生産の集計（プロジェクトがあるものは生産、ないものは非生産）
+  all_entries = entries_by_date.values.flatten
+  productive_minutes = all_entries.select { |e| e.project_id.present? }.sum(&:minutes)
+  non_productive_minutes = all_entries.select { |e| e.project_id.nil? }.sum(&:minutes)
+  total_minutes = productive_minutes + non_productive_minutes
+  productive_ratio = total_minutes > 0 ? (productive_minutes.to_f / total_minutes * 100).round : 0
+
+  # プロジェクトごとの集計
+  project_totals = all_entries.group_by(&:project).transform_values { |entries| entries.sum(&:minutes) }
+%>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <!-- カレンダーヘッダー（曜日） -->
+  <div class="grid grid-cols-7 border-b border-zinc-200">
+    <% %w[日 月 火 水 木 金 土].each_with_index do |day, idx| %>
+      <div class="px-2 py-2 text-center text-xs font-medium <%= idx == 0 ? 'text-red-500' : idx == 6 ? 'text-blue-500' : 'text-zinc-500' %> border-r border-zinc-200 last:border-r-0">
+        <%= day %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- カレンダー本体 -->
+  <div class="grid grid-cols-7">
+    <% (calendar_start..calendar_end).each do |cal_date| %>
+      <%
+        is_current_month = cal_date.month == current_month
+        is_today = cal_date == Date.current
+        is_sunday = cal_date.wday == 0
+        is_saturday = cal_date.wday == 6
+        day_entries = entries_by_date[cal_date] || []
+        day_total = day_entries.sum(&:minutes)
+        day_hours = day_total / 60
+        day_mins = day_total % 60
+      %>
+      <div class="min-h-[140px] border-r border-b border-zinc-200 last:border-r-0 <%= is_today ? 'bg-blue-50' : is_current_month ? 'bg-white' : 'bg-zinc-50' %>">
+        <!-- 日付ヘッダー -->
+        <div class="flex justify-between items-center px-2 py-1 border-b border-zinc-100">
+          <span class="text-sm font-medium <%= is_sunday ? 'text-red-500' : is_saturday ? 'text-blue-500' : 'text-zinc-700' %> <%= !is_current_month ? 'opacity-40' : '' %>">
+            <%= cal_date.day %>
+          </span>
+          <span class="text-xs <%= is_current_month ? 'text-zinc-500' : 'text-zinc-400' %>">
+            <%= day_hours %>時間<%= "%02d" % day_mins %>分
+          </span>
+        </div>
+
+        <!-- 工数エントリー -->
+        <div class="p-1 space-y-1 overflow-y-auto max-h-[100px]">
+          <% day_entries.each do |entry| %>
+            <%
+              entry_hours = entry.minutes / 60
+              entry_mins = entry.minutes % 60
+              time_display = entry_hours > 0 ? "#{entry_hours}:%02d" % entry_mins : "0:#{"%02d" % entry_mins}"
+            %>
+            <%= link_to edit_admin_work_hour_work_entry_path(entry), class: "block px-1.5 py-1 rounded text-xs hover:opacity-80", style: "background-color: #{entry.project&.color || '#9ca3af'}30" do %>
+              <div class="flex justify-between items-start">
+                <span class="font-medium text-zinc-800 truncate flex-1"><%= entry.project_name %></span>
+              </div>
+              <div class="flex justify-between items-center mt-0.5">
+                <span class="font-semibold text-zinc-900"><%= time_display %></span>
+                <% if entry.project&.client %>
+                  <span class="text-zinc-500 truncate ml-1"><%= entry.project.client.name.truncate(10) %></span>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+
+          <% if is_today && is_current_month %>
+            <%= link_to new_admin_work_hour_work_entry_path(date: cal_date), class: "block w-full px-2 py-1 text-center text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-200 rounded" do %>
+              + 工数を追加
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- 月間サマリー -->
+<div class="mt-6 bg-white shadow rounded-lg p-6">
+  <h3 class="text-lg font-bold text-zinc-900 mb-4"><%= date.strftime("%Y年%m月") %>分のサマリー</h3>
+
+  <div class="grid grid-cols-5 gap-6">
+    <!-- 工数実績 -->
+    <div>
+      <div class="text-sm text-zinc-500 mb-1">工数実績</div>
+      <div class="text-xl font-bold text-zinc-900"><%= total_minutes / 60 %>時間<%= total_minutes % 60 %>分</div>
+    </div>
+
+    <!-- 生産実績 -->
+    <div>
+      <div class="text-sm text-zinc-500 mb-1">生産実績</div>
+      <div class="text-xl font-bold text-zinc-900"><%= productive_minutes / 60 %>時間<%= productive_minutes % 60 %>分</div>
+    </div>
+
+    <!-- 非生産実績 -->
+    <div>
+      <div class="text-sm text-zinc-500 mb-1">非生産実績</div>
+      <div class="text-xl font-bold text-zinc-900"><%= non_productive_minutes / 60 %>時間<%= non_productive_minutes % 60 %>分</div>
+    </div>
+
+    <!-- 生産時間割合 -->
+    <div>
+      <div class="text-sm text-zinc-500 mb-1">生産時間割合</div>
+      <div class="flex items-center space-x-2">
+        <div class="flex-1 h-4 bg-zinc-200 rounded-full overflow-hidden">
+          <div class="h-full bg-blue-500 rounded-full" style="width: <%= productive_ratio %>%"></div>
+        </div>
+        <span class="text-lg font-bold text-zinc-900"><%= productive_ratio %>%</span>
+      </div>
+    </div>
+
+    <!-- プロジェクトごとの比率 -->
+    <div>
+      <div class="text-sm text-zinc-500 mb-1">プロジェクトごとの比率</div>
+      <div class="flex h-4 rounded-full overflow-hidden">
+        <% project_totals.each do |project, minutes| %>
+          <% width = total_minutes > 0 ? (minutes.to_f / total_minutes * 100) : 0 %>
+          <div class="h-full" style="width: <%= width %>%; background-color: <%= project&.color || '#9ca3af' %>" title="<%= project&.name || 'その他' %>: <%= minutes / 60 %>時間<%= minutes % 60 %>分"></div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

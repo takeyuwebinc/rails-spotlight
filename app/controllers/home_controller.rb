@@ -1,6 +1,7 @@
 class HomeController < ApplicationController
   def index
     @featured_projects = Project.published.limit(3)
+    @availability = WorkHour::AvailabilityCalculator.new(months_ahead: 3).monthly_availability
 
     # Ruby on Rails受託開発に特化したSEOメタデータ
     @seo_title = "Ruby on Rails受託開発"
@@ -9,7 +10,7 @@ class HomeController < ApplicationController
     @seo_canonical_url = root_url
   end
 
-  # TODO: Add resources for articles
   def about
+    @availability = WorkHour::AvailabilityCalculator.new(months_ahead: 3).monthly_availability
   end
 end

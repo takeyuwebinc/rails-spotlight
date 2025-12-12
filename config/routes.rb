@@ -33,6 +33,25 @@ Rails.application.routes.draw do
     end
   end
 
+  # Admin routes
+  namespace :admin do
+    root to: "dashboard#index"
+    namespace :work_hour do
+      resources :clients
+      resources :projects do
+        resources :monthly_estimates, only: %i[new create edit update destroy]
+      end
+      resources :work_entries
+      resources :csv, only: [:index] do
+        collection do
+          post :import_projects
+          post :import_work_entries
+          get :export_work_entries
+        end
+      end
+    end
+  end
+
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
