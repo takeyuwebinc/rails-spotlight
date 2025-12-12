@@ -42,7 +42,7 @@ Rails.application.routes.draw do
         resources :monthly_estimates, only: %i[new create edit update destroy]
       end
       resources :work_entries
-      resources :csv, only: [:index] do
+      resources :csv, only: [ :index ] do
         collection do
           post :import_projects
           post :import_work_entries
