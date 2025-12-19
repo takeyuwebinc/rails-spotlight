@@ -1,4 +1,24 @@
 Rails.application.routes.draw do
+  # Doorkeeper OAuth routes (without admin UI and DCR)
+  use_doorkeeper do
+    # Disable all admin controllers (applications management)
+    skip_controllers :applications, :authorized_applications
+  end
+
+  # OAuth Discovery endpoints (MCP spec)
+  get ".well-known/oauth-protected-resource", to: "oauth/discovery#protected_resource", as: :oauth_protected_resource
+  get ".well-known/oauth-authorization-server", to: "oauth/discovery#authorization_server", as: :oauth_authorization_server_metadata
+
+  # OAuth session routes (for MCP OAuth with Google authentication)
+  namespace :oauth do
+    get "login", to: "sessions#new", as: :login
+    delete "logout", to: "sessions#destroy", as: :logout
+
+    # OmniAuth callbacks for OAuth (using oauth_google provider)
+    get "auth/oauth_google/callback", to: "omniauth_callbacks#oauth_google"
+    get "auth/failure", to: "omniauth_callbacks#failure"
+  end
+
   if Rails.env.local?
     mount Rswag::Ui::Engine => "/api-docs"
     mount Rswag::Api::Engine => "/api-docs/api"
@@ -25,7 +45,9 @@ Rails.application.routes.draw do
 
   # API routes
   namespace :api do
+    # MCP endpoint - POST for requests, GET for protocol discovery (MCP 2025-06-18)
     post "mcp", to: "mcp#handle"
+    get "mcp", to: "mcp#handle"
     resources :link_cards, only: [] do
       collection do
         get :metadata
@@ -35,6 +57,14 @@ Rails.application.routes.draw do
 
   # Admin routes
   namespace :admin do
+    # Authentication
+    get "login", to: "sessions#new", as: :login
+    delete "logout", to: "sessions#destroy", as: :logout
+
+    # OmniAuth callbacks
+    get "auth/google_oauth2/callback", to: "omniauth_callbacks#google_oauth2"
+    get "auth/failure", to: "omniauth_callbacks#failure"
+
     root to: "dashboard#index"
     namespace :work_hour do
       resources :clients
