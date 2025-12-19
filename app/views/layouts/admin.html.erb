@@ -34,7 +34,11 @@
                     class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.include?('csv') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
               </div>
             </div>
-            <div>
+            <div class="flex items-center gap-4">
+              <% if admin_signed_in? %>
+                <span class="text-zinc-400 text-sm"><%= current_admin_email %></span>
+                <%= button_to "ログアウト", admin_logout_path, method: :delete, class: "text-zinc-300 hover:text-white text-sm", data: { turbo: false } %>
+              <% end %>
               <%= link_to "サイトへ戻る", root_path, class: "text-zinc-300 hover:text-white text-sm" %>
             </div>
           </div>

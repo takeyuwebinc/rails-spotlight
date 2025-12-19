@@ -2,11 +2,10 @@
 
 module Admin
   class BaseController < ApplicationController
+    include AdminAuthenticatable
+
     layout "admin"
 
-    http_basic_authenticate_with(
-      name: Rails.application.credentials.dig(:admin, :username) || "admin",
-      password: Rails.application.credentials.dig(:admin, :password) || "password"
-    )
+    before_action :authenticate_admin!
   end
 end

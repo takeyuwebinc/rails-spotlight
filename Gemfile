@@ -82,7 +82,15 @@ gem "rswag-ui"
 gem "rswag-specs", group: [ :development, :test ]
 
 # Model Context Protocol (MCP) for LLM integration
-gem "mcp"
+gem "mcp", "~> 0.4.0"
+
+# OAuth 2.0 Provider
+gem "doorkeeper"
+
+# Google OAuth authentication
+gem "omniauth"
+gem "omniauth-google-oauth2"
+gem "omniauth-rails_csrf_protection"
 
 gem "sentry-ruby"
 gem "sentry-rails"

@@ -3,34 +3,22 @@
 require "rails_helper"
 
 RSpec.describe "Admin::WorkHour::Csv", type: :request do
-  let(:credentials) { { username: "admin", password: "password" } }
-  let(:auth_headers) do
-    {
-      "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(
-        credentials[:username], credentials[:password]
-      )
-    }
-  end
-
-  before do
-    allow(Rails.application.credentials).to receive(:dig).with(:admin, :username).and_return(credentials[:username])
-    allow(Rails.application.credentials).to receive(:dig).with(:admin, :password).and_return(credentials[:password])
-  end
+  before { sign_in_admin }
 
   describe "GET /admin/work_hour/csv" do
     it "returns http success" do
-      get admin_work_hour_csv_index_path, headers: auth_headers
+      get admin_work_hour_csv_index_path
       expect(response).to have_http_status(:success)
     end
 
     it "displays import forms" do
-      get admin_work_hour_csv_index_path, headers: auth_headers
+      get admin_work_hour_csv_index_path
       expect(response.body).to include("案件インポート")
       expect(response.body).to include("工数実績インポート")
     end
 
     it "displays export form" do
-      get admin_work_hour_csv_index_path, headers: auth_headers
+      get admin_work_hour_csv_index_path
       expect(response.body).to include("工数実績エクスポート")
     end
   end
@@ -38,7 +26,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
   describe "POST /admin/work_hour/csv/import_projects" do
     context "without file" do
       it "redirects with alert" do
-        post import_projects_admin_work_hour_csv_index_path, headers: auth_headers
+        post import_projects_admin_work_hour_csv_index_path
         expect(response).to redirect_to(admin_work_hour_csv_index_path)
         expect(flash[:alert]).to eq("ファイルを選択してください。")
       end
@@ -64,8 +52,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
       it "imports projects and redirects with notice" do
         expect {
           post import_projects_admin_work_hour_csv_index_path,
-               params: { file: file },
-               headers: auth_headers
+               params: { file: file }
         }.to change(::WorkHour::Project, :count).by(2)
 
         expect(response).to redirect_to(admin_work_hour_csv_index_path)
@@ -75,8 +62,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
       it "creates client from 発注元" do
         expect {
           post import_projects_admin_work_hour_csv_index_path,
-               params: { file: file },
-               headers: auth_headers
+               params: { file: file }
         }.to change(::WorkHour::Client, :count).by(1)
 
         client = ::WorkHour::Client.find_by(name: "テストクライアント")
@@ -85,8 +71,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "assigns correct attributes to project" do
         post import_projects_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         project = ::WorkHour::Project.find_by(code: "proj-001")
         expect(project.name).to eq("テストプロジェクト")
@@ -98,8 +83,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "parses 終了 status as closed" do
         post import_projects_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         project = ::WorkHour::Project.find_by(code: "proj-002")
         expect(project.status).to eq("closed")
@@ -124,8 +108,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "parses Japanese date format" do
         post import_projects_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         project = ::WorkHour::Project.find_by(code: "proj-jp")
         expect(project.start_date).to eq(Date.new(2025, 1, 15))
@@ -154,8 +137,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
       it "updates existing project" do
         expect {
           post import_projects_admin_work_hour_csv_index_path,
-               params: { file: file },
-               headers: auth_headers
+               params: { file: file }
         }.not_to change(::WorkHour::Project, :count)
 
         existing_project.reload
@@ -165,8 +147,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "reports update count" do
         post import_projects_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         expect(flash[:notice]).to include("更新: 1件")
       end
@@ -190,8 +171,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "handles BOM correctly" do
         post import_projects_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         project = ::WorkHour::Project.find_by(code: "proj-bom")
         expect(project).to be_present
@@ -204,7 +184,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
     context "without file" do
       it "redirects with alert" do
-        post import_work_entries_admin_work_hour_csv_index_path, headers: auth_headers
+        post import_work_entries_admin_work_hour_csv_index_path
         expect(response).to redirect_to(admin_work_hour_csv_index_path)
         expect(flash[:alert]).to eq("ファイルを選択してください。")
       end
@@ -230,8 +210,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
       it "imports work entries and redirects with notice" do
         expect {
           post import_work_entries_admin_work_hour_csv_index_path,
-               params: { file: file },
-               headers: auth_headers
+               params: { file: file }
         }.to change(::WorkHour::WorkEntry, :count).by(2)
 
         expect(response).to redirect_to(admin_work_hour_csv_index_path)
@@ -240,8 +219,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "assigns correct attributes to work entry" do
         post import_work_entries_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         entry = ::WorkHour::WorkEntry.find_by(description: "開発作業")
         expect(entry.project).to eq(project)
@@ -269,8 +247,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
       it "creates work entry without project" do
         post import_work_entries_admin_work_hour_csv_index_path,
-             params: { file: file },
-             headers: auth_headers
+             params: { file: file }
 
         entry = ::WorkHour::WorkEntry.find_by(description: "作業")
         expect(entry).to be_present
@@ -300,8 +277,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
     it "returns CSV file" do
       get export_work_entries_admin_work_hour_csv_index_path,
-          params: { start_month: "2025-01", end_month: "2025-02" },
-          headers: auth_headers
+          params: { start_month: "2025-01", end_month: "2025-02" }
 
       expect(response).to have_http_status(:success)
       expect(response.content_type).to include("text/csv")
@@ -309,16 +285,14 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
     it "includes correct filename" do
       get export_work_entries_admin_work_hour_csv_index_path,
-          params: { start_month: "2025-01", end_month: "2025-02" },
-          headers: auth_headers
+          params: { start_month: "2025-01", end_month: "2025-02" }
 
       expect(response.headers["Content-Disposition"]).to include("work_entries_202501_202502.csv")
     end
 
     it "includes work entries in response body" do
       get export_work_entries_admin_work_hour_csv_index_path,
-          params: { start_month: "2025-01", end_month: "2025-02" },
-          headers: auth_headers
+          params: { start_month: "2025-01", end_month: "2025-02" }
 
       expect(response.body).to include("エクスポート案件")
       expect(response.body).to include("作業1")
@@ -335,8 +309,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
              minutes: 30)
 
       get export_work_entries_admin_work_hour_csv_index_path,
-          params: { start_month: "2025-01", end_month: "2025-02", project_id: project.id },
-          headers: auth_headers
+          params: { start_month: "2025-01", end_month: "2025-02", project_id: project.id }
 
       expect(response.body).to include("作業1")
       expect(response.body).not_to include("他案件作業")
@@ -344,8 +317,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
 
     it "filters by date range" do
       get export_work_entries_admin_work_hour_csv_index_path,
-          params: { start_month: "2025-01", end_month: "2025-01" },
-          headers: auth_headers
+          params: { start_month: "2025-01", end_month: "2025-01" }
 
       expect(response.body).to include("作業1")
       expect(response.body).not_to include("作業2")

@@ -3,19 +3,7 @@
 require "rails_helper"
 
 RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
-  let(:credentials) { { username: "admin", password: "password" } }
-  let(:auth_headers) do
-    {
-      "HTTP_AUTHORIZATION" => ActionController::HttpAuthentication::Basic.encode_credentials(
-        credentials[:username], credentials[:password]
-      )
-    }
-  end
-
-  before do
-    allow(Rails.application.credentials).to receive(:dig).with(:admin, :username).and_return(credentials[:username])
-    allow(Rails.application.credentials).to receive(:dig).with(:admin, :password).and_return(credentials[:password])
-  end
+  before { sign_in_admin }
 
   let!(:project) { create(:work_hour_project, name: "テスト案件", status: "active") }
 
@@ -24,34 +12,34 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
     let!(:entry2) { create(:work_hour_work_entry, project: project, worked_on: Date.current - 1.week, description: "先週の作業") }
 
     it "returns http success" do
-      get admin_work_hour_work_entries_path, headers: auth_headers
+      get admin_work_hour_work_entries_path
       expect(response).to have_http_status(:success)
     end
 
     it "displays current week entries by default" do
-      get admin_work_hour_work_entries_path, headers: auth_headers
+      get admin_work_hour_work_entries_path
       expect(response.body).to include("作業1")
     end
 
     it "can filter by date" do
-      get admin_work_hour_work_entries_path(date: Date.current - 1.week), headers: auth_headers
+      get admin_work_hour_work_entries_path(date: Date.current - 1.week)
       expect(response.body).to include("先週の作業")
     end
 
     it "can switch to month view" do
-      get admin_work_hour_work_entries_path(view_mode: "month"), headers: auth_headers
+      get admin_work_hour_work_entries_path(view_mode: "month")
       expect(response).to have_http_status(:success)
     end
   end
 
   describe "GET /admin/work_hour/work_entries/new" do
     it "returns http success" do
-      get new_admin_work_hour_work_entry_path, headers: auth_headers
+      get new_admin_work_hour_work_entry_path
       expect(response).to have_http_status(:success)
     end
 
     it "pre-fills date from params" do
-      get new_admin_work_hour_work_entry_path(date: "2025-01-15"), headers: auth_headers
+      get new_admin_work_hour_work_entry_path(date: "2025-01-15")
       expect(response.body).to include("2025-01-15")
     end
   end
@@ -72,18 +60,18 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
 
       it "creates a new work entry" do
         expect {
-          post admin_work_hour_work_entries_path, params: valid_params, headers: auth_headers
+          post admin_work_hour_work_entries_path, params: valid_params
         }.to change(::WorkHour::WorkEntry, :count).by(1)
       end
 
       it "redirects to index with notice" do
-        post admin_work_hour_work_entries_path, params: valid_params, headers: auth_headers
+        post admin_work_hour_work_entries_path, params: valid_params
         expect(response).to redirect_to(admin_work_hour_work_entries_path(date: Date.new(2025, 1, 15)))
         expect(flash[:notice]).to eq("工数を登録しました。")
       end
 
       it "assigns correct attributes" do
-        post admin_work_hour_work_entries_path, params: valid_params, headers: auth_headers
+        post admin_work_hour_work_entries_path, params: valid_params
         entry = ::WorkHour::WorkEntry.last
         expect(entry.project).to eq(project)
         expect(entry.worked_on).to eq(Date.new(2025, 1, 15))
@@ -108,7 +96,7 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
 
       it "creates a work entry without project" do
         expect {
-          post admin_work_hour_work_entries_path, params: valid_params, headers: auth_headers
+          post admin_work_hour_work_entries_path, params: valid_params
         }.to change(::WorkHour::WorkEntry, :count).by(1)
 
         entry = ::WorkHour::WorkEntry.last
@@ -129,12 +117,12 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
 
       it "does not create a work entry" do
         expect {
-          post admin_work_hour_work_entries_path, params: invalid_params, headers: auth_headers
+          post admin_work_hour_work_entries_path, params: invalid_params
         }.not_to change(::WorkHour::WorkEntry, :count)
       end
 
       it "returns unprocessable entity" do
-        post admin_work_hour_work_entries_path, params: invalid_params, headers: auth_headers
+        post admin_work_hour_work_entries_path, params: invalid_params
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -144,7 +132,7 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
     let!(:entry) { create(:work_hour_work_entry, project: project) }
 
     it "returns http success" do
-      get edit_admin_work_hour_work_entry_path(entry), headers: auth_headers
+      get edit_admin_work_hour_work_entry_path(entry)
       expect(response).to have_http_status(:success)
     end
   end
@@ -163,14 +151,14 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
       end
 
       it "updates the work entry" do
-        patch admin_work_hour_work_entry_path(entry), params: valid_params, headers: auth_headers
+        patch admin_work_hour_work_entry_path(entry), params: valid_params
         entry.reload
         expect(entry.description).to eq("新説明")
         expect(entry.minutes).to eq(120)
       end
 
       it "redirects to index with notice" do
-        patch admin_work_hour_work_entry_path(entry), params: valid_params, headers: auth_headers
+        patch admin_work_hour_work_entry_path(entry), params: valid_params
         expect(response).to redirect_to(admin_work_hour_work_entries_path(date: entry.worked_on))
         expect(flash[:notice]).to eq("工数を更新しました。")
       end
@@ -186,7 +174,7 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
       end
 
       it "returns unprocessable entity" do
-        patch admin_work_hour_work_entry_path(entry), params: invalid_params, headers: auth_headers
+        patch admin_work_hour_work_entry_path(entry), params: invalid_params
         expect(response).to have_http_status(:unprocessable_entity)
       end
     end
@@ -197,12 +185,12 @@ RSpec.describe "Admin::WorkHour::WorkEntries", type: :request do
 
     it "deletes the work entry" do
       expect {
-        delete admin_work_hour_work_entry_path(entry), headers: auth_headers
+        delete admin_work_hour_work_entry_path(entry)
       }.to change(::WorkHour::WorkEntry, :count).by(-1)
     end
 
     it "redirects to index with notice" do
-      delete admin_work_hour_work_entry_path(entry), headers: auth_headers
+      delete admin_work_hour_work_entry_path(entry)
       expect(response).to redirect_to(admin_work_hour_work_entries_path(date: Date.new(2025, 1, 15)))
       expect(flash[:notice]).to eq("工数を削除しました。")
     end
