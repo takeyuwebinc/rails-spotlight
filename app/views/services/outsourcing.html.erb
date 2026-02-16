@@ -1,0 +1,118 @@
+<% content_for :title, "受託開発 - Services" %>
+<% content_for :description, "Ruby on Railsによる受託開発サービス。新規Webサービス開発、保守開発、システムリプレースに対応。準委任契約・請負契約いずれも可能です。" %>
+<% content_for :canonical_url, services_outsourcing_url %>
+
+<div class="sm:px-8 mt-16 sm:mt-32">
+  <div class="mx-auto w-full max-w-7xl lg:px-8">
+    <div class="relative px-4 sm:px-8 lg:px-12">
+      <div class="mx-auto max-w-2xl lg:max-w-5xl">
+        <header class="max-w-2xl">
+          <div class="mb-4">
+            <%= link_to services_path, class: "flex items-center text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:text-teal-500 dark:hover:text-teal-400 transition" do %>
+              <i class="fa-solid fa-chevron-left mr-1 h-auto w-2"></i>
+              Services
+            <% end %>
+          </div>
+          <h1 class="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+            受託開発
+          </h1>
+          <p class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+            新規開発・保守・リプレース、いずれも対応可能です。Ruby on Railsを使った開発なら、お任せください。
+          </p>
+        </header>
+
+        <div class="mt-16 sm:mt-20 space-y-16">
+          <!-- 対応範囲 -->
+          <section>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+              対応範囲
+            </h2>
+            <p class="mt-4 text-base text-zinc-600 dark:text-zinc-400">
+              新規開発だけでなく、他社から引き継いでの保守開発にも対応可能です。Ruby on Railsを中心に、要件にあわせてインフラ構成やクラウドサービスの選定もあわせて提案します。
+            </p>
+
+            <div class="mt-8 space-y-10">
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <i class="fa-solid fa-rocket h-5 w-5 mr-3 text-teal-500"></i>
+                  新規Webサービス開発
+                </h3>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  業務改善や新規事業に必要なWebサービスを、Ruby on Railsで高速に開発します。アイデアやセキュリティ要件をお伝えいただければ、具体的な仕様策定からシステム設計、実装まですべてお任せいただけます。
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <i class="fa-solid fa-wrench h-5 w-5 mr-3 text-teal-500"></i>
+                  保守開発
+                </h3>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  既存のWebサービスを引き継いで保守できます。非エンジニアが開発したシステムの専門家サポートや、他社からの移管など柔軟に対応します。Ruby / Ruby on Railsのアップグレード経験も豊富なので、古いシステムの更新もお任せください。
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <i class="fa-solid fa-arrows-rotate h-5 w-5 mr-3 text-teal-500"></i>
+                  システムリプレース
+                </h3>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  老朽化したシステムはセキュリティリスクが高まり、追加開発にも時間とコストがかかります。最新のRuby on Railsで新しいシステムに置き換えることで、保守性と開発効率を改善します。
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- 契約形態 -->
+          <section>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+              契約形態
+            </h2>
+            <p class="mt-4 text-base text-zinc-600 dark:text-zinc-400">
+              ご要望にあわせて、2つの契約形態から選べます。
+            </p>
+
+            <div class="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-2">
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+                  準委任契約（月額稼働）
+                </h3>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                  開発ボリュームやご予算をもとに月額を定め、優先度の高い機能から順次実装していくプランです。仕様を完全に詰める前から開発をスタートでき、進めながらの軌道修正も可能です。
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+                  請負契約
+                </h3>
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                  事前に決定した仕様の実現に対して、決まった金額をお支払いいただくプランです。予算内でのリリースが必要な場合に適しています。
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-16 sm:mt-20 rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+          <h2 class="flex text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+            <i class="fa-solid fa-envelope h-6 w-6 mr-3 text-teal-500"></i>
+            お問い合わせ
+          </h2>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+            受託開発に関するご相談は、お気軽にお問い合わせください。
+          </p>
+          <a href="https://forms.gle/scwNEGrT196rFnD9A"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="inline-flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium rounded-lg transition-colors">
+            <i class="fa-solid fa-external-link mr-2"></i>
+            お問い合わせフォーム
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

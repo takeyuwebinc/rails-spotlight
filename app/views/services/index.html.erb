@@ -1,0 +1,88 @@
+<% content_for :title, "Services - サービス案内" %>
+<% content_for :description, "Ruby on Railsに特化した受託開発・技術顧問サービスを提供しています。新規開発から保守・運用まで、一人会社ならではの柔軟な対応でお客様のWeb開発を支援します。" %>
+<% content_for :canonical_url, services_url %>
+
+<div class="sm:px-8 mt-16 sm:mt-32">
+  <div class="mx-auto w-full max-w-7xl lg:px-8">
+    <div class="relative px-4 sm:px-8 lg:px-12">
+      <div class="mx-auto max-w-2xl lg:max-w-5xl">
+        <header class="max-w-2xl">
+          <h1 class="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+            Services
+          </h1>
+          <p class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+            Ruby on Railsに特化した開発支援を提供しています。2006年からRailsを使い続けてきた経験を活かし、一人会社ならではのスピード感と柔軟性でお客様の課題を解決します。
+          </p>
+        </header>
+
+        <div class="mt-16 sm:mt-20">
+          <div class="space-y-20">
+            <!-- 受託開発 -->
+            <section class="group relative flex flex-col items-start">
+              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+                <div class="h-8 w-8 rounded-full bg-teal-500 flex items-center justify-center">
+                  <i class="fa-solid fa-code text-white"></i>
+                </div>
+              </div>
+              <h2 class="mt-6 text-2xl font-semibold text-zinc-800 dark:text-zinc-100">
+                <a href="<%= services_outsourcing_path %>" class="hover:text-teal-500 dark:hover:text-teal-400 transition">
+                  受託開発
+                </a>
+              </h2>
+              <p class="mt-4 text-base text-zinc-600 dark:text-zinc-400">
+                新規Webサービス開発から既存システムの保守・リプレースまで対応します。Ruby on Railsのスペシャリストとして、設計・実装・インフラ構築までワンストップでお任せいただけます。
+              </p>
+              <div class="mt-4">
+                <%= link_to services_outsourcing_path, class: "flex items-center text-sm font-medium text-teal-500 dark:text-teal-400" do %>
+                  詳しく見る
+                  <i class="fa-solid fa-chevron-right ml-1 h-auto w-2"></i>
+                <% end %>
+              </div>
+            </section>
+
+            <!-- 技術顧問 -->
+            <section class="group relative flex flex-col items-start">
+              <div class="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+                <div class="h-8 w-8 rounded-full bg-amber-500 flex items-center justify-center">
+                  <i class="fa-solid fa-comments text-white"></i>
+                </div>
+              </div>
+              <h2 class="mt-6 text-2xl font-semibold text-zinc-800 dark:text-zinc-100">
+                <a href="<%= services_technical_advisor_path %>" class="hover:text-teal-500 dark:hover:text-teal-400 transition">
+                  技術顧問
+                </a>
+              </h2>
+              <p class="mt-4 text-base text-zinc-600 dark:text-zinc-400">
+                月額契約でRuby on Railsに関する技術相談・支援を行います。設計レビュー、技術的負債の解消、バージョンアップ支援など、開発チームが抱える技術的な課題を一緒に解決します。
+              </p>
+              <div class="mt-4">
+                <%= link_to services_technical_advisor_path, class: "flex items-center text-sm font-medium text-teal-500 dark:text-teal-400" do %>
+                  詳しく見る
+                  <i class="fa-solid fa-chevron-right ml-1 h-auto w-2"></i>
+                <% end %>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-16 sm:mt-20 rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+          <h2 class="flex text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+            <i class="fa-solid fa-envelope h-6 w-6 mr-3 text-teal-500"></i>
+            お問い合わせ
+          </h2>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+            サービスに関するご質問やご相談がございましたら、お気軽にお問い合わせください。
+          </p>
+          <a href="https://forms.gle/scwNEGrT196rFnD9A"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="inline-flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium rounded-lg transition-colors">
+            <i class="fa-solid fa-external-link mr-2"></i>
+            お問い合わせフォーム
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,6 +8,28 @@
     <priority>1.0</priority>
   </url>
 
+  <!-- サービスページ -->
+  <url>
+    <loc><%= services_url %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc><%= services_outsourcing_url %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc><%= services_technical_advisor_url %></loc>
+    <lastmod><%= Date.current.iso8601 %></lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
   <!-- 静的ページ -->
   <url>
     <loc><%= about_url %></loc>

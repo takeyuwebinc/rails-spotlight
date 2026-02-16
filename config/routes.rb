@@ -35,13 +35,17 @@ Rails.application.routes.draw do
   get "/jobs/*path", to: redirect("/", status: 301)
   get "/aboutus", to: redirect("/about", status: 301)
   get "/company", to: redirect("/about", status: 301)
-  get "/services", to: redirect("/projects", status: 301)
-  get "/services/*path", to: redirect("/projects", status: 301)
   get "/works", to: redirect("/projects", status: 301)
   get "/works/*path", to: redirect("/projects", status: 301)
   get "/announcements", to: redirect("/", status: 301)
   get "/announcements/*path", to: redirect("/", status: 301)
   get "/contacts", to: redirect("/about", status: 301)
+
+  # Legacy service URL redirects (old site compatibility)
+  get "/service", to: redirect("/services", status: 301)
+  get "/service/development", to: redirect("/services/outsourcing", status: 301)
+  get "/service/consulting", to: redirect("/services/technical_advisor", status: 301)
+  get "/service/ses", to: redirect("/services", status: 301)
 
   # API routes
   namespace :api do
@@ -96,6 +100,11 @@ Rails.application.routes.draw do
 
   # Slides
   resources :slides, only: [ :show ]
+
+  # Services
+  get "services" => "services#index"
+  get "services/outsourcing" => "services#outsourcing"
+  get "services/technical_advisor" => "services#technical_advisor"
 
   # Projects
   resources :projects, only: [ :index ]

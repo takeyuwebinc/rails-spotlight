@@ -1,0 +1,126 @@
+<% content_for :title, "技術顧問 - Services" %>
+<% content_for :description, "Ruby on Railsの技術顧問サービス。月額契約で技術相談、設計レビュー、バージョンアップ支援など、開発チームの技術的な課題解決をサポートします。" %>
+<% content_for :canonical_url, services_technical_advisor_url %>
+
+<div class="sm:px-8 mt-16 sm:mt-32">
+  <div class="mx-auto w-full max-w-7xl lg:px-8">
+    <div class="relative px-4 sm:px-8 lg:px-12">
+      <div class="mx-auto max-w-2xl lg:max-w-5xl">
+        <header class="max-w-2xl">
+          <div class="mb-4">
+            <%= link_to services_path, class: "flex items-center text-sm font-medium text-zinc-400 dark:text-zinc-500 hover:text-teal-500 dark:hover:text-teal-400 transition" do %>
+              <i class="fa-solid fa-chevron-left mr-1 h-auto w-2"></i>
+              Services
+            <% end %>
+          </div>
+          <h1 class="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+            技術顧問
+          </h1>
+          <p class="mt-6 text-base text-zinc-600 dark:text-zinc-400">
+            Ruby on Railsの専門家が、お客様の開発チームの技術的な課題解決をサポートします。
+          </p>
+        </header>
+
+        <div class="mt-16 sm:mt-20 space-y-16">
+          <!-- 技術顧問とは -->
+          <section>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+              技術顧問とは
+            </h2>
+            <p class="mt-4 text-base text-zinc-600 dark:text-zinc-400">
+              月額の顧問料で、Ruby on Railsやその周辺技術についての相談、最新情報の共有、技術的に難しい領域の開発支援など、Rails専門家としてお客様の開発チームの課題解決を支援するサービスです。
+            </p>
+          </section>
+
+          <!-- サポート内容 -->
+          <section>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+              サポート内容
+            </h2>
+
+            <div class="mt-8 space-y-6">
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <i class="fa-solid fa-magnifying-glass h-5 w-5 mr-3 text-teal-500"></i>
+                  設計・コードレビュー
+                </h3>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  アーキテクチャの設計レビューやコードレビューを通じて、誤った設計・実装・技術選択による将来の問題を予防します。
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <i class="fa-solid fa-arrow-up-right-dots h-5 w-5 mr-3 text-teal-500"></i>
+                  バージョンアップ支援
+                </h3>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  Ruby / Ruby on Railsのバージョンアップは、放置するとセキュリティリスクが高まります。アップグレード経験を活かし、計画策定から実施までサポートします。
+                </p>
+              </div>
+
+              <div class="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+                <h3 class="flex items-center text-lg font-semibold text-zinc-900 dark:text-zinc-100">
+                  <i class="fa-solid fa-lightbulb h-5 w-5 mr-3 text-teal-500"></i>
+                  技術相談
+                </h3>
+                <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+                  開発中に発生する技術的な課題や、新しい技術の導入検討など、困ったときに相談できる相手として機能します。オンラインでの相談を基本とし、必要に応じて訪問対応も可能です。
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- こんなお客様に -->
+          <section>
+            <h2 class="text-2xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100">
+              こんなお客様に
+            </h2>
+
+            <ul class="mt-6 space-y-3">
+              <li class="flex items-start text-base text-zinc-600 dark:text-zinc-400">
+                <i class="fa-solid fa-check h-5 w-5 mr-3 mt-0.5 text-teal-500 flex-shrink-0"></i>
+                社内にRuby / Ruby on Railsに詳しい人材がいない
+              </li>
+              <li class="flex items-start text-base text-zinc-600 dark:text-zinc-400">
+                <i class="fa-solid fa-check h-5 w-5 mr-3 mt-0.5 text-teal-500 flex-shrink-0"></i>
+                誤った設計・実装・技術選択により将来の発展に支障をきたすことを予防したい
+              </li>
+              <li class="flex items-start text-base text-zinc-600 dark:text-zinc-400">
+                <i class="fa-solid fa-check h-5 w-5 mr-3 mt-0.5 text-teal-500 flex-shrink-0"></i>
+                困ったときに相談できる相手がほしい
+              </li>
+            </ul>
+
+            <div class="mt-8 rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+              <h3 class="text-base font-semibold text-zinc-900 dark:text-zinc-100 mb-3">
+                なぜ技術顧問なのか
+              </h3>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                高い技能と深い知識を持ったRuby on Railsの専門家の採用は難しく、十分な報酬も必要です。一方で、すべての業務で常に専門家レベルの技能が必要というわけでもありません。技術顧問なら、必要なときに必要なだけの支援を受けることができます。
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <!-- CTA -->
+        <div class="mt-16 sm:mt-20 rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40 bg-zinc-50 dark:bg-zinc-800/50">
+          <h2 class="flex text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-4">
+            <i class="fa-solid fa-envelope h-6 w-6 mr-3 text-teal-500"></i>
+            お問い合わせ
+          </h2>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-4">
+            技術顧問に関するご相談は、お気軽にお問い合わせください。
+          </p>
+          <a href="https://forms.gle/scwNEGrT196rFnD9A"
+             target="_blank"
+             rel="noopener noreferrer"
+             class="inline-flex items-center px-4 py-2 bg-teal-500 hover:bg-teal-600 text-white text-sm font-medium rounded-lg transition-colors">
+            <i class="fa-solid fa-external-link mr-2"></i>
+            お問い合わせフォーム
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

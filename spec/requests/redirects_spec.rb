@@ -45,23 +45,29 @@ RSpec.describe "Legacy URL Redirects", type: :request do
     end
   end
 
-  describe "GET /services/*" do
-    it "redirects /services to projects path with 301 status" do
-      get "/services"
+  describe "GET /service (legacy service URLs)" do
+    it "redirects /service to services path with 301 status" do
+      get "/service"
       expect(response).to have_http_status(301)
-      expect(response).to redirect_to(projects_path)
+      expect(response).to redirect_to("/services")
     end
 
-    it "redirects /services/web-development to projects path with 301 status" do
-      get "/services/web-development"
+    it "redirects /service/development to outsourcing path with 301 status" do
+      get "/service/development"
       expect(response).to have_http_status(301)
-      expect(response).to redirect_to(projects_path)
+      expect(response).to redirect_to("/services/outsourcing")
     end
 
-    it "redirects /services/consulting/rails to projects path with 301 status" do
-      get "/services/consulting/rails"
+    it "redirects /service/consulting to technical_advisor path with 301 status" do
+      get "/service/consulting"
       expect(response).to have_http_status(301)
-      expect(response).to redirect_to(projects_path)
+      expect(response).to redirect_to("/services/technical_advisor")
+    end
+
+    it "redirects /service/ses to services path with 301 status" do
+      get "/service/ses"
+      expect(response).to have_http_status(301)
+      expect(response).to redirect_to("/services")
     end
   end
 
