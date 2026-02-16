@@ -5,7 +5,7 @@ class HomeController < ApplicationController
 
     # Ruby on Rails受託開発に特化したSEOメタデータ
     @seo_title = "Ruby on Rails受託開発"
-    @seo_description = "タケユー・ウェブ株式会社は、Ruby on Railsに特化したWeb開発会社です。高品質なWebアプリケーション開発、システム設計、技術コンサルティングを提供しています。Rails開発の外注・委託はお任せください。"
+    @seo_description = "Ruby on Railsの受託開発・技術顧問。2006年からRails一筋のエンジニアが、新規開発・保守・技術相談まで一人で幅広くお引き受けします。"
     @seo_og_type = "website"
     @seo_canonical_url = root_url
   end
