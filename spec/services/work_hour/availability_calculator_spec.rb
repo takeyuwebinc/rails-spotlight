@@ -123,4 +123,54 @@ RSpec.describe WorkHour::AvailabilityCalculator do
       expect(calculator.status).to eq("受付可")
     end
   end
+
+  describe "#monthly_availability with project_breakdown" do
+    context "when estimates exist for multiple projects" do
+      let(:project1) { create(:work_hour_project, name: "プロジェクトA", status: "active") }
+      let(:project2) { create(:work_hour_project, name: "プロジェクトB", status: "active") }
+
+      it "includes project_breakdown sorted by estimated_hours descending" do
+        target_month = Date.current.beginning_of_month
+        create(:work_hour_project_monthly_estimate, project: project1, year_month: target_month, estimated_hours: 40)
+        create(:work_hour_project_monthly_estimate, project: project2, year_month: target_month, estimated_hours: 80)
+
+        calculator = described_class.new(months_ahead: 3)
+        result = calculator.monthly_availability
+
+        breakdown = result.first[:project_breakdown]
+        expect(breakdown.length).to eq(2)
+        expect(breakdown.first[:project_name]).to eq("プロジェクトB")
+        expect(breakdown.first[:estimated_hours]).to eq(80)
+        expect(breakdown.second[:project_name]).to eq("プロジェクトA")
+        expect(breakdown.second[:estimated_hours]).to eq(40)
+      end
+    end
+
+    context "when no estimates exist" do
+      it "returns empty project_breakdown" do
+        calculator = described_class.new(months_ahead: 3)
+        result = calculator.monthly_availability
+
+        expect(result.first[:project_breakdown]).to eq([])
+      end
+    end
+
+    context "when estimates exist for closed projects" do
+      let(:active_project) { create(:work_hour_project, name: "アクティブ", status: "active") }
+      let(:closed_project) { create(:work_hour_project, name: "終了済み", status: "closed") }
+
+      it "excludes closed projects from breakdown" do
+        target_month = Date.current.beginning_of_month
+        create(:work_hour_project_monthly_estimate, project: active_project, year_month: target_month, estimated_hours: 80)
+        create(:work_hour_project_monthly_estimate, project: closed_project, year_month: target_month, estimated_hours: 40)
+
+        calculator = described_class.new(months_ahead: 3)
+        result = calculator.monthly_availability
+
+        breakdown = result.first[:project_breakdown]
+        expect(breakdown.length).to eq(1)
+        expect(breakdown.first[:project_name]).to eq("アクティブ")
+      end
+    end
+  end
 end

@@ -14,7 +14,8 @@ module WorkHour
         {
           month: target_month,
           month_label: target_month.strftime("%Y年%m月"),
-          rate: calculate_rate(target_month)
+          rate: calculate_rate(target_month),
+          project_breakdown: project_breakdown_for_month(target_month)
         }
       end
     end
@@ -46,6 +47,21 @@ module WorkHour
     end
 
     private
+
+    def project_breakdown_for_month(target_month)
+      ProjectMonthlyEstimate
+        .joins(:project)
+        .where(year_month: target_month)
+        .where(work_hour_projects: { status: "active" })
+        .select("work_hour_projects.name as project_name, work_hour_project_monthly_estimates.estimated_hours")
+        .order(estimated_hours: :desc)
+        .map do |estimate|
+          {
+            project_name: estimate.project_name,
+            estimated_hours: estimate.estimated_hours
+          }
+        end
+    end
 
     def calculate_rate(target_month)
       total_estimate_hours = ProjectMonthlyEstimate
