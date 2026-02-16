@@ -24,10 +24,10 @@ RUN apt-get update && apt-get install -y \
     libx11-xcb1 \
     libxcb-dri3-0 \
     fonts-liberation \
-    libappindicator1 \
+    libayatana-appindicator3-1 \
     xdg-utils \
     libnss3-dev \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-2.0-0 \
     libgtk-3-0 \
     libxss1 \
     && apt-get clean \
