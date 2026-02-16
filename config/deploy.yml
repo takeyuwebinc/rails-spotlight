@@ -17,15 +17,11 @@ proxy:
   host: takeyuweb.co.jp
 
 # Credentials for your image host.
+# ローカルレジストリを使用（Kamal 2.8.0以降）
+# - 外部レジストリ不要、認証情報不要
+# - SSHポートフォワーディングでリモートサーバーからプル
 registry:
-  # Specify the registry server, if you're not using Docker Hub
-  # server: registry.digitalocean.com / ghcr.io / ...
-  server: takeyuwebinc-spotlight-rails.sakuracr.jp
-  username: deploy
-
-  # Always use an access token rather than real password when possible.
-  password:
-    - KAMAL_REGISTRY_PASSWORD
+  server: localhost:5555
 # Inject ENV variables into containers (secrets come from .env).
 # Remember to run `kamal env push` after making changes!
 # env:
