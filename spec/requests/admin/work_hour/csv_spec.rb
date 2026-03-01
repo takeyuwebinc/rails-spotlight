@@ -257,7 +257,8 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
   end
 
   describe "GET /admin/work_hour/csv/export_work_entries" do
-    let!(:project) { create(:work_hour_project, code: "proj-export", name: "エクスポート案件") }
+    let!(:client) { create(:work_hour_client, code: "cli-export", name: "エクスポートクライアント") }
+    let!(:project) { create(:work_hour_project, code: "proj-export", name: "エクスポート案件", client: client) }
     let!(:entry1) do
       create(:work_hour_work_entry,
              project: project,
@@ -288,6 +289,45 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
           params: { start_month: "2025-01", end_month: "2025-02" }
 
       expect(response.headers["Content-Disposition"]).to include("work_entries_202501_202502.csv")
+    end
+
+    it "includes CSV header with client columns" do
+      get export_work_entries_admin_work_hour_csv_index_path,
+          params: { start_month: "2025-01", end_month: "2025-02" }
+
+      csv_body = response.body.delete_prefix("\xEF\xBB\xBF")
+      header = CSV.parse(csv_body).first
+      expect(header).to eq(%w[対象月 工数登録日 クライアント クライアントコード プロジェクト プロジェクトコード 業務内容 工数実績(分)])
+    end
+
+    it "includes client name and code in work entries" do
+      get export_work_entries_admin_work_hour_csv_index_path,
+          params: { start_month: "2025-01", end_month: "2025-02" }
+
+      csv_body = response.body.delete_prefix("\xEF\xBB\xBF")
+      rows = CSV.parse(csv_body)
+      data_row = rows.find { |row| row.include?("作業1") }
+      expect(data_row[2]).to eq("エクスポートクライアント")
+      expect(data_row[3]).to eq("cli-export")
+    end
+
+    it "outputs empty client columns for entries without project" do
+      create(:work_hour_work_entry,
+             project: nil,
+             target_month: Date.new(2025, 1, 1),
+             worked_on: Date.new(2025, 1, 20),
+             description: "その他作業",
+             minutes: 30)
+
+      get export_work_entries_admin_work_hour_csv_index_path,
+          params: { start_month: "2025-01", end_month: "2025-02" }
+
+      csv_body = response.body.delete_prefix("\xEF\xBB\xBF")
+      rows = CSV.parse(csv_body)
+      other_row = rows.find { |row| row.include?("その他作業") }
+      expect(other_row[2]).to eq("")
+      expect(other_row[3]).to eq("")
+      expect(other_row[4]).to eq("その他")
     end
 
     it "includes work entries in response body" do

@@ -28,5 +28,13 @@ module WorkHour
     def project_code
       project&.code || ""
     end
+
+    def client_name
+      project&.client&.name || ""
+    end
+
+    def client_code
+      project&.client&.code || ""
+    end
   end
 end

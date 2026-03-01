@@ -9,7 +9,7 @@ module WorkHour
     class << self
       def export_work_entries(start_month, end_month, project_id = nil)
         entries = ::WorkHour::WorkEntry
-          .includes(:project)
+          .includes(project: :client)
           .for_period(start_month, end_month)
           .order(:target_month, :worked_on)
 
@@ -22,12 +22,14 @@ module WorkHour
 
       def generate_csv(entries)
         BOM + CSV.generate do |csv|
-          csv << [ "対象月", "工数登録日", "プロジェクト", "プロジェクトコード", "業務内容", "工数実績(分)" ]
+          csv << [ "対象月", "工数登録日", "クライアント", "クライアントコード", "プロジェクト", "プロジェクトコード", "業務内容", "工数実績(分)" ]
 
           entries.each do |entry|
             csv << [
               entry.target_month.strftime("%Y年%m月"),
               entry.worked_on.strftime("%Y年%m月%d日"),
+              entry.client_name,
+              entry.client_code,
               entry.project_name,
               entry.project_code,
               entry.description,
