@@ -19,6 +19,10 @@
     "KAMAL_REGISTRY_PASSWORD": "$KAMAL_REGISTRY_PASSWORD"
   },
 
+  "remoteEnv": {
+    "HOST_HOME": "${localEnv:HOME}"
+  },
+
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [3000],
 
@@ -34,7 +38,7 @@
 
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/claude-setup.sh && bin/setup --skip-server",
+  "postCreateCommand": ".devcontainer/setup-claude-paths.sh && bin/claude-setup.sh && bin/setup --skip-server",
 
   // Mount host's ~/.claude if it exists
   "mounts": [
