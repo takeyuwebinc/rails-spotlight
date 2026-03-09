@@ -20,7 +20,8 @@
   },
 
   "remoteEnv": {
-    "HOST_HOME": "${localEnv:HOME}"
+    "HOST_HOME": "${localEnv:HOME}",
+    "CLAUDE_CONFIG_DIR": "${localEnv:HOME}/.claude"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
