@@ -29,7 +29,7 @@
 ### 実装方針
 
 1. **バインドマウント先をホストのパスに変更**: `target=${localEnv:HOME}/.claude` とし、コンテナ内でもホストと同じ絶対パスにファイルが配置されるようにする
-2. **`remoteEnv` に `CLAUDE_CONFIG_DIR` を追加**: `${localEnv:HOME}/.claude` を設定し、コンテナ内の Claude Code がホストと同じパスで設定ディレクトリを参照するようにする
+2. **`containerEnv` に `CLAUDE_CONFIG_DIR` を追加**: `${localEnv:HOME}/.claude` を設定し、コンテナ内の Claude Code がホストと同じパスで設定ディレクトリを参照するようにする。`remoteEnv` ではなく `containerEnv` を使用することで、`postCreateCommand` を含むコンテナ内のすべてのプロセスから参照可能にする
 3. **シンボリックリンク方式を廃止**: `setup-claude-paths.sh` と `HOST_HOME` 環境変数を削除する
 
 ### パス解決の仕組み
@@ -50,7 +50,7 @@
   "mounts": [
     "source=${localEnv:HOME}/.claude,target=${localEnv:HOME}/.claude,type=bind,consistency=cached"
   ],
-  "remoteEnv": {
+  "containerEnv": {
     "CLAUDE_CONFIG_DIR": "${localEnv:HOME}/.claude"
   },
   "postCreateCommand": "bin/claude-setup.sh && bin/setup --skip-server"

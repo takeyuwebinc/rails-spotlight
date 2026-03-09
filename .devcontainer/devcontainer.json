@@ -16,10 +16,7 @@
   },
 
   "containerEnv": {
-    "KAMAL_REGISTRY_PASSWORD": "$KAMAL_REGISTRY_PASSWORD"
-  },
-
-  "remoteEnv": {
+    "KAMAL_REGISTRY_PASSWORD": "$KAMAL_REGISTRY_PASSWORD",
     "CLAUDE_CONFIG_DIR": "${localEnv:HOME}/.claude"
   },
 
