@@ -7,7 +7,9 @@ image: takeyuweb/takeyuwebinc-spotlight-rails
 # Deploy to these servers.
 servers:
   web:
-    - 100.125.89.92 
+    # 短縮名だと Docker 埋め込み DNS + search ドメイン補完で AAAA が EAI_AGAIN を返し、
+    # kamal のポートフォワーディング（net-ssh の並行 A/AAAA 解決）が確率的に失敗する。FQDN 必須。
+    - www-takeyuweb-co-jp.tail7b9e6.ts.net
 
 # Enable SSL auto certification via Let's Encrypt (and allow for multiple apps on one server).
 # If using something like Cloudflare, it is recommended to set encryption mode 
