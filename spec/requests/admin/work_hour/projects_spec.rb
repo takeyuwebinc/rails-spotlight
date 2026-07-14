@@ -93,6 +93,70 @@ RSpec.describe "Admin::WorkHour::Projects", type: :request do
       end
     end
 
+    context "without budget_hours" do
+      let(:params_without_budget) do
+        {
+          work_hour_project: {
+            code: "no-budget-project",
+            name: "予算未登録案件",
+            color: "#ff0000",
+            status: "active",
+            budget_hours: ""
+          }
+        }
+      end
+
+      it "creates a project with nil budget_hours" do
+        post admin_work_hour_projects_path, params: params_without_budget
+        expect(::WorkHour::Project.last.budget_hours).to be_nil
+      end
+    end
+
+    context "with budget_hours" do
+      let(:params_with_budget) do
+        {
+          work_hour_project: {
+            code: "budget-project",
+            name: "予算登録案件",
+            color: "#ff0000",
+            status: "active",
+            budget_hours: "120.5"
+          }
+        }
+      end
+
+      it "creates a project with the given budget_hours" do
+        post admin_work_hour_projects_path, params: params_with_budget
+        expect(::WorkHour::Project.last.budget_hours).to eq(120.5)
+      end
+    end
+
+    context "with zero budget_hours" do
+      let(:params_with_zero_budget) do
+        {
+          work_hour_project: {
+            code: "zero-budget-project",
+            name: "予算ゼロ案件",
+            color: "#ff0000",
+            status: "active",
+            budget_hours: "0"
+          }
+        }
+      end
+
+      it "does not create a project" do
+        expect {
+          post admin_work_hour_projects_path, params: params_with_zero_budget
+        }.not_to change(::WorkHour::Project, :count)
+      end
+
+      it "renders the form with an error message" do
+        post admin_work_hour_projects_path, params: params_with_zero_budget
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.body).to include("must be greater than 0")
+      end
+    end
+
     context "with invalid params" do
       let(:invalid_params) do
         {
@@ -143,6 +207,11 @@ RSpec.describe "Admin::WorkHour::Projects", type: :request do
         project.reload
         expect(project.name).to eq("新名称")
         expect(project.color).to eq("#00ff00")
+      end
+
+      it "updates budget_hours" do
+        patch admin_work_hour_project_path(project), params: { work_hour_project: { budget_hours: "120.5" } }
+        expect(project.reload.budget_hours).to eq(120.5)
       end
 
       it "redirects to show page with notice" do

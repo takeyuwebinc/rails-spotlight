@@ -8,6 +8,7 @@ FactoryBot.define do
     status { "active" }
     start_date { Date.current.beginning_of_month }
     end_date { 1.year.from_now.end_of_month }
+    budget_hours { nil }
 
     association :client, factory: :work_hour_client
 

@@ -45,6 +45,28 @@ RSpec.describe WorkHour::Project, type: :model do
       expect(project).not_to be_valid
       expect(project.errors[:status]).to include("is not included in the list")
     end
+
+    it "is valid without budget_hours" do
+      project = build(:work_hour_project, budget_hours: nil)
+      expect(project).to be_valid
+    end
+
+    it "is valid with positive budget_hours" do
+      project = build(:work_hour_project, budget_hours: 120.5)
+      expect(project).to be_valid
+    end
+
+    it "is invalid with zero budget_hours" do
+      project = build(:work_hour_project, budget_hours: 0)
+      expect(project).not_to be_valid
+      expect(project.errors[:budget_hours]).to include("must be greater than 0")
+    end
+
+    it "is invalid with negative budget_hours" do
+      project = build(:work_hour_project, budget_hours: -1)
+      expect(project).not_to be_valid
+      expect(project.errors[:budget_hours]).to include("must be greater than 0")
+    end
   end
 
   describe "associations" do

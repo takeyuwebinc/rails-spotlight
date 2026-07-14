@@ -51,6 +51,12 @@
       <%= form.label :status, "ステータス", class: "block text-sm font-medium text-zinc-700" %>
       <%= form.select :status, [["運用中", "active"], ["終了", "closed"]], {}, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
     </div>
+
+    <div>
+      <%= form.label :budget_hours, "予算工数", class: "block text-sm font-medium text-zinc-700" %>
+      <%= form.number_field :budget_hours, step: 0.1, min: 0, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "例: 120.5" %>
+      <p class="mt-1 text-xs text-zinc-500">案件全体の予算工数（時間）。空欄可</p>
+    </div>
   </div>
 
   <div class="flex justify-end space-x-3">

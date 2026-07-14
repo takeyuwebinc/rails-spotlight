@@ -53,7 +53,7 @@ module Admin
       end
 
       def project_params
-        params.require(:work_hour_project).permit(:code, :name, :client_id, :color, :start_date, :end_date, :status)
+        params.require(:work_hour_project).permit(:code, :name, :client_id, :color, :start_date, :end_date, :status, :budget_hours)
       end
     end
   end
