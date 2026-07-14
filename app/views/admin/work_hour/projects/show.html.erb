@@ -27,6 +27,59 @@
   </div>
 </div>
 
+<div class="bg-white shadow rounded-lg mb-6">
+  <div class="px-6 py-4 border-b border-zinc-200">
+    <h2 class="text-lg font-medium text-zinc-900">予算消化</h2>
+  </div>
+  <dl class="grid grid-cols-1 gap-6 px-6 py-4 sm:grid-cols-3">
+    <div>
+      <dt class="text-sm font-medium text-zinc-500">予算工数</dt>
+      <dd class="mt-1 text-2xl font-semibold text-zinc-900">
+        <%= @budget_consumption.budget_hours ? "#{number_with_precision(@budget_consumption.budget_hours, precision: 1)}時間" : "-" %>
+      </dd>
+    </div>
+    <div>
+      <dt class="text-sm font-medium text-zinc-500">実績（累計）</dt>
+      <dd class="mt-1 text-2xl font-semibold text-zinc-900">
+        <%= number_with_precision(@budget_consumption.actual_hours, precision: 1) %>時間
+      </dd>
+    </div>
+    <div>
+      <dt class="text-sm font-medium text-zinc-500">消化率</dt>
+      <dd class="mt-1 text-2xl font-semibold <%= @budget_consumption.over? ? "text-red-700" : @budget_consumption.caution? ? "text-amber-700" : "text-zinc-900" %>">
+        <%= @budget_consumption.rate ? "#{@budget_consumption.rate}%" : "-" %>
+      </dd>
+    </div>
+  </dl>
+</div>
+
+<div class="bg-white shadow rounded-lg mb-6">
+  <div class="px-6 py-4 border-b border-zinc-200">
+    <h2 class="text-lg font-medium text-zinc-900">月別実績</h2>
+  </div>
+  <table class="min-w-full divide-y divide-zinc-200">
+    <thead class="bg-zinc-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">対象月</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">実績</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-zinc-200">
+      <% @actual_minutes_by_month.each do |target_month, minutes| %>
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900"><%= target_month.strftime("%Y年%m月") %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-zinc-900"><%= number_with_precision(minutes / 60.0, precision: 1) %>時間</td>
+        </tr>
+      <% end %>
+      <% if @actual_minutes_by_month.empty? %>
+        <tr>
+          <td colspan="2" class="px-6 py-4 text-center text-sm text-zinc-500">実績が登録されていません</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
 <div class="bg-white shadow rounded-lg">
   <div class="px-6 py-4 border-b border-zinc-200 flex justify-between items-center">
     <h2 class="text-lg font-medium text-zinc-900">月別見込み工数</h2>

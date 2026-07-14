@@ -116,6 +116,32 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
       end
     end
 
+    context "re-importing a project with a registered budget" do
+      let!(:existing_project) { create(:work_hour_project, code: "proj-budget", name: "予算案件", budget_hours: 120.5) }
+
+      let(:csv_content) do
+        <<~CSV
+          プロジェクトコード,プロジェクト名,発注元,カラー,期間from,期間to,運用ステータス
+          proj-budget,予算案件,クライアント,#0000ff,,,運用中
+        CSV
+      end
+
+      let(:file) do
+        Rack::Test::UploadedFile.new(
+          StringIO.new(csv_content),
+          "text/csv",
+          original_filename: "projects.csv"
+        )
+      end
+
+      it "keeps budget_hours" do
+        post import_projects_admin_work_hour_csv_index_path,
+             params: { file: file }
+
+        expect(existing_project.reload.budget_hours).to eq(120.5)
+      end
+    end
+
     context "updating existing project" do
       let!(:existing_project) { create(:work_hour_project, code: "proj-existing", name: "旧名称") }
 

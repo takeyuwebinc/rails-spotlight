@@ -7,10 +7,19 @@ module Admin
 
       def index
         @projects = ::WorkHour::Project.includes(:client).order(:name)
+        actual_minutes = ::WorkHour::WorkEntry.total_minutes_by_project
+        @budget_consumptions = @projects.to_h do |project|
+          [ project.id, ::WorkHour::BudgetConsumption.new(budget_hours: project.budget_hours, actual_minutes: actual_minutes[project.id]) ]
+        end
       end
 
       def show
         @monthly_estimates = @project.monthly_estimates.order(year_month: :desc)
+        @actual_minutes_by_month = ::WorkHour::WorkEntry.total_minutes_by_month(@project).sort_by { |month, _| month }.reverse
+        @budget_consumption = ::WorkHour::BudgetConsumption.new(
+          budget_hours: @project.budget_hours,
+          actual_minutes: @actual_minutes_by_month.sum { |_, minutes| minutes }
+        )
       end
 
       def new

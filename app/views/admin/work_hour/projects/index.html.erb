@@ -15,12 +15,16 @@
         <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">クライアント</th>
         <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">期間</th>
         <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">ステータス</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">予算工数</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">実績（累計）</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">消化率</th>
         <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">操作</th>
       </tr>
     </thead>
     <tbody class="bg-white divide-y divide-zinc-200">
       <% @projects.each do |project| %>
-        <tr>
+        <% consumption = @budget_consumptions[project.id] %>
+        <tr class="<%= "bg-red-50" if consumption.over? %><%= "bg-amber-50" if consumption.caution? %>">
           <td class="px-6 py-4 whitespace-nowrap">
             <div class="w-6 h-6 rounded" style="background-color: <%= project.color %>"></div>
           </td>
@@ -43,6 +47,15 @@
               <span class="inline-flex items-center rounded-md bg-zinc-50 px-2 py-1 text-xs font-medium text-zinc-600 ring-1 ring-inset ring-zinc-500/10">終了</span>
             <% end %>
           </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-zinc-900">
+            <%= consumption.budget_hours ? "#{number_with_precision(consumption.budget_hours, precision: 1)}時間" : "-" %>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-zinc-900">
+            <%= number_with_precision(consumption.actual_hours, precision: 1) %>時間
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm <%= consumption.over? ? "font-semibold text-red-700" : consumption.caution? ? "font-semibold text-amber-700" : "text-zinc-900" %>">
+            <%= consumption.rate ? "#{consumption.rate}%" : "-" %>
+          </td>
           <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
             <%= link_to "編集", edit_admin_work_hour_project_path(project), class: "text-indigo-600 hover:text-indigo-900 mr-4" %>
             <%= link_to "削除", admin_work_hour_project_path(project), method: :delete, data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？" }, class: "text-red-600 hover:text-red-900" %>
@@ -51,7 +64,7 @@
       <% end %>
       <% if @projects.empty? %>
         <tr>
-          <td colspan="7" class="px-6 py-4 text-center text-sm text-zinc-500">案件がありません</td>
+          <td colspan="10" class="px-6 py-4 text-center text-sm text-zinc-500">案件がありません</td>
         </tr>
       <% end %>
     </tbody>
