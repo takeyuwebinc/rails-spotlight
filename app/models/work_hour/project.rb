@@ -12,8 +12,11 @@ module WorkHour
     validates :name, presence: true
     validates :color, presence: true
     validates :status, presence: true, inclusion: { in: STATUSES }
-    # 予算工数は未登録（nil）を許容する。0時間の予算は業務上意味を持たず、
-    # 消化率の算出で0除算になるため、正の値のみを受け付ける。
+    # budget_hours は案件全体の予算工数（時間）。月別の見込み工数
+    # （ProjectMonthlyEstimate#estimated_hours）とは別概念で、「見積(estimate)」の語は
+    # 月別見込みに割り当てられているため、案件全体の予算は「予算(budget)」と呼び分ける。
+    # 未登録（nil）を許容する。0時間の予算は業務上意味を持たず、消化率の算出で
+    # 0除算になるため、正の値のみを受け付ける。
     validates :budget_hours, numericality: { greater_than: 0 }, allow_nil: true
 
     scope :active, -> { where(status: "active") }
