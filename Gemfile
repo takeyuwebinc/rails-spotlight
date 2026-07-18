@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
-gem "rails", "~> 8.0.1"
+gem "rails", "~> 8.1.0"
 # The modern asset pipeline for Rails [https://github.com/rails/propshaft]
 gem "propshaft"
 # Use sqlite3 as the database for Active Record
@@ -53,7 +53,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # Testing framework
-  gem "rspec-rails", "~> 6.0"
+  gem "rspec-rails", "~> 8.0"
   gem "factory_bot_rails"
   gem "faker"
 
@@ -68,7 +68,7 @@ end
 
 
 gem "tailwindcss-rails", "~> 4.1"
-gem "view_component", "~> 3.10"
+gem "view_component", "~> 4.0"
 
 # Markdown parsing and frontmatter extraction
 gem "front_matter_parser", "~> 1.0.1"
