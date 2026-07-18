@@ -10,26 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_18_044021) do
   create_table "active_storage_attachments", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "record_type", null: false
-    t.bigint "record_id", null: false
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.bigint "record_id", null: false
+    t.string "record_type", null: false
     t.index ["blob_id"], name: "index_active_storage_attachments_on_blob_id"
     t.index ["record_type", "record_id", "name", "blob_id"], name: "index_active_storage_attachments_uniqueness", unique: true
   end
 
   create_table "active_storage_blobs", force: :cascade do |t|
-    t.string "key", null: false
-    t.string "filename", null: false
-    t.string "content_type"
-    t.text "metadata"
-    t.string "service_name", null: false
     t.bigint "byte_size", null: false
     t.string "checksum"
+    t.string "content_type"
     t.datetime "created_at", null: false
+    t.string "filename", null: false
+    t.string "key", null: false
+    t.text "metadata"
+    t.string "service_name", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
   end
 
@@ -40,44 +40,44 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
   end
 
   create_table "link_metadata", force: :cascade do |t|
-    t.string "url", null: false
-    t.string "title", default: "", null: false
+    t.datetime "created_at", null: false
     t.text "description", default: "", null: false
     t.string "domain", default: "", null: false
     t.string "favicon", default: "", null: false
     t.string "image_url", default: "", null: false
     t.datetime "last_fetched_at", null: false
-    t.datetime "created_at", null: false
+    t.string "title", default: "", null: false
     t.datetime "updated_at", null: false
+    t.string "url", null: false
     t.index ["url"], name: "index_link_metadata_on_url", unique: true
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
-    t.string "resource_owner_id", null: false
     t.integer "application_id", null: false
-    t.string "token", null: false
-    t.integer "expires_in", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
-    t.datetime "created_at", null: false
-    t.datetime "revoked_at"
     t.string "code_challenge"
     t.string "code_challenge_method"
+    t.datetime "created_at", null: false
+    t.integer "expires_in", null: false
+    t.text "redirect_uri", null: false
+    t.string "resource_owner_id", null: false
+    t.datetime "revoked_at"
+    t.string "scopes", default: "", null: false
+    t.string "token", null: false
     t.index ["application_id"], name: "index_oauth_access_grants_on_application_id"
     t.index ["resource_owner_id"], name: "index_oauth_access_grants_on_resource_owner_id"
     t.index ["token"], name: "index_oauth_access_grants_on_token", unique: true
   end
 
   create_table "oauth_access_tokens", force: :cascade do |t|
-    t.string "resource_owner_id"
     t.integer "application_id", null: false
-    t.string "token", null: false
-    t.string "refresh_token"
-    t.integer "expires_in"
-    t.string "scopes"
     t.datetime "created_at", null: false
-    t.datetime "revoked_at"
+    t.integer "expires_in"
     t.string "previous_refresh_token", default: "", null: false
+    t.string "refresh_token"
+    t.string "resource_owner_id"
+    t.datetime "revoked_at"
+    t.string "scopes"
+    t.string "token", null: false
     t.index ["application_id"], name: "index_oauth_access_tokens_on_application_id"
     t.index ["refresh_token"], name: "index_oauth_access_tokens_on_refresh_token", unique: true
     t.index ["resource_owner_id"], name: "index_oauth_access_tokens_on_resource_owner_id"
@@ -85,43 +85,43 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
   end
 
   create_table "oauth_applications", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "uid", null: false
-    t.string "secret", null: false
-    t.text "redirect_uri", null: false
-    t.string "scopes", default: "", null: false
     t.boolean "confidential", default: true, null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.text "redirect_uri", null: false
+    t.string "scopes", default: "", null: false
+    t.string "secret", null: false
+    t.string "uid", null: false
     t.datetime "updated_at", null: false
     t.index ["uid"], name: "index_oauth_applications_on_uid", unique: true
   end
 
   create_table "projects", force: :cascade do |t|
-    t.string "title", null: false
+    t.string "color", null: false
+    t.datetime "created_at", null: false
     t.text "description", null: false
     t.string "icon", null: false
-    t.string "color", null: false
-    t.string "technologies", null: false
     t.integer "position"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.datetime "published_at"
+    t.string "technologies", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "slide_pages", force: :cascade do |t|
-    t.integer "slide_id", null: false
     t.text "content", null: false
-    t.integer "position", null: false
     t.datetime "created_at", null: false
+    t.integer "position", null: false
+    t.integer "slide_id", null: false
     t.datetime "updated_at", null: false
     t.index ["slide_id", "position"], name: "index_slide_pages_on_slide_id_and_position", unique: true
     t.index ["slide_id"], name: "index_slide_pages_on_slide_id"
   end
 
   create_table "slide_tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.integer "slide_id", null: false
     t.integer "tag_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["slide_id", "tag_id"], name: "index_slide_tags_on_slide_id_and_tag_id", unique: true
     t.index ["slide_id"], name: "index_slide_tags_on_slide_id"
@@ -129,20 +129,20 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
   end
 
   create_table "slides", force: :cascade do |t|
-    t.string "title", null: false
-    t.string "slug", null: false
+    t.datetime "created_at", null: false
     t.text "description", null: false
     t.datetime "published_at", null: false
-    t.datetime "created_at", null: false
+    t.string "slug", null: false
+    t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["published_at"], name: "index_slides_on_published_at"
     t.index ["slug"], name: "index_slides_on_slug", unique: true
   end
 
   create_table "speaking_engagement_tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
     t.integer "speaking_engagement_id", null: false
     t.integer "tag_id", null: false
-    t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["speaking_engagement_id", "tag_id"], name: "idx_on_speaking_engagement_id_tag_id_6ba35e291c", unique: true
     t.index ["speaking_engagement_id"], name: "index_speaking_engagement_tags_on_speaking_engagement_id"
@@ -150,17 +150,17 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
   end
 
   create_table "speaking_engagements", force: :cascade do |t|
-    t.string "title", null: false
-    t.string "slug", null: false
-    t.string "event_name", null: false
-    t.date "event_date", null: false
-    t.string "location"
+    t.datetime "created_at", null: false
     t.text "description"
+    t.date "event_date", null: false
+    t.string "event_name", null: false
     t.string "event_url"
-    t.string "slides_url"
+    t.string "location"
     t.integer "position", default: 999
     t.boolean "published", default: true
-    t.datetime "created_at", null: false
+    t.string "slides_url"
+    t.string "slug", null: false
+    t.string "title", null: false
     t.datetime "updated_at", null: false
     t.index ["event_date"], name: "index_speaking_engagements_on_event_date"
     t.index ["published", "event_date"], name: "index_speaking_engagements_on_published_and_event_date"
@@ -168,27 +168,27 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
   end
 
   create_table "tags", force: :cascade do |t|
+    t.string "bg_color", null: false
+    t.datetime "created_at", null: false
     t.string "name", null: false
     t.string "slug", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "bg_color", null: false
     t.string "text_color", null: false
+    t.datetime "updated_at", null: false
     t.index ["name"], name: "index_tags_on_name", unique: true
     t.index ["slug"], name: "index_tags_on_slug", unique: true
   end
 
   create_table "uses_items", force: :cascade do |t|
-    t.string "name", null: false
-    t.string "slug", null: false
     t.string "category", null: false
+    t.datetime "created_at", null: false
     t.text "description", null: false
-    t.string "url"
+    t.boolean "discontinued", default: false, null: false
+    t.string "name", null: false
     t.integer "position", default: 999
     t.boolean "published", default: true
-    t.datetime "created_at", null: false
+    t.string "slug", null: false
     t.datetime "updated_at", null: false
-    t.boolean "discontinued", default: false, null: false
+    t.string "url"
     t.index ["category", "position"], name: "index_uses_items_on_category_and_position"
     t.index ["category"], name: "index_uses_items_on_category"
     t.index ["slug"], name: "index_uses_items_on_slug", unique: true
@@ -196,45 +196,45 @@ ActiveRecord::Schema[8.0].define(version: 2026_07_14_061204) do
 
   create_table "work_hour_clients", force: :cascade do |t|
     t.string "code", null: false
-    t.string "name", null: false
     t.datetime "created_at", null: false
+    t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_work_hour_clients_on_code", unique: true
   end
 
   create_table "work_hour_project_monthly_estimates", force: :cascade do |t|
-    t.integer "project_id", null: false
-    t.date "year_month", null: false
-    t.decimal "estimated_hours", precision: 5, scale: 1, null: false
     t.datetime "created_at", null: false
+    t.decimal "estimated_hours", precision: 5, scale: 1, null: false
+    t.integer "project_id", null: false
     t.datetime "updated_at", null: false
+    t.date "year_month", null: false
     t.index ["project_id", "year_month"], name: "idx_work_hour_estimates_on_project_and_month", unique: true
     t.index ["project_id"], name: "index_work_hour_project_monthly_estimates_on_project_id"
   end
 
   create_table "work_hour_projects", force: :cascade do |t|
-    t.string "code", null: false
-    t.string "name", null: false
-    t.integer "client_id"
-    t.string "color", default: "#6366f1", null: false
-    t.date "start_date"
-    t.date "end_date"
-    t.string "status", default: "active", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.decimal "budget_hours", precision: 7, scale: 1
+    t.integer "client_id"
+    t.string "code", null: false
+    t.string "color", default: "#6366f1", null: false
+    t.datetime "created_at", null: false
+    t.date "end_date"
+    t.string "name", null: false
+    t.date "start_date"
+    t.string "status", default: "active", null: false
+    t.datetime "updated_at", null: false
     t.index ["client_id"], name: "index_work_hour_projects_on_client_id"
     t.index ["code"], name: "index_work_hour_projects_on_code", unique: true
   end
 
   create_table "work_hour_work_entries", force: :cascade do |t|
-    t.integer "project_id"
-    t.date "worked_on", null: false
-    t.date "target_month", null: false
+    t.datetime "created_at", null: false
     t.text "description"
     t.integer "minutes", null: false
-    t.datetime "created_at", null: false
+    t.integer "project_id"
+    t.date "target_month", null: false
     t.datetime "updated_at", null: false
+    t.date "worked_on", null: false
     t.index ["project_id"], name: "index_work_hour_work_entries_on_project_id"
     t.index ["target_month"], name: "index_work_hour_work_entries_on_target_month"
     t.index ["worked_on"], name: "index_work_hour_work_entries_on_worked_on"
