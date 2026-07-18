@@ -218,7 +218,6 @@ GEM
       fastimage (~> 2.2)
       nesty (~> 1.0)
       nokogiri (~> 1.13)
-    method_source (1.1.0)
     mini_magick (5.2.0)
       benchmark
       logger
@@ -492,10 +491,10 @@ GEM
     uri (1.1.1)
     useragent (0.16.11)
     version_gem (1.1.9)
-    view_component (3.25.0)
-      activesupport (>= 5.2.0, < 8.2)
+    view_component (4.12.0)
+      actionview (>= 7.1.0)
+      activesupport (>= 7.1.0)
       concurrent-ruby (~> 1)
-      method_source (~> 1.0)
     web-console (4.2.1)
       actionview (>= 6.0.0)
       activemodel (>= 6.0.0)
@@ -560,7 +559,7 @@ DEPENDENCIES
   thruster
   turbo-rails
   tzinfo-data
-  view_component (~> 3.10)
+  view_component (~> 4.0)
   web-console
   webmock
 
