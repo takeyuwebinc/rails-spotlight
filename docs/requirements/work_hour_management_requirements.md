@@ -205,7 +205,7 @@ freee工数管理からエクスポートしたCSVを取り込む。
 ### 3.3 依存関係
 
 - 既存の「お仕事の募集状況表示機能」を置き換える
-  - 参照：[docs/specs/availability_status_feature.md](availability_status_feature.md)
+  - 旧仕様書 `availability_status_feature.md` は [ADR 021](../adr/021_設計書のリポジトリ管理廃止.md) により削除済み（Git 履歴参照）
 
 ## 4. 用語定義
 

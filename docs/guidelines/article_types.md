@@ -6,7 +6,7 @@
 
 ## カスタムMarkdownコンポーネントの活用
 
-記事の表現力を高めるため、以下のカスタムコンポーネントを積極的に活用します（詳細は @docs/specs/custom_markdown_specification.md を参照）：
+記事の表現力を高めるため、以下のカスタムコンポーネントを積極的に活用します（詳細は @docs/guidelines/custom_markdown_specification.md を参照）：
 
 ### 利用可能なコンポーネント
 
