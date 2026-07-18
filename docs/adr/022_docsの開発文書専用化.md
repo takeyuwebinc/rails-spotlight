@@ -36,6 +36,8 @@
 
 `docs/` から記事執筆関連（`guidelines/`・`templates/`・`drafts/`・`published/`）をすべて削除し、今後 `docs/` で記事の管理・作成を行わないことを決定した。`docs/` は本アプリについての開発文書（`adr/`・`requirements/`・`reports/`）のみとする。
 
+**追記（2026-07-18）**: 用語集（`glossary/`）を保持対象に追加した。用語の定義・英語名の選定理由・禁止表現はコードから復元できない情報であり、[021](021_設計書のリポジトリ管理廃止.md) の保持基準（コードから復元できるか）に適合するため。
+
 ### 実装方針
 
 1. `docs/guidelines/`・`docs/templates/`・`docs/drafts/`・`docs/published/` を削除する
