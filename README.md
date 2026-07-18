@@ -4,15 +4,16 @@
 https://takeyuweb.co.jp として公開するRailsアプリケーション
 
 ## コンテンツの管理
-docs ディレクトリ
 
-### コンテンツの反映
+コンテンツ（プロジェクト・Uses・登壇実績・スライド）はデータベースで管理し、MCP サーバー経由で作成・更新する（[ADR 022](docs/adr/022_docsの開発文書専用化.md)）。
+リポジトリでは原稿を管理しない。
 
-```ruby
-bundle exec rails db:import
+外部ディレクトリの markdown 原稿を取り込む場合は `db:import` タスクに取り込み元を指定して実行する：
+
+```bash
+bundle exec rails "db:import[/path/to/projects,/path/to/uses,/path/to/speaking,/path/to/slides]"
 ```
 
-- docs/published 上のmarkdownファイルを探す。
 - markdownから title, slug, published_date といったメタデータを取り出す。
 - markdown本文をHTMLに変換する。
 - 対応するActiveRecordモデルレコードを更新または追加する。

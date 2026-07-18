@@ -1,5 +1,5 @@
 namespace :db do
-  desc "Import content from docs/published directory (or specified directories)"
+  desc "Import content from specified directories (see ADR 022: content is managed in DB, not in this repo)"
   task :import, [ :projects_dir, :uses_dir, :speaking_dir, :slides_dir ] => :environment do |t, args|
     projects_dir = args[:projects_dir].presence || Rails.root.join("docs", "published", "projects")
     uses_dir = args[:uses_dir].presence || Rails.root.join("docs", "published", "uses")
