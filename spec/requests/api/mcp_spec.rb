@@ -60,6 +60,14 @@ RSpec.describe "Api::Mcp", type: :request do
             "list_slides_tool"
           )
         end
+
+        it "returns the reevaluation check tool" do
+          post api_mcp_path, params: request_body, headers: headers
+
+          json_response = JSON.parse(response.body)
+          tool_names = json_response["result"]["tools"].map { |t| t["name"] }
+          expect(tool_names).to include("record_reevaluation_check_tool")
+        end
       end
 
       context "origin injection" do
