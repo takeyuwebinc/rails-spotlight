@@ -1,0 +1,106 @@
+<% content_for(:title) { "#{@adr.engagement.code}-#{@adr.number}: #{@adr.title}" } %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900"><%= @adr.engagement.code %>-<%= @adr.number %>: <%= @adr.title %></h1>
+  <p class="text-sm text-zinc-500 mt-1">
+    案件: <%= link_to @adr.engagement.name, admin_adr_management_engagement_path(@adr.engagement), class: "text-indigo-600 hover:text-indigo-900" %>
+    ／ ステータス: <%= adr_status_label(@adr.status) %>
+    ／ 信頼度: <%= adr_confidence_label(@adr.confidence) %>
+    ／ 決定日: <%= @adr.decided_on %>
+    <% if @adr.project %>／ プロジェクト: <%= @adr.project.name %><% end %>
+  </p>
+</div>
+
+<% if @adr.superseded_adrs.any? || @adr.superseding_adr %>
+  <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+    <h2 class="text-sm font-medium text-amber-800 mb-2">置換変遷</h2>
+    <% if @adr.superseding_adr %>
+      <p class="text-sm text-amber-800">この ADR は <%= link_to "#{@adr.engagement.code}-#{@adr.superseding_adr.number} #{@adr.superseding_adr.title}", admin_adr_management_adr_path(@adr.superseding_adr), class: "underline font-medium" %> に置き換えられています（そちらが現行の決定です）</p>
+    <% end %>
+    <% if @adr.superseded_adrs.any? %>
+      <p class="text-sm text-amber-800">この ADR が置き換えた決定:</p>
+      <ul class="list-disc pl-5 text-sm text-amber-800">
+        <% @adr.superseded_adrs.each do |old_adr| %>
+          <li><%= link_to "#{@adr.engagement.code}-#{old_adr.number} #{old_adr.title}", admin_adr_management_adr_path(old_adr), class: "underline" %></li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+<% end %>
+
+<div class="bg-white shadow rounded-lg p-6 mb-6 space-y-6">
+  <section>
+    <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">コンテキスト</h2>
+    <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.context) %></div>
+  </section>
+  <section>
+    <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">決定</h2>
+    <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.decision) %></div>
+  </section>
+  <section>
+    <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">結果</h2>
+    <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.consequences) %></div>
+  </section>
+  <% if @adr.alternatives.present? %>
+    <section>
+      <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">代替案</h2>
+      <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.alternatives) %></div>
+    </section>
+  <% end %>
+  <% if @adr.reevaluation_conditions.present? %>
+    <section>
+      <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">再評価条件</h2>
+      <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.reevaluation_conditions) %></div>
+    </section>
+  <% end %>
+  <% if @adr.reference_links.present? %>
+    <section>
+      <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">参考資料</h2>
+      <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.reference_links) %></div>
+    </section>
+  <% end %>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+  <div class="px-6 py-4 border-b border-zinc-200">
+    <h2 class="text-lg font-medium text-zinc-900">版履歴</h2>
+  </div>
+  <div class="divide-y divide-zinc-200">
+    <% @revisions.each do |revision| %>
+      <details class="px-6 py-3">
+        <summary class="cursor-pointer text-sm text-zinc-700">
+          <span class="font-medium"><%= revision.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+          <span class="ml-2"><%= adr_change_type_label(revision.change_type) %></span>
+          <span class="ml-2 text-zinc-500">経路: <%= revision.origin %></span>
+          <% if revision.changed_fields.present? %>
+            <span class="ml-2 text-zinc-500">変更: <%= Array(revision.changed_fields).join(", ") %></span>
+          <% end %>
+        </summary>
+        <% if revision.snapshot.present? %>
+          <div class="mt-3 bg-zinc-50 rounded p-3 text-xs text-zinc-700 overflow-x-auto">
+            <p class="font-medium mb-1">変更前の内容:</p>
+            <% revision.snapshot.each do |field, value| %>
+              <% next if value.blank? %>
+              <p class="mb-1"><span class="font-medium <%= Array(revision.changed_fields).include?(field) ? 'text-red-700' : '' %>"><%= field %>:</span> <%= truncate(value.to_s, length: 300) %></p>
+            <% end %>
+          </div>
+        <% else %>
+          <p class="mt-2 text-xs text-zinc-500">新規作成（変更前の内容はありません）</p>
+        <% end %>
+      </details>
+    <% end %>
+    <% if @revisions.empty? %>
+      <p class="px-6 py-4 text-sm text-zinc-500">版履歴がありません</p>
+    <% end %>
+  </div>
+</div>
+
+<div class="flex space-x-3">
+  <%= link_to "編集", edit_admin_adr_management_adr_path(@adr), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+  <% if @adr.supersession_involved? %>
+    <span class="rounded-md bg-zinc-200 px-3 py-2 text-sm font-semibold text-zinc-400 cursor-not-allowed" title="置換関係を持つ ADR は削除できません">削除</span>
+  <% else %>
+    <%= link_to "削除", admin_adr_management_adr_path(@adr), data: { turbo_method: :delete, turbo_confirm: "本当に削除しますか？版履歴も併せて削除されます。" }, class: "rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500" %>
+  <% end %>
+  <%= link_to "一覧に戻る", admin_adr_management_adrs_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+</div>

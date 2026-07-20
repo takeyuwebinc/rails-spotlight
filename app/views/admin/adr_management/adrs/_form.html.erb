@@ -1,0 +1,121 @@
+<%= form_with(model: @adr, url: @adr.new_record? ? admin_adr_management_adrs_path : admin_adr_management_adr_path(@adr), class: "space-y-6") do |form| %>
+  <% if @adr.errors.any? || @operation_errors.present? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="text-sm text-red-700">
+        <ul class="list-disc space-y-1 pl-5">
+          <% @adr.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+          <% Array(@operation_errors).each do |error| %>
+            <li><%= error %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <% if @adr.new_record? %>
+    <div>
+      <%= form.label :engagement_id, "案件", class: "block text-sm font-medium text-zinc-700" %>
+      <% if @engagement %>
+        <%= form.hidden_field :engagement_id, value: @engagement.id %>
+        <p class="mt-1 text-sm text-zinc-900"><%= @engagement.name %>（<%= @engagement.code %>）</p>
+      <% else %>
+        <%= form.collection_select :engagement_id, @engagements, :id, :name, { include_blank: "選択してください" }, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        <p class="mt-1 text-xs text-zinc-500">置換対象・プロジェクトを指定する場合は、案件詳細画面の「ADR を登録」から作成してください</p>
+      <% end %>
+    </div>
+  <% else %>
+    <div>
+      <%= form.label :engagement_id, "所属案件", class: "block text-sm font-medium text-zinc-700" %>
+      <% if @adr.supersession_involved? %>
+        <%= form.hidden_field :engagement_id %>
+        <p class="mt-1 text-sm text-zinc-500"><%= @adr.engagement.name %>（置換関係を持つため変更できません）</p>
+      <% else %>
+        <%= form.collection_select :engagement_id, @engagements, :id, :name, {}, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+        <p class="mt-1 text-xs text-zinc-500">案件を変更すると移動先の案件で番号が再採番されます（元の番号は欠番になります）</p>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, "タイトル", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_field :title, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div class="grid grid-cols-3 gap-4">
+    <div>
+      <%= form.label :status, "ステータス", class: "block text-sm font-medium text-zinc-700" %>
+      <% if @adr.new_record? %>
+        <%= form.select :status, [ [ "承認済み（過去の決定の記録）", "accepted" ], [ "提案中", "proposed" ] ], {}, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+        <p class="mt-1 text-xs text-zinc-500">置換対象を指定した場合は「承認済み」として登録されます</p>
+      <% else %>
+        <% transition_options = ([ @adr.status ] + ::AdrManagement::Adr::ALLOWED_STATUS_TRANSITIONS.fetch(@adr.status, [])).map { |s| [ adr_status_label(s), s ] } %>
+        <%= form.select :status, transition_options, {}, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+      <% end %>
+    </div>
+    <div>
+      <%= form.label :confidence, "信頼度", class: "block text-sm font-medium text-zinc-700" %>
+      <%= form.select :confidence, ::AdrManagement::Adr::CONFIDENCES.map { |c| [ adr_confidence_label(c), c ] }, {}, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+    </div>
+    <div>
+      <%= form.label :decided_on, "決定日", class: "block text-sm font-medium text-zinc-700" %>
+      <%= form.date_field :decided_on, value: @adr.decided_on || Date.current, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+    </div>
+  </div>
+
+  <% if @engagement && @projects.any? %>
+    <div>
+      <%= form.label :project_id, "プロジェクト（期間）", class: "block text-sm font-medium text-zinc-700" %>
+      <%= form.collection_select :project_id, @projects, :id, :name, { include_blank: "指定しない" }, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+    </div>
+  <% end %>
+
+  <% if @adr.new_record? && @supersession_candidates.any? %>
+    <div class="rounded-md border border-amber-200 bg-amber-50 p-4">
+      <p class="text-sm font-medium text-amber-800">置換対象（この ADR が置き換える承認済みの決定）</p>
+      <p class="text-xs text-amber-700 mb-2">指定すると、この ADR の登録・旧 ADR の「置換」への変更・置換関係の記録が一体で行われます</p>
+      <% @supersession_candidates.each do |candidate| %>
+        <label class="flex items-center gap-2 text-sm text-zinc-700 py-1">
+          <%= check_box_tag "superseded_numbers[]", candidate.number, false, id: "superseded_number_#{candidate.number}", class: "rounded border-zinc-300" %>
+          <%= @engagement.code %>-<%= candidate.number %> <%= candidate.title %>
+        </label>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :context, "コンテキスト（現状の問題点・制約条件）", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :context, rows: 8, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono" %>
+  </div>
+
+  <div>
+    <%= form.label :decision, "決定（実装方針）", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :decision, rows: 8, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono" %>
+  </div>
+
+  <div>
+    <%= form.label :consequences, "結果（ポジティブ/ネガティブな影響）", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :consequences, rows: 8, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono" %>
+  </div>
+
+  <div>
+    <%= form.label :alternatives, "代替案", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :alternatives, rows: 6, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono" %>
+  </div>
+
+  <div>
+    <%= form.label :reevaluation_conditions, "再評価条件", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :reevaluation_conditions, rows: 4, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono" %>
+  </div>
+
+  <div>
+    <%= form.label :reference_links, "参考資料", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :reference_links, rows: 3, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm font-mono" %>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <%= link_to "キャンセル", @adr.new_record? ? admin_adr_management_adrs_path : admin_adr_management_adr_path(@adr), class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+    <%= form.submit @adr.new_record? ? "登録" : "更新", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+  </div>
+<% end %>

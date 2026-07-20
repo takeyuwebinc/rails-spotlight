@@ -1,0 +1,31 @@
+<% content_for(:title) { @client.name } %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900"><%= @client.name %></h1>
+  <p class="text-sm text-zinc-500">コード: <%= @client.code %></p>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+  <div class="px-6 py-4 border-b border-zinc-200 flex justify-between items-center">
+    <h2 class="text-lg font-medium text-zinc-900">案件</h2>
+    <%= link_to "案件を作成", new_admin_adr_management_engagement_path(client_id: @client.id), class: "text-sm text-indigo-600 hover:text-indigo-900" %>
+  </div>
+  <table class="min-w-full divide-y divide-zinc-200">
+    <tbody class="bg-white divide-y divide-zinc-200">
+      <% @client.engagements.order(:code).each do |engagement| %>
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><%= link_to engagement.code, admin_adr_management_engagement_path(engagement), class: "text-indigo-600 hover:text-indigo-900" %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900"><%= engagement.name %></td>
+        </tr>
+      <% end %>
+      <% if @client.engagements.empty? %>
+        <tr><td class="px-6 py-4 text-center text-sm text-zinc-500">案件がありません</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="flex space-x-3">
+  <%= link_to "編集", edit_admin_adr_management_client_path(@client), class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+  <%= link_to "一覧に戻る", admin_adr_management_clients_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+</div>
