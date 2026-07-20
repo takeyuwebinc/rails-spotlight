@@ -90,9 +90,12 @@ module ContentAgent
 
       return unless target_type == "Slide" && payload["content"].present?
 
-      # Slide の公開状態は frontmatter の published_date で表現するため、
-      # 取り込み失敗を適用時まで遅らせず提案時点で検出する
+      # Slide の取り込み（import_from_markdown）は published_date と
+      # category: slide を欠く markdown を nil で拒否する。適用時まで失敗を
+      # 遅らせず提案時点で検出する（LLM は category: slide を省略しがちなことが
+      # エージェント評価で実測されている）
       errors.add(:payload, "の markdown frontmatter に published_date が必要です") unless payload["content"].match?(/^published_date:/)
+      errors.add(:payload, "の markdown frontmatter に category: slide が必要です") unless payload["content"].match?(/^category:\s*slide$/)
     end
   end
 end

@@ -76,6 +76,23 @@ RSpec.describe ContentAgent::PendingChange, type: :model do
 
         expect(change).not_to be_valid
       end
+
+      it "Slide は frontmatter に category: slide が必要" do
+        change = build(:content_agent_pending_change,
+                       target_type: "Slide", operation: "create",
+                       payload: { "content" => "---\ntitle: t\npublished_date: 2026-07-15\n---\n本文" })
+
+        expect(change).not_to be_valid
+        expect(change.errors[:payload].join).to include("category")
+      end
+
+      it "Slide は published_date と category: slide が揃えば有効" do
+        change = build(:content_agent_pending_change,
+                       target_type: "Slide", operation: "create",
+                       payload: { "content" => "---\ntitle: t\npublished_date: 2026-07-15\ncategory: slide\n---\n本文" })
+
+        expect(change).to be_valid
+      end
     end
   end
 

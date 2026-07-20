@@ -71,7 +71,7 @@ RSpec.describe ContentAgent::ApplyPendingChange do
         allow(Slide).to receive(:import_from_markdown).and_return(slide)
         change = create(:content_agent_pending_change,
                         target_type: "Slide", operation: "create",
-                        payload: { "content" => "---\npublished_date: 2026-07-20\n---\n# p" })
+                        payload: { "content" => "---\npublished_date: 2026-07-20\ncategory: slide\n---\n# p" })
 
         result = described_class.perform(pending_change: change)
 
@@ -84,7 +84,7 @@ RSpec.describe ContentAgent::ApplyPendingChange do
         allow(Slide).to receive(:import_from_markdown).and_return(nil)
         change = create(:content_agent_pending_change,
                         target_type: "Slide", operation: "create",
-                        payload: { "content" => "---\npublished_date: 2026-07-20\n---\n# p" })
+                        payload: { "content" => "---\npublished_date: 2026-07-20\ncategory: slide\n---\n# p" })
 
         result = described_class.perform(pending_change: change)
 

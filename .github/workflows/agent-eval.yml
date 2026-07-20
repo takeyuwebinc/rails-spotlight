@@ -1,0 +1,74 @@
+name: Agent Eval
+
+# 掲載内容管理支援エージェントのシナリオ評価（実 LLM API 使用）。
+# プロンプト・モデル割当・基盤側の変化による品質低下を週次で検出し、
+# 失敗時は Issue を作成する（既存の未クローズ Issue があればコメント追記）。
+# 実行には RAILS_MASTER_KEY シークレットが必要（credentials の API キーを参照するため）。
+
+on:
+  schedule:
+    - cron: "0 0 * * 1" # 毎週月曜 09:00 JST
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  agent_eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      RAILS_ENV: test
+      RAILS_MASTER_KEY: ${{ secrets.RAILS_MASTER_KEY }}
+      AGENT_EVAL: "1"
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: .ruby-version
+          bundler-cache: true
+
+      - name: Prepare database
+        run: bin/rails db:test:prepare
+
+      - name: Run agent evals
+        run: |
+          mkdir -p tmp
+          set -o pipefail
+          bundle exec rspec spec/agent_evals --format documentation 2>&1 | tee tmp/agent_eval_output.txt
+
+      - name: Create or update issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create agent-eval --color D93F0B \
+            --description "エージェント評価（週次）の失敗" --force || true
+
+          {
+            echo "週次エージェント評価が失敗しました。品質低下（プロンプト・モデル割当・LLM 基盤側の変化）の可能性があります。"
+            echo ""
+            echo "- 実行ログ: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            echo "- 実行方法（ローカル再現）: \`AGENT_EVAL=1 bundle exec rspec spec/agent_evals\`"
+            echo ""
+            echo "評価は pass@3（3 回試行して全滅で失敗）のため、単発のフレークではなく再現性のある失敗の可能性が高いです。"
+            echo ""
+            echo '```'
+            tail -c 5000 tmp/agent_eval_output.txt 2>/dev/null || echo "(出力なし)"
+            echo '```'
+          } > tmp/issue_body.md
+
+          existing=$(gh issue list --label agent-eval --state open --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file tmp/issue_body.md
+          else
+            gh issue create \
+              --title "エージェント評価の失敗を検出 ($(date +%Y-%m-%d))" \
+              --label agent-eval \
+              --body-file tmp/issue_body.md
+          fi
