@@ -27,6 +27,7 @@ module AdrManagement
           changed_fields: changed
         )
       end
+      RefreshSearchIndex.perform(adr: @adr)
       success(@adr)
     rescue ActiveRecord::RecordInvalid => e
       failure(invalid_input_errors(e.record))

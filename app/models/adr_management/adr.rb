@@ -40,6 +40,8 @@ module AdrManagement
 
     has_many :revisions, class_name: "AdrManagement::AdrRevision",
       dependent: :destroy
+    has_many :chunks, class_name: "AdrManagement::AdrChunk",
+      dependent: :delete_all
 
     validates :number, presence: true, uniqueness: { scope: :engagement_id }
     validates :title, presence: true

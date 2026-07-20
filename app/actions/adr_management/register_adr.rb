@@ -23,6 +23,7 @@ module AdrManagement
       end
 
       adr = register_with_numbering_retry(superseded_adrs)
+      RefreshSearchIndex.perform(adr: adr)
       success(adr)
     rescue ActiveRecord::RecordInvalid => e
       failure(invalid_input_errors(e.record))

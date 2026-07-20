@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_040004) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040004) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "adr_management_adr_chunks", force: :cascade do |t|
+    t.integer "adr_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.binary "embedding"
+    t.string "kind", null: false
+    t.string "state", default: "stale", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adr_id"], name: "index_adr_management_adr_chunks_on_adr_id"
+    t.index ["state"], name: "index_adr_management_adr_chunks_on_state"
   end
 
   create_table "adr_management_adr_revisions", force: :cascade do |t|
