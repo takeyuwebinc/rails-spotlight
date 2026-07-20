@@ -14,7 +14,9 @@ module Admin
     end
 
     def create
-      chat = Chat.create!
+      # 素の Chat.create! ではエージェントのモデル設定が会話に載らないため、
+      # Rails モードの Agent 経由で作成する
+      chat = ContentAgent::ConversationAgent.create!
       redirect_to admin_agent_chat_path(chat)
     end
   end
