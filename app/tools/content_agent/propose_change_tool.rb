@@ -34,6 +34,16 @@ module ContentAgent
       payload = JSON.parse(payload_json)
       return { error: "payload_json はオブジェクト（{...}）にしてください" } unless payload.is_a?(Hash)
 
+      # UsesItem の公式サイト URL は Web 検索で自動収集する運用のため、
+      # url キーなしの新規作成提案は受け付けず、エージェントに検索させる。
+      # 指示文（プロンプト）だけでは省略されることが実測で確認されたため、
+      # ツール側で構造的に強制する。公式サイトが存在しない場合の逃げ道として
+      # 明示的な null は許可する。
+      if target_type == "UsesItem" && operation == "create" && !payload.key?("url")
+        return { error: "UsesItem の新規作成には url キーが必要です。web_search で「製品名 公式サイト」を検索して" \
+                        "公式サイト URL を url に含めてください。公式サイトが存在しない場合のみ url: null を明示してください" }
+      end
+
       pending_change = nil
       ActiveRecord::Base.transaction do
         supersede_replaced!(replaces_pending_change_id)

@@ -10,7 +10,8 @@ RSpec.describe ContentAgent::ProposeChangeTool do
         operation: "create",
         payload_json: {
           name: "HHKB", slug: "hhkb", category: "hardware",
-          description: "キーボード", published: true
+          description: "キーボード", published: true,
+          url: "https://happyhackingkb.com/jp/"
         }.to_json
       )
 
@@ -21,11 +22,38 @@ RSpec.describe ContentAgent::ProposeChangeTool do
       expect(UsesItem.count).to eq(0)
     end
 
+    it "UsesItem の新規作成で url キーがないと Web 検索を促すエラーを返す" do
+      result = described_class.new(chat: chat).execute(
+        target_type: "UsesItem",
+        operation: "create",
+        payload_json: {
+          name: "HHKB", slug: "hhkb", category: "hardware",
+          description: "キーボード", published: true
+        }.to_json
+      )
+
+      expect(result[:error]).to include("web_search")
+      expect(chat.pending_changes.count).to eq(0)
+    end
+
+    it "公式サイトが存在しない場合は url: null を明示すれば提案できる" do
+      result = described_class.new(chat: chat).execute(
+        target_type: "UsesItem",
+        operation: "create",
+        payload_json: {
+          name: "自作キーボード", slug: "diy-keyboard", category: "hardware",
+          description: "d", published: false, url: nil
+        }.to_json
+      )
+
+      expect(result[:pending_change_id]).to be_present
+    end
+
     it "必須属性が不足していると保留変更を作らずエラーを返す" do
       result = described_class.new(chat: chat).execute(
         target_type: "UsesItem",
         operation: "create",
-        payload_json: { name: "HHKB" }.to_json
+        payload_json: { name: "HHKB", url: nil }.to_json
       )
 
       expect(result[:error]).to include("必須属性")
@@ -48,7 +76,8 @@ RSpec.describe ContentAgent::ProposeChangeTool do
         operation: "create",
         payload_json: {
           name: "HHKB", slug: "hhkb-2", category: "hardware",
-          description: "d", published: false
+          description: "d", published: false,
+          url: "https://happyhackingkb.com/jp/"
         }.to_json,
         replaces_pending_change_id: old_change.id
       )
