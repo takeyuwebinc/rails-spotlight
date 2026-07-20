@@ -6,7 +6,7 @@ class ContentServer
   def self.create(origin: nil)
     MCP::Server.new(
       name: "spotlight-rails",
-      version: "1.5.0",
+      version: "1.6.0",
       tools: [
         # Slide tools
         Tools::CreateSlideTool,
@@ -51,7 +51,8 @@ class ContentServer
         Tools::SearchAdrsTool,
         Tools::GetAdrTool,
         Tools::RegisterAdrTool,
-        Tools::UpdateAdrTool
+        Tools::UpdateAdrTool,
+        Tools::RecordReevaluationCheckTool
       ],
       server_context: { origin: origin }
     )
