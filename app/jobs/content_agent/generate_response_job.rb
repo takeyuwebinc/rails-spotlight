@@ -20,6 +20,9 @@ module ContentAgent
         broadcast_chunk(chat, chunk.content) if chunk.content.present?
       end
 
+      # 保留変更のプレビューカードは、この完了時の再描画でのみ画面に現れる。
+      # 承認・否認の操作を応答の生成完了後にだけ有効化する保証がこの構造に
+      # 依存しているため、生成途中でカードを配信してはならない。
       broadcast_refresh(chat)
     rescue StandardError => e
       Rails.error.report(e, context: { chat_id: chat_id }, severity: :error)

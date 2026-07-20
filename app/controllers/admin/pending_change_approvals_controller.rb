@@ -10,6 +10,9 @@ module Admin
       chat = pending_change.chat
 
       result = ContentAgent::ApplyPendingChange.perform(pending_change: pending_change)
+      # 「（適用結果）」接頭辞は、画面のシステム通知表示（_message パーシャル）と
+      # エージェント指示文（instructions テンプレート）の双方がこの表記に依存する。
+      # 変更する場合は三箇所を揃えること。
       notice = if result.success?
         "（適用結果）保留変更 ##{pending_change.id} は承認され、適用に成功しました。"
       else
