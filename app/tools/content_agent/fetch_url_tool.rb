@@ -8,6 +8,10 @@ module ContentAgent
   # 含まれていても、掲載内容への反映は保留変更の承認ゲートを通るため
   # ここでは無害化しない。
   class FetchUrlTool < RubyLLM::Tool
+    # 既定のツール名は名前空間込み（content_agent--fetch_url）になり、
+    # モデルが指示文中の短い名前で呼び出して失敗しやすいため短縮名に固定する
+    def name = "fetch_url"
+
     MAX_REDIRECTS = 3
     MAX_TEXT_LENGTH = 8_000
 

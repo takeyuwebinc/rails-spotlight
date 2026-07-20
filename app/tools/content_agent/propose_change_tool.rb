@@ -7,6 +7,10 @@ module ContentAgent
   # 掲載内容へ反映する。必須属性が不足している提案は保留変更を作らず
   # エラーを返すので、不足分を管理者にヒアリングしてから再提案すること。
   class ProposeChangeTool < RubyLLM::Tool
+    # 既定のツール名は名前空間込み（content_agent--propose_change）になり、
+    # モデルが指示文中の短い名前で呼び出して失敗しやすいため短縮名に固定する
+    def name = "propose_change"
+
     description "掲載内容への変更（新規作成・更新・公開/非公開切替）を提案する。" \
                 "実行してもデータベースは変更されず、管理者が画面で承認して初めて反映される。" \
                 "新規作成は必須属性（公開状態を含む）をすべて payload_json に含めること。" \

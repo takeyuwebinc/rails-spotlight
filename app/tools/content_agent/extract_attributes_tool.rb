@@ -6,6 +6,10 @@ module ContentAgent
   # 抽出用モデルで実行し、利用トークンは TaskUsage に記録して
   # 会話コスト概算に含める。
   class ExtractAttributesTool < RubyLLM::Tool
+    # 既定のツール名は名前空間込み（content_agent--extract_attributes）になり、
+    # モデルが指示文中の短い名前で呼び出して失敗しやすいため短縮名に固定する
+    def name = "extract_attributes"
+
     description "テキスト素材から掲載内容の属性候補（JSON）を抽出する。" \
                 "取得したページ本文や長いメモの整理に使う。結果は候補であり、" \
                 "不足・不確かな値は管理者に確認すること。"

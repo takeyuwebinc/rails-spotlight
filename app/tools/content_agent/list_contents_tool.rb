@@ -4,6 +4,10 @@ module ContentAgent
   # 掲載内容の一覧・検索（読み取り系）。データベースを変更しないため
   # 承認なしで自動実行してよい。
   class ListContentsTool < RubyLLM::Tool
+    # 既定のツール名は名前空間込み（content_agent--list_contents）になり、
+    # モデルが指示文中の短い名前で呼び出して失敗しやすいため短縮名に固定する
+    def name = "list_contents"
+
     description "掲載内容（Project/SpeakingEngagement/UsesItem/Slide）を一覧・検索する。" \
                 "keyword を指定するとタイトル・名前・説明の部分一致で絞り込む。"
 

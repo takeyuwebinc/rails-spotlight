@@ -6,6 +6,10 @@ module ContentAgent
   # Brave Search API による Web 検索（外部取得系）。イベント情報等の
   # 素材収集に使う。
   class WebSearchTool < RubyLLM::Tool
+    # 既定のツール名は名前空間込み（content_agent--web_search）になり、
+    # モデルが指示文中の短い名前で呼び出して失敗しやすいため短縮名に固定する
+    def name = "web_search"
+
     ENDPOINT = URI.parse("https://api.search.brave.com/res/v1/web/search").freeze
 
     description "Web を検索し、上位結果（タイトル・URL・概要）を返す。イベント情報等の素材収集に使う。"
