@@ -3,6 +3,14 @@
 require "rails_helper"
 
 RSpec.describe AdrManagement::Adr, type: :model do
+  describe "#display_number" do
+    it "uppercases the engagement code" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      adr = create(:adr_management_adr, engagement: engagement, number: 12)
+      expect(adr.display_number).to eq("FABBLE-12")
+    end
+  end
+
   describe "validations" do
     it "is valid with valid attributes" do
       adr = build(:adr_management_adr)

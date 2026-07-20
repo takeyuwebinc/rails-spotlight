@@ -167,7 +167,7 @@ RSpec.describe "AdrManagement Search Tools" do
         engagement_code: "fabble", number: adr.number, server_context: server_context
       ))
 
-      expect(text).to include("fabble-#{adr.number}: 認証方式の選定")
+      expect(text).to include("FABBLE-#{adr.number}: 認証方式の選定")
       expect(text).to include("コンテキスト本文", "決定本文", "結果本文", "代替案本文", "再評価条件本文")
       expect(text).to include("版履歴", "created", "oauth:Agent")
     end
@@ -195,6 +195,16 @@ RSpec.describe "AdrManagement Search Tools" do
         engagement_code: "fabble", number: old_adr.number, server_context: server_context
       ))
       expect(old_text).to include("この ADR を置き換えた決定", "新決定")
+    end
+
+    it "finds the engagement case-insensitively (uppercase display form)" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      adr = create(:adr_management_adr, engagement: engagement, title: "認証方式の選定")
+
+      text = response_text(described_class.call(
+        engagement_code: "FABBLE", number: adr.number, server_context: server_context
+      ))
+      expect(text).to include("FABBLE-#{adr.number}: 認証方式の選定")
     end
 
     it "returns master_not_found for an unknown number" do

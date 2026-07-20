@@ -28,7 +28,10 @@ module Tools
     end
 
     def find_engagement_or_error(code)
-      engagement = AdrManagement::Engagement.find_by(code: code)
+      # ADR 番号の表示は大文字（例: SPOTLIGHT-RAILS-12）のため、表示から
+      # 転記された大文字 code も受け付けられるよう大文字小文字を無視して照合する
+      engagement = AdrManagement::Engagement.find_by(code: code) ||
+        AdrManagement::Engagement.where("LOWER(code) = ?", code.to_s.downcase).first
       return engagement if engagement
 
       error_response(AdrManagement::OperationError.build(
@@ -40,9 +43,15 @@ module Tools
       ))
     end
 
+    # ADR オブジェクトが存在しない場面（未登録番号のエラー応答等）で
+    # 表示用の ADR 番号を組み立てる。存在する ADR には Adr#display_number を使う
+    def adr_number_label(engagement, number)
+      "#{engagement.code.upcase}-#{number}"
+    end
+
     def adr_summary_line(adr, relevance: nil)
       parts = [
-        "#{adr.engagement.code}-#{adr.number}",
+        adr.display_number,
         "[#{adr.status}/#{adr.confidence}]",
         adr.decided_on.to_s,
         adr.title

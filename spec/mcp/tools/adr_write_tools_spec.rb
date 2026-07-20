@@ -26,7 +26,7 @@ RSpec.describe "AdrManagement Write Tools" do
     it "registers an adr with an auto-issued number and records the origin" do
       text = response_text(described_class.call(**base_params))
 
-      expect(text).to include("registered successfully", "fabble-1")
+      expect(text).to include("registered successfully", "FABBLE-1")
       adr = engagement.adrs.sole
       expect(adr.status).to eq("accepted")
       expect(adr.revisions.sole.origin).to eq("oauth:Test Agent")
@@ -50,7 +50,7 @@ RSpec.describe "AdrManagement Write Tools" do
 
       text = response_text(described_class.call(**base_params, superseded_numbers: [ old_adr.number ]))
 
-      expect(text).to include("Superseded: fabble-#{old_adr.number}")
+      expect(text).to include("Superseded: FABBLE-#{old_adr.number}")
       expect(old_adr.reload.status).to eq("superseded")
     end
 

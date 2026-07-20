@@ -29,7 +29,7 @@ module Tools
         return error_response(AdrManagement::OperationError.build(
           kind: :master_not_found,
           param: "number",
-          message: "ADR #{engagement.code}-#{number} が存在しません",
+          message: "ADR #{adr_number_label(engagement, number)} が存在しません",
           next_action: "search_adrs_tool で対象案件の ADR 番号を確認してください"
         ))
       end
@@ -41,7 +41,7 @@ module Tools
 
     def self.format_adr(adr)
       sections = [
-        "# #{adr.engagement.code}-#{adr.number}: #{adr.title}",
+        "# #{adr.display_number}: #{adr.title}",
         "- Status: #{adr.status}",
         "- Confidence: #{adr.confidence}",
         "- Decided on: #{adr.decided_on}",

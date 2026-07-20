@@ -55,6 +55,12 @@ module AdrManagement
 
     scope :accepted, -> { where(status: "accepted") }
 
+    # ADR 番号の表示名（例: SPOTLIGHT-RAILS-12）。案件 code は照合用に
+    # 小文字で保持し、ADR 番号としての表示時のみ大文字にする。
+    def display_number
+      "#{engagement.code.upcase}-#{number}"
+    end
+
     def supersession_involved?
       supersessions_as_superseding.exists? || supersession_as_superseded.present?
     end

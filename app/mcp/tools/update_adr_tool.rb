@@ -50,7 +50,7 @@ module Tools
         return error_response(AdrManagement::OperationError.build(
           kind: :master_not_found,
           param: "number",
-          message: "ADR #{engagement.code}-#{number} が存在しません",
+          message: "ADR #{adr_number_label(engagement, number)} が存在しません",
           next_action: "search_adrs_tool で対象案件の ADR 番号を確認してください"
         ))
       end
@@ -96,7 +96,7 @@ module Tools
       updated = result.data
       text_response(
         "ADR updated successfully:\n" \
-        "- Number: #{engagement.code}-#{updated.number}\n" \
+        "- Number: #{updated.display_number}\n" \
         "- Title: #{updated.title}\n" \
         "- Status: #{updated.status}\n" \
         "- Updated fields: #{updates.keys.join(', ')}"

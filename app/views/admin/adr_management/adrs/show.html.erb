@@ -1,4 +1,4 @@
-<% content_for(:title) { "#{@adr.engagement.code}-#{@adr.number}: #{@adr.title}" } %>
+<% content_for(:title) { "#{@adr.display_number}: #{@adr.title}" } %>
 
 <div class="mb-6">
   <h1 class="text-2xl font-bold text-zinc-900"><%= @adr.engagement.code %>-<%= @adr.number %>: <%= @adr.title %></h1>
@@ -15,13 +15,13 @@
   <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
     <h2 class="text-sm font-medium text-amber-800 mb-2">置換変遷</h2>
     <% if @adr.superseding_adr %>
-      <p class="text-sm text-amber-800">この ADR は <%= link_to "#{@adr.engagement.code}-#{@adr.superseding_adr.number} #{@adr.superseding_adr.title}", admin_adr_management_adr_path(@adr.superseding_adr), class: "underline font-medium" %> に置き換えられています（そちらが現行の決定です）</p>
+      <p class="text-sm text-amber-800">この ADR は <%= link_to "#{@adr.superseding_adr.display_number} #{@adr.superseding_adr.title}", admin_adr_management_adr_path(@adr.superseding_adr), class: "underline font-medium" %> に置き換えられています（そちらが現行の決定です）</p>
     <% end %>
     <% if @adr.superseded_adrs.any? %>
       <p class="text-sm text-amber-800">この ADR が置き換えた決定:</p>
       <ul class="list-disc pl-5 text-sm text-amber-800">
         <% @adr.superseded_adrs.each do |old_adr| %>
-          <li><%= link_to "#{@adr.engagement.code}-#{old_adr.number} #{old_adr.title}", admin_adr_management_adr_path(old_adr), class: "underline" %></li>
+          <li><%= link_to "#{old_adr.display_number} #{old_adr.title}", admin_adr_management_adr_path(old_adr), class: "underline" %></li>
         <% end %>
       </ul>
     <% end %>

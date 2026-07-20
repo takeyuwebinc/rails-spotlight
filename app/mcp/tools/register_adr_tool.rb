@@ -117,13 +117,13 @@ module Tools
 
       adr = result.data
       superseded_note = if adr.superseded_adrs.any?
-        "\n- Superseded: #{adr.superseded_adrs.map { |old| "#{adr.engagement.code}-#{old.number}" }.join(', ')}"
+        "\n- Superseded: #{adr.superseded_adrs.map(&:display_number).join(', ')}"
       else
         ""
       end
       text_response(
         "ADR registered successfully:\n" \
-        "- Number: #{adr.engagement.code}-#{adr.number}\n" \
+        "- Number: #{adr.display_number}\n" \
         "- Title: #{adr.title}\n" \
         "- Status: #{adr.status}#{superseded_note}"
       )

@@ -78,7 +78,7 @@
       <% @supersession_candidates.each do |candidate| %>
         <label class="flex items-center gap-2 text-sm text-zinc-700 py-1">
           <%= check_box_tag "superseded_numbers[]", candidate.number, false, id: "superseded_number_#{candidate.number}", class: "rounded border-zinc-300" %>
-          <%= @engagement.code %>-<%= candidate.number %> <%= candidate.title %>
+          <%= candidate.display_number %> <%= candidate.title %>
         </label>
       <% end %>
     </div>
