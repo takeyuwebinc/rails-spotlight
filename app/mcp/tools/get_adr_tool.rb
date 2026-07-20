@@ -55,6 +55,7 @@ module Tools
       sections << "## 再評価条件\n#{adr.reevaluation_conditions}" if adr.reevaluation_conditions.present?
       sections << "## 参考資料\n#{adr.reference_links}" if adr.reference_links.present?
       sections << supersession_section(adr)
+      sections << checks_section(adr)
       sections << revisions_section(adr)
       sections.compact.join("\n\n")
     end
@@ -72,6 +73,17 @@ module Tools
       return nil if lines.empty?
 
       "## 置換変遷\n#{lines.join("\n")}"
+    end
+
+    def self.checks_section(adr)
+      checks = adr.reevaluation_checks.recent_first.limit(5)
+      return nil if checks.empty?
+
+      lines = checks.map do |check|
+        note = check.note.present? ? " — #{check.note}" : ""
+        "- #{check.checked_on} #{check.result} (origin: #{check.origin})#{note}"
+      end
+      "## 再評価点検（新しい順、最大5件）\n#{lines.join("\n")}"
     end
 
     def self.revisions_section(adr)

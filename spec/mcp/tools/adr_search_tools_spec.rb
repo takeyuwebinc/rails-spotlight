@@ -228,6 +228,29 @@ RSpec.describe "AdrManagement Search Tools" do
       expect(text).to include("FABBLE-#{adr.number}: 認証方式の選定")
       expect(text).to include("コンテキスト本文", "決定本文", "結果本文", "代替案本文", "再評価条件本文")
       expect(text).to include("版履歴", "created", "oauth:Agent")
+      expect(text).not_to include("再評価点検")
+    end
+
+    it "shows reevaluation checks newest first, capped at 5" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      adr = create(:adr_management_adr, engagement: engagement,
+        reevaluation_conditions: "条件")
+      6.times do |i|
+        create(:adr_management_reevaluation_check, adr: adr,
+          checked_on: Date.new(2026, 7, 1) + i, result: "no_trigger")
+      end
+      create(:adr_management_reevaluation_check, adr: adr,
+        checked_on: Date.new(2026, 7, 10), result: "suspected", note: "無償枠改定を観測")
+
+      text = response_text(described_class.call(
+        engagement_code: "fabble", number: adr.number, server_context: server_context
+      ))
+
+      expect(text).to include("再評価点検（新しい順、最大5件）")
+      expect(text).to include("2026-07-10 suspected", "無償枠改定を観測")
+      expect(text.index("2026-07-10")).to be < text.index("2026-07-06")
+      expect(text.scan(/no_trigger/).size).to eq(4)
+      expect(text).not_to include("2026-07-01 no_trigger")
     end
 
     it "shows the supersession chain in both directions" do
