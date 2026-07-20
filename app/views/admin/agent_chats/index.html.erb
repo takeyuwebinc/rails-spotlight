@@ -1,0 +1,29 @@
+<% content_for :title, "エージェント" %>
+
+<div class="mx-auto max-w-4xl">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">掲載内容管理エージェント</h1>
+    <%= button_to "新しい会話", admin_agent_chats_path,
+        class: "rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500" %>
+  </div>
+
+  <% if @chats.empty? %>
+    <p class="text-zinc-500">まだ会話がありません。「新しい会話」から始めてください。</p>
+  <% else %>
+    <ul class="divide-y divide-zinc-200 dark:divide-zinc-700 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800">
+      <% @chats.each do |chat| %>
+        <li>
+          <%= link_to admin_agent_chat_path(chat),
+              class: "flex items-center justify-between px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-700" do %>
+            <span class="truncate text-zinc-900 dark:text-zinc-100">
+              <%= chat.title.presence || "（無題の会話）" %>
+            </span>
+            <span class="ml-4 shrink-0 text-sm text-zinc-500">
+              <%= chat.updated_at.strftime("%Y-%m-%d %H:%M") %>
+            </span>
+          <% end %>
+        </li>
+      <% end %>
+    </ul>
+  <% end %>
+</div>

@@ -1,0 +1,50 @@
+<% content_for :title, @chat.title.presence || "エージェント" %>
+<%= turbo_stream_from "content_agent_chat_#{@chat.id}" %>
+
+<div class="mx-auto max-w-3xl">
+  <div class="flex items-center justify-between mb-6">
+    <div>
+      <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+        <%= @chat.title.presence || "（無題の会話）" %>
+      </h1>
+    </div>
+    <%= link_to "会話一覧へ", admin_agent_chats_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
+  </div>
+
+  <div id="chat_messages" class="space-y-3 mb-4">
+    <% @messages.each do |message| %>
+      <%= render "message", message: message %>
+      <% (@pending_changes_by_message[message.id] || []).each do |pending_change| %>
+        <%= render "pending_change", pending_change: pending_change %>
+      <% end %>
+    <% end %>
+    <% (@pending_changes_by_message[nil] || []).each do |pending_change| %>
+      <%= render "pending_change", pending_change: pending_change %>
+    <% end %>
+  </div>
+
+  <div id="agent_streaming" class="mb-4">
+    <div id="agent_streaming_content"
+         class="whitespace-pre-wrap text-sm text-zinc-600 dark:text-zinc-300 empty:hidden rounded-lg border border-dashed border-zinc-300 dark:border-zinc-600 [&:not(:empty)]:p-3"></div>
+  </div>
+
+  <% if @chat.last_error.present? %>
+    <div class="mb-4 rounded-lg border border-red-300 bg-red-50 dark:bg-red-900/30 dark:border-red-700 p-4">
+      <p class="text-sm text-red-800 dark:text-red-200 mb-3"><%= @chat.last_error %></p>
+      <div class="flex gap-3">
+        <%= button_to "再送", admin_agent_chat_resend_path(@chat),
+            class: "rounded-md bg-red-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-red-500" %>
+        <%= button_to "新しい会話を開始", admin_agent_chats_path,
+            class: "rounded-md border border-red-300 px-3 py-1.5 text-sm font-medium text-red-700 dark:text-red-200 hover:bg-red-100" %>
+      </div>
+    </div>
+  <% end %>
+
+  <%= form_with url: admin_agent_chat_messages_path(@chat), method: :post, class: "flex gap-2" do |form| %>
+    <%= form.text_area "message[content]", rows: 2, required: true,
+        placeholder: "例: 昨日の登壇を登録して / このURLのイベントを登録して",
+        class: "flex-1 rounded-md border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 px-3 py-2 text-sm" %>
+    <%= form.submit "送信",
+        class: "self-end rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500 cursor-pointer" %>
+  <% end %>
+</div>

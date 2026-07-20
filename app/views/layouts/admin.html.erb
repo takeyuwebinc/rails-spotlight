@@ -38,6 +38,8 @@
                     class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.start_with?('/admin/adr/engagements') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
                 <%= link_to "ADRクライアント", admin_adr_management_clients_path,
                     class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.start_with?('/admin/adr/clients') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
+                <%= link_to "エージェント", admin_agent_chats_path,
+                    class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.start_with?('/admin/agent_chats') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
               </div>
             </div>
             <div class="flex items-center gap-4">
