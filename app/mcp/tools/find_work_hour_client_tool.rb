@@ -48,15 +48,15 @@ module Tools
 
     def self.find_client(query)
       # 1. Exact code match
-      client = WorkHour::Client.find_by(code: query)
+      client = WorkHour::Client.find_by_code(query)
       return client if client
 
       # 2. Partial code match (prefix)
-      client = WorkHour::Client.where("code LIKE ?", "#{query}%").first
+      client = WorkHour::Client.joins(:shared_client).where("clients.code LIKE ?", "#{query}%").first
       return client if client
 
       # 3. Name partial match
-      WorkHour::Client.where("name LIKE ?", "%#{query}%").first
+      WorkHour::Client.joins(:shared_client).where("clients.name LIKE ?", "%#{query}%").first
     end
   end
 end

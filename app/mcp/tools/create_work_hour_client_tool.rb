@@ -20,7 +20,7 @@ module Tools
 
     def self.call(code:, name:, server_context:)
       # Check for duplicate code
-      if WorkHour::Client.exists?(code: code)
+      if WorkHour::Client.joins(:shared_client).exists?(clients: { code: code })
         return MCP::Tool::Response.new([ {
           type: "text",
           text: "Error: Client with code '#{code}' already exists."
