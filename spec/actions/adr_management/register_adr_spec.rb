@@ -135,5 +135,20 @@ RSpec.describe AdrManagement::RegisterAdr do
       expect(error.kind).to eq(:invalid_input)
       expect(error.param).to eq("title")
     end
+
+    it "allows proposed as the initial status" do
+      result = register(attributes: attributes.merge(status: "proposed"))
+      expect(result).to be_success
+    end
+
+    %w[rejected deprecated superseded].each do |status|
+      it "rejects #{status} as the initial status" do
+        result = register(attributes: attributes.merge(status: status))
+
+        expect(result).to be_failure
+        expect(result.errors.first.kind).to eq(:invalid_input)
+        expect(result.errors.first.param).to eq("status")
+      end
+    end
   end
 end

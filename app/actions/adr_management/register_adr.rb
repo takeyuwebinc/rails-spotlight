@@ -16,7 +16,15 @@ module AdrManagement
       @superseded_numbers = Array(superseded_numbers)
     end
 
+    # 登録時に指定できる初期ステータス。rejected/deprecated/superseded は
+    # 既存の決定の状態遷移によってのみ到達する
+    INITIAL_STATUSES = %w[proposed accepted].freeze
+
     def perform
+      if (error = validate_initial_status)
+        return failure(error)
+      end
+
       superseded_adrs = find_superseded_adrs
       if (error = validate_supersession(superseded_adrs))
         return failure(error)
@@ -30,6 +38,18 @@ module AdrManagement
     end
 
     private
+
+    def validate_initial_status
+      status = @attributes[:status]&.to_s
+      return nil if status.blank? || INITIAL_STATUSES.include?(status)
+
+      OperationError.build(
+        kind: :invalid_input,
+        param: "status",
+        message: "登録時のステータスは proposed（提案中）または accepted（承認済み）のみ指定できます",
+        next_action: "過去に下した決定の記録なら accepted、これからの提案なら proposed を指定してください"
+      )
+    end
 
     def find_superseded_adrs
       @superseded_numbers.map do |number|

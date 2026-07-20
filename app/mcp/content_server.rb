@@ -36,7 +36,22 @@ class ContentServer
         Tools::CreateWorkHourEstimateTool,
         # WorkHour Entry tools
         Tools::ListWorkHourEntriesTool,
-        Tools::CreateWorkHourEntryTool
+        Tools::CreateWorkHourEntryTool,
+        # ADR management master tools
+        Tools::ListAdrClientsTool,
+        Tools::FindAdrClientTool,
+        Tools::CreateAdrClientTool,
+        Tools::ListAdrEngagementsTool,
+        Tools::FindAdrEngagementTool,
+        Tools::CreateAdrEngagementTool,
+        Tools::ListAdrProjectsTool,
+        Tools::FindAdrProjectTool,
+        Tools::CreateAdrProjectTool,
+        # ADR tools
+        Tools::SearchAdrsTool,
+        Tools::GetAdrTool,
+        Tools::RegisterAdrTool,
+        Tools::UpdateAdrTool
       ],
       server_context: { origin: origin }
     )
