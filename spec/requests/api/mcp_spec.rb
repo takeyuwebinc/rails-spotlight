@@ -61,6 +61,18 @@ RSpec.describe "Api::Mcp", type: :request do
           )
         end
       end
+
+      context "origin injection" do
+        let(:request_body) { { jsonrpc: "2.0", method: "initialize", id: 1 }.to_json }
+
+        it "injects the legacy token origin into the server context" do
+          allow(ContentServer).to receive(:create).and_call_original
+
+          post api_mcp_path, params: request_body, headers: headers
+
+          expect(ContentServer).to have_received(:create).with(origin: "legacy-token")
+        end
+      end
     end
 
     context "with invalid authentication" do
@@ -149,6 +161,14 @@ RSpec.describe "Api::Mcp", type: :request do
           json_response = JSON.parse(response.body)
           expect(json_response["jsonrpc"]).to eq("2.0")
           expect(json_response["result"]["serverInfo"]["name"]).to eq("spotlight-rails")
+        end
+
+        it "injects the OAuth application name as origin into the server context" do
+          allow(ContentServer).to receive(:create).and_call_original
+
+          post api_mcp_path, params: request_body, headers: headers
+
+          expect(ContentServer).to have_received(:create).with(origin: "oauth:Test MCP Client")
         end
       end
 

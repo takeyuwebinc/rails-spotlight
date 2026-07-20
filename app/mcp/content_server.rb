@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class ContentServer
-  def self.create
+  # origin: このリクエストの更新経路（どの認証主体からの操作か）。
+  # ADR の版履歴などの記録処理が server_context 経由で参照する。
+  def self.create(origin: nil)
     MCP::Server.new(
       name: "spotlight-rails",
       version: "1.5.0",
@@ -36,7 +38,7 @@ class ContentServer
         Tools::ListWorkHourEntriesTool,
         Tools::CreateWorkHourEntryTool
       ],
-      server_context: {}
+      server_context: { origin: origin }
     )
   end
 end
