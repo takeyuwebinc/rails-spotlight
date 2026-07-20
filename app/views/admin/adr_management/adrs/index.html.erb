@@ -1,0 +1,57 @@
+<% content_for(:title) { "ADR一覧" } %>
+
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900">ADR一覧</h1>
+  <%= link_to "新規登録", new_admin_adr_management_adr_path, class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+</div>
+
+<div class="bg-white shadow rounded-lg p-4 mb-6">
+  <%= form_with(url: admin_adr_management_adrs_path, method: :get, class: "flex flex-wrap items-end gap-4") do |form| %>
+    <div>
+      <%= form.label :engagement_id, "案件", class: "block text-xs font-medium text-zinc-500" %>
+      <%= form.collection_select :engagement_id, @engagements, :id, :name, { include_blank: "すべて", selected: params[:engagement_id] }, class: "mt-1 rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+    </div>
+    <div>
+      <%= form.label :status, "ステータス", class: "block text-xs font-medium text-zinc-500" %>
+      <%= form.select :status, ::AdrManagement::Adr::STATUSES.map { |s| [ adr_status_label(s), s ] }, { include_blank: "すべて", selected: params[:status] }, class: "mt-1 rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+    </div>
+    <div class="grow max-w-xs">
+      <%= form.label :keyword, "キーワード", class: "block text-xs font-medium text-zinc-500" %>
+      <%= form.text_field :keyword, value: params[:keyword], placeholder: "タイトル・本文の部分一致", class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm sm:text-sm" %>
+    </div>
+    <%= form.submit "絞り込み", class: "rounded-md bg-zinc-700 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-zinc-600 cursor-pointer" %>
+    <%= link_to "クリア", admin_adr_management_adrs_path, class: "text-sm text-zinc-500 hover:text-zinc-700" %>
+  <% end %>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <table class="min-w-full divide-y divide-zinc-200">
+    <thead class="bg-zinc-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">番号</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">タイトル</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">案件</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">ステータス</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">信頼度</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">決定日</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-zinc-200">
+      <% @adrs.each do |adr| %>
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><%= link_to adr.display_number, admin_adr_management_adr_path(adr), class: "text-indigo-600 hover:text-indigo-900" %></td>
+          <td class="px-6 py-4 text-sm text-zinc-900"><%= adr.title %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500"><%= adr.engagement.name %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500"><%= adr_status_label(adr.status) %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500"><%= adr_confidence_label(adr.confidence) %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500"><%= adr.decided_on %></td>
+        </tr>
+      <% end %>
+      <% if @adrs.empty? %>
+        <tr>
+          <td colspan="6" class="px-6 py-4 text-center text-sm text-zinc-500">ADR がありません</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

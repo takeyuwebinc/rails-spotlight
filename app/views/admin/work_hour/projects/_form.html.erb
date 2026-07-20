@@ -29,7 +29,7 @@
 
     <div>
       <%= form.label :client_id, "クライアント", class: "block text-sm font-medium text-zinc-700" %>
-      <%= form.collection_select :client_id, ::WorkHour::Client.order(:name), :id, :name, { include_blank: "選択してください" }, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+      <%= form.collection_select :client_id, ::WorkHour::Client.ordered_by_name, :id, :name, { include_blank: "選択してください" }, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
     </div>
 
     <div>

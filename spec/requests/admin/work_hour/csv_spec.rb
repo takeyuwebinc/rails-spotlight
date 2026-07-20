@@ -65,7 +65,7 @@ RSpec.describe "Admin::WorkHour::Csv", type: :request do
                params: { file: file }
         }.to change(::WorkHour::Client, :count).by(1)
 
-        client = ::WorkHour::Client.find_by(name: "テストクライアント")
+        client = ::WorkHour::Client.joins(:shared_client).find_by(clients: { name: "テストクライアント" })
         expect(client).to be_present
       end
 

@@ -20,7 +20,7 @@ module Tools
     )
 
     def self.call(status: "all", client_code: nil, server_context:)
-      projects = WorkHour::Project.includes(:client)
+      projects = WorkHour::Project.includes(client: :shared_client)
 
       # Filter by status
       case status
@@ -32,7 +32,7 @@ module Tools
 
       # Filter by client
       if client_code.present?
-        client = WorkHour::Client.find_by(code: client_code)
+        client = WorkHour::Client.find_by_code(client_code)
         projects = projects.where(client: client) if client
       end
 

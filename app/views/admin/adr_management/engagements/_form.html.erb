@@ -1,0 +1,39 @@
+<%= form_with(model: @engagement, url: @engagement.new_record? ? admin_adr_management_engagements_path : admin_adr_management_engagement_path(@engagement), class: "space-y-6") do |form| %>
+  <% if @engagement.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4">
+      <div class="text-sm text-red-700">
+        <ul class="list-disc space-y-1 pl-5">
+          <% @engagement.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :client_id, "クライアント", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.collection_select :client_id, ::AdrManagement::Client.ordered_by_name, :id, :name, { include_blank: "選択してください" }, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div>
+    <%= form.label :code, "コード", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_field :code, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "例: fabble" %>
+    <p class="mt-1 text-xs text-zinc-500">Coding Agent がリポジトリから案件を特定するキーです</p>
+  </div>
+
+  <div>
+    <%= form.label :name, "名前", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_field :name, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm", placeholder: "例: Fabble" %>
+  </div>
+
+  <div>
+    <%= form.label :description, "説明", class: "block text-sm font-medium text-zinc-700" %>
+    <%= form.text_area :description, rows: 3, class: "mt-1 block w-full rounded-md border-zinc-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm" %>
+  </div>
+
+  <div class="flex justify-end space-x-3">
+    <%= link_to "キャンセル", admin_adr_management_engagements_path, class: "rounded-md bg-white px-3 py-2 text-sm font-semibold text-zinc-900 shadow-sm ring-1 ring-inset ring-zinc-300 hover:bg-zinc-50" %>
+    <%= form.submit @engagement.new_record? ? "作成" : "更新", class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 cursor-pointer" %>
+  </div>
+<% end %>

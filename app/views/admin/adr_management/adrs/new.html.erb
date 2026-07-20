@@ -1,0 +1,12 @@
+<% content_for(:title) { "ADR登録" } %>
+
+<div class="mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900">ADR登録</h1>
+  <% if @engagement %>
+    <p class="text-sm text-zinc-500">案件: <%= @engagement.name %>（番号は自動採番されます）</p>
+  <% end %>
+</div>
+
+<div class="bg-white shadow rounded-lg p-6">
+  <%= render "form" %>
+</div>

@@ -1,0 +1,36 @@
+<% content_for(:title) { "ADR案件一覧" } %>
+
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900">ADR案件一覧</h1>
+  <%= link_to "新規作成", new_admin_adr_management_engagement_path, class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500" %>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden">
+  <table class="min-w-full divide-y divide-zinc-200">
+    <thead class="bg-zinc-50">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">コード</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">名前</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-zinc-500 uppercase tracking-wider">クライアント</th>
+        <th class="px-6 py-3 text-right text-xs font-medium text-zinc-500 uppercase tracking-wider">操作</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white divide-y divide-zinc-200">
+      <% @engagements.each do |engagement| %>
+        <tr>
+          <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><%= link_to engagement.code, admin_adr_management_engagement_path(engagement), class: "text-indigo-600 hover:text-indigo-900" %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-900"><%= engagement.name %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-sm text-zinc-500"><%= engagement.client.name %></td>
+          <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+            <%= link_to "編集", edit_admin_adr_management_engagement_path(engagement), class: "text-indigo-600 hover:text-indigo-900" %>
+          </td>
+        </tr>
+      <% end %>
+      <% if @engagements.empty? %>
+        <tr>
+          <td colspan="4" class="px-6 py-4 text-center text-sm text-zinc-500">案件がありません</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>

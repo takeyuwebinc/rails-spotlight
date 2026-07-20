@@ -48,7 +48,7 @@ module Tools
       # Find client if specified
       client = nil
       if client_code.present?
-        client = WorkHour::Client.find_by(code: client_code)
+        client = WorkHour::Client.find_by_code(client_code)
         unless client
           return MCP::Tool::Response.new([ {
             type: "text",

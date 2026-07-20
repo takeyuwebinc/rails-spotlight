@@ -7,7 +7,7 @@ module Api
 
     def handle
       # Create MCP server instance with OAuth user context
-      server = ContentServer.create
+      server = ContentServer.create(origin: request_origin)
 
       # Handle the JSON-RPC request
       response = server.handle_json(request.raw_post)
@@ -30,6 +30,17 @@ module Api
     end
 
     private
+
+    # 更新経路（版履歴の origin）。どの OAuth アプリケーション（Agent）からの
+    # 操作かを識別できる形式で返す。レガシー静的トークン認証は
+    # アプリケーションを識別できないため固定値とする。
+    def request_origin
+      if @doorkeeper_token
+        "oauth:#{@doorkeeper_token.application&.name || 'unknown'}"
+      else
+        "legacy-token"
+      end
+    end
 
     def authenticate_mcp_request
       # Try OAuth token first (Doorkeeper)

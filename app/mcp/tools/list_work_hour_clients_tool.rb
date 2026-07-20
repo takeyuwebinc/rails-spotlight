@@ -10,7 +10,7 @@ module Tools
     )
 
     def self.call(server_context:)
-      clients = WorkHour::Client.includes(:projects).order(:code)
+      clients = WorkHour::Client.includes(:projects).ordered_by_code
 
       if clients.any?
         client_list = clients.map do |client|

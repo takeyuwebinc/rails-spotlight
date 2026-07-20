@@ -1,11 +1,13 @@
 # frozen_string_literal: true
 
 module WorkHour
+  # 工数管理ドメインにおける取引先の拡張。識別属性（code・name）は
+  # ドメイン横断の共有クライアント（Client）が保持し、本モデルは
+  # 共有クライアントへの参照とドメイン固有の関連（projects）のみを持つ。
   class Client < ApplicationRecord
-    has_many :projects, class_name: "WorkHour::Project", dependent: :nullify
+    include SharedClientExtension
 
-    validates :code, presence: true, uniqueness: true
-    validates :name, presence: true
+    has_many :projects, class_name: "WorkHour::Project", dependent: :nullify
 
     def self.generate_code_from_name(name)
       return "" if name.blank?

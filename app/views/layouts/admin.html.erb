@@ -32,6 +32,12 @@
                     class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.include?('clients') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
                 <%= link_to "CSV", admin_work_hour_csv_index_path,
                     class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.include?('csv') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
+                <%= link_to "ADR", admin_adr_management_adrs_path,
+                    class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.start_with?('/admin/adr/adrs') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
+                <%= link_to "ADR案件", admin_adr_management_engagements_path,
+                    class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.start_with?('/admin/adr/engagements') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
+                <%= link_to "ADRクライアント", admin_adr_management_clients_path,
+                    class: "rounded-md px-3 py-2 text-sm font-medium #{request.path.start_with?('/admin/adr/clients') ? 'bg-zinc-900 text-white' : 'text-zinc-300 hover:bg-zinc-700 hover:text-white'}" %>
               </div>
             </div>
             <div class="flex items-center gap-4">

@@ -97,7 +97,7 @@ module WorkHour
       def find_or_create_client(name)
         return nil if name.blank?
 
-        client = ::WorkHour::Client.find_by(name: name)
+        client = ::WorkHour::Client.joins(:shared_client).find_by(clients: { name: name })
         return client if client
 
         code = ::WorkHour::Client.generate_code_from_name(name)

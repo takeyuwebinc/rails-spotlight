@@ -6,7 +6,7 @@ module Admin
       before_action :set_client, only: %i[show edit update destroy]
 
       def index
-        @clients = ::WorkHour::Client.order(:name)
+        @clients = ::WorkHour::Client.ordered_by_name
       end
 
       def show

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_18_044021) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,93 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_18_044021) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "adr_management_adr_chunks", force: :cascade do |t|
+    t.integer "adr_id", null: false
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.binary "embedding"
+    t.string "kind", null: false
+    t.string "state", default: "stale", null: false
+    t.datetime "updated_at", null: false
+    t.index ["adr_id"], name: "index_adr_management_adr_chunks_on_adr_id"
+    t.index ["state"], name: "index_adr_management_adr_chunks_on_state"
+  end
+
+  create_table "adr_management_adr_revisions", force: :cascade do |t|
+    t.integer "adr_id", null: false
+    t.string "change_type", null: false
+    t.json "changed_fields"
+    t.datetime "created_at", null: false
+    t.string "origin", null: false
+    t.json "snapshot"
+    t.index ["adr_id"], name: "index_adr_management_adr_revisions_on_adr_id"
+  end
+
+  create_table "adr_management_adrs", force: :cascade do |t|
+    t.text "alternatives"
+    t.string "confidence", null: false
+    t.text "consequences", null: false
+    t.text "context", null: false
+    t.datetime "created_at", null: false
+    t.date "decided_on", null: false
+    t.text "decision", null: false
+    t.integer "engagement_id", null: false
+    t.integer "number", null: false
+    t.integer "project_id"
+    t.text "reevaluation_conditions"
+    t.text "reference_links"
+    t.string "status", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["engagement_id", "number"], name: "idx_adr_management_adrs_on_engagement_and_number", unique: true
+    t.index ["project_id"], name: "index_adr_management_adrs_on_project_id"
+  end
+
+  create_table "adr_management_clients", force: :cascade do |t|
+    t.integer "client_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_adr_management_clients_on_client_id", unique: true
+  end
+
+  create_table "adr_management_engagements", force: :cascade do |t|
+    t.integer "client_id", null: false
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.integer "max_issued_number", default: 0, null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_adr_management_engagements_on_client_id"
+    t.index ["code"], name: "index_adr_management_engagements_on_code", unique: true
+  end
+
+  create_table "adr_management_projects", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.date "end_date"
+    t.integer "engagement_id", null: false
+    t.string "name", null: false
+    t.date "start_date"
+    t.datetime "updated_at", null: false
+    t.index ["engagement_id"], name: "index_adr_management_projects_on_engagement_id"
+  end
+
+  create_table "adr_management_supersessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "superseded_adr_id", null: false
+    t.integer "superseding_adr_id", null: false
+    t.index ["superseded_adr_id"], name: "idx_adr_management_supersessions_on_superseded", unique: true
+    t.index ["superseding_adr_id"], name: "idx_adr_management_supersessions_on_superseding"
+  end
+
+  create_table "clients", force: :cascade do |t|
+    t.string "code", null: false
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code"], name: "index_clients_on_code", unique: true
   end
 
   create_table "link_metadata", force: :cascade do |t|
@@ -195,11 +282,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_18_044021) do
   end
 
   create_table "work_hour_clients", force: :cascade do |t|
-    t.string "code", null: false
+    t.integer "client_id", null: false
     t.datetime "created_at", null: false
-    t.string "name", null: false
     t.datetime "updated_at", null: false
-    t.index ["code"], name: "index_work_hour_clients_on_code", unique: true
+    t.index ["client_id"], name: "index_work_hour_clients_on_client_id", unique: true
   end
 
   create_table "work_hour_project_monthly_estimates", force: :cascade do |t|

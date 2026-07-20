@@ -84,6 +84,13 @@ Rails.application.routes.draw do
         end
       end
     end
+    namespace :adr_management, path: "adr" do
+      resources :clients
+      resources :engagements do
+        resources :projects, except: %i[show]
+      end
+      resources :adrs
+    end
   end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

@@ -6,7 +6,7 @@ module Admin
       before_action :set_project, only: %i[show edit update destroy]
 
       def index
-        @projects = ::WorkHour::Project.includes(:client).order(:name)
+        @projects = ::WorkHour::Project.includes(client: :shared_client).order(:name)
         actual_minutes = ::WorkHour::WorkEntry.total_minutes_by_project
         @budget_consumptions = @projects.to_h do |project|
           [ project.id, ::WorkHour::BudgetConsumption.new(budget_hours: project.budget_hours, actual_minutes: actual_minutes[project.id]) ]
