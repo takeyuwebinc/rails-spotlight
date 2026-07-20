@@ -12,7 +12,10 @@ module Tools
                 "Omit engagement_code to search across all engagements. " \
                 "Returns summaries; use get_adr_tool to read the full text. " \
                 "Embedding-based search is weak against paraphrasing: run multiple phrasings and " \
-                "combine with keyword search before concluding nothing is relevant."
+                "combine with keyword search before concluding nothing is relevant. " \
+                "For periodic reevaluation review, use unchecked_for_days / check_result WITHOUT query " \
+                "(combine with status: accepted): the natural language path truncates to the top-scored " \
+                "results before filtering and is not exhaustive."
 
     input_schema(
       properties: {
@@ -50,6 +53,18 @@ module Tools
           type: "string",
           description: "Filter: decided on or before this date (YYYY-MM-DD)"
         },
+        unchecked_for_days: {
+          type: "integer",
+          description: "Filter: ADRs with reevaluation conditions and no reevaluation check " \
+                       "newer than N days (includes never-checked ADRs; a check exactly N days " \
+                       "ago counts as due). Must be 1 or greater"
+        },
+        check_result: {
+          type: "string",
+          enum: AdrManagement::ReevaluationCheck::RESULTS,
+          description: "Filter: ADRs whose latest reevaluation check has this result " \
+                       "(use suspected to collect pending trigger observations)"
+        },
         limit: {
           type: "integer",
           description: "Maximum number of results (default #{DEFAULT_LIMIT}, max #{MAX_LIMIT})"
@@ -60,7 +75,7 @@ module Tools
 
     def self.call(query: nil, keyword: nil, engagement_code: nil, project_name: nil,
                   status: nil, confidence: nil, decided_after: nil, decided_before: nil,
-                  limit: nil, server_context:)
+                  unchecked_for_days: nil, check_result: nil, limit: nil, server_context:)
       engagement = nil
       if engagement_code.present?
         engagement = find_engagement_or_error(engagement_code)
@@ -72,9 +87,19 @@ module Tools
       before_date, error = parse_date_or_error(decided_before, "decided_before")
       return error if error
 
+      if unchecked_for_days && unchecked_for_days < 1
+        return error_response(AdrManagement::OperationError.build(
+          kind: :invalid_input,
+          param: "unchecked_for_days",
+          message: "unchecked_for_days には1以上の日数を指定してください: #{unchecked_for_days}",
+          next_action: "点検期限の日数（例: 30）を指定してください"
+        ))
+      end
+
       limit = (limit || DEFAULT_LIMIT).clamp(1, MAX_LIMIT)
       filters = { engagement: engagement, project_name: project_name, status: status,
-                  confidence: confidence, after: after_date, before: before_date }
+                  confidence: confidence, after: after_date, before: before_date,
+                  unchecked_for_days: unchecked_for_days, check_result: check_result }
 
       if query.present?
         natural_language_search(query, filters, limit)
@@ -135,6 +160,15 @@ module Tools
       if filters[:project_name].present?
         adrs = adrs.joins(:project).where(adr_management_projects: { name: filters[:project_name] })
       end
+      if filters[:unchecked_for_days]
+        # 条件を持たない ADR は点検登録が不可のため対象外にする。含めると
+        # 永久に「未点検」でマッチし続け、点検による差分消化が収束しない
+        adrs = adrs.where.not(reevaluation_conditions: [ nil, "" ])
+          .where.not(id: AdrManagement::ReevaluationCheck.adr_ids_checked_within(filters[:unchecked_for_days]))
+      end
+      if filters[:check_result].present?
+        adrs = adrs.where(id: AdrManagement::ReevaluationCheck.adr_ids_with_latest_result(filters[:check_result]))
+      end
       adrs
     end
 
@@ -144,6 +178,23 @@ module Tools
       return false if filters[:after] && adr.decided_on < filters[:after]
       return false if filters[:before] && adr.decided_on > filters[:before]
       return false if filters[:project_name].present? && adr.project&.name != filters[:project_name]
+      return false unless matches_check_filters?(adr, filters)
+
+      true
+    end
+
+    def self.matches_check_filters?(adr, filters)
+      if filters[:unchecked_for_days]
+        return false if adr.reevaluation_conditions.blank?
+
+        cutoff = Date.current - filters[:unchecked_for_days]
+        return false if adr.reevaluation_checks.any? { |check| check.checked_on > cutoff }
+      end
+
+      if filters[:check_result].present?
+        latest = adr.reevaluation_checks.max_by { |check| [ check.checked_on, check.id ] }
+        return false unless latest&.result == filters[:check_result]
+      end
 
       true
     end

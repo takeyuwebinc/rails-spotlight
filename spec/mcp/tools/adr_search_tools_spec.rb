@@ -145,6 +145,64 @@ RSpec.describe "AdrManagement Search Tools" do
       end
     end
 
+    describe "reevaluation check filters" do
+      it "unchecked_for_days returns due ADRs including never-checked, treating exactly N days ago as due" do
+        never_checked = create(:adr_management_adr, title: "未点検の決定",
+          reevaluation_conditions: "条件A")
+        due = create(:adr_management_adr, title: "期限切れの決定",
+          reevaluation_conditions: "条件B")
+        create(:adr_management_reevaluation_check, adr: due, checked_on: Date.current - 30)
+        fresh = create(:adr_management_adr, title: "点検済みの決定",
+          reevaluation_conditions: "条件C")
+        create(:adr_management_reevaluation_check, adr: fresh, checked_on: Date.current - 29)
+        create(:adr_management_adr, title: "条件なしの決定", reevaluation_conditions: nil)
+
+        text = response_text(described_class.call(unchecked_for_days: 30, server_context: server_context))
+
+        expect(text).to include(never_checked.title, due.title)
+        expect(text).not_to include(fresh.title, "条件なしの決定")
+      end
+
+      it "rejects unchecked_for_days below 1" do
+        text = response_text(described_class.call(unchecked_for_days: 0, server_context: server_context))
+        expect(text).to include("種別: invalid_input", "unchecked_for_days")
+      end
+
+      it "check_result matches on the latest check only" do
+        resolved = create(:adr_management_adr, title: "解消済みの疑い",
+          reevaluation_conditions: "条件")
+        create(:adr_management_reevaluation_check, adr: resolved,
+          checked_on: Date.current - 10, result: "suspected", note: "観測")
+        create(:adr_management_reevaluation_check, adr: resolved,
+          checked_on: Date.current - 1, result: "no_trigger")
+        pending_adr = create(:adr_management_adr, title: "発火疑いの決定",
+          reevaluation_conditions: "条件")
+        create(:adr_management_reevaluation_check, adr: pending_adr,
+          checked_on: Date.current - 1, result: "suspected", note: "観測")
+
+        text = response_text(described_class.call(check_result: "suspected", server_context: server_context))
+
+        expect(text).to include(pending_adr.title)
+        expect(text).not_to include(resolved.title)
+      end
+
+      it "applies unchecked_for_days as a post-filter on the natural language path" do
+        due = create(:adr_management_adr, title: "未点検の決定", reevaluation_conditions: "条件")
+        fresh = create(:adr_management_adr, title: "点検済みの決定", reevaluation_conditions: "条件")
+        create(:adr_management_reevaluation_check, adr: fresh, checked_on: Date.current)
+        index_adr(due, [ 1.0, 0.0, 0.0 ])
+        index_adr(fresh, [ 0.9, 0.1, 0.0 ])
+        stub_query_embedding([ 1.0, 0.0, 0.0 ])
+
+        text = response_text(described_class.call(
+          query: "点検対象は？", unchecked_for_days: 30, server_context: server_context
+        ))
+
+        expect(text).to include(due.title)
+        expect(text).not_to include(fresh.title)
+      end
+    end
+
     it "returns master_not_found for an unknown engagement" do
       text = response_text(described_class.call(
         keyword: "x", engagement_code: "nope", server_context: server_context
