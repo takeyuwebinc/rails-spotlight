@@ -5,6 +5,8 @@ module AdrManagement
   # 工数管理ドメインの WorkHour::Project とは別モデル。
   class Project < ApplicationRecord
     belongs_to :engagement, class_name: "AdrManagement::Engagement"
+    has_many :adrs, class_name: "AdrManagement::Adr",
+      foreign_key: :project_id, dependent: :restrict_with_error
 
     validates :name, presence: true
     validate :end_date_not_before_start_date

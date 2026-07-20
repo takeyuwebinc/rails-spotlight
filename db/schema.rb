@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_040003) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_040004) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -37,6 +37,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040003) do
     t.bigint "blob_id", null: false
     t.string "variation_digest", null: false
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
+  end
+
+  create_table "adr_management_adr_revisions", force: :cascade do |t|
+    t.integer "adr_id", null: false
+    t.string "change_type", null: false
+    t.json "changed_fields"
+    t.datetime "created_at", null: false
+    t.string "origin", null: false
+    t.json "snapshot"
+    t.index ["adr_id"], name: "index_adr_management_adr_revisions_on_adr_id"
+  end
+
+  create_table "adr_management_adrs", force: :cascade do |t|
+    t.text "alternatives"
+    t.string "confidence", null: false
+    t.text "consequences", null: false
+    t.text "context", null: false
+    t.datetime "created_at", null: false
+    t.date "decided_on", null: false
+    t.text "decision", null: false
+    t.integer "engagement_id", null: false
+    t.integer "number", null: false
+    t.integer "project_id"
+    t.text "reevaluation_conditions"
+    t.text "reference_links"
+    t.string "status", null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["engagement_id", "number"], name: "idx_adr_management_adrs_on_engagement_and_number", unique: true
+    t.index ["project_id"], name: "index_adr_management_adrs_on_project_id"
   end
 
   create_table "adr_management_clients", force: :cascade do |t|
@@ -66,6 +96,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040003) do
     t.date "start_date"
     t.datetime "updated_at", null: false
     t.index ["engagement_id"], name: "index_adr_management_projects_on_engagement_id"
+  end
+
+  create_table "adr_management_supersessions", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "superseded_adr_id", null: false
+    t.integer "superseding_adr_id", null: false
+    t.index ["superseded_adr_id"], name: "idx_adr_management_supersessions_on_superseded", unique: true
+    t.index ["superseding_adr_id"], name: "idx_adr_management_supersessions_on_superseding"
   end
 
   create_table "clients", force: :cascade do |t|
