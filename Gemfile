@@ -84,6 +84,9 @@ gem "rswag-specs", group: [ :development, :test ]
 # Model Context Protocol (MCP) for LLM integration
 gem "mcp", "~> 0.4.0"
 
+# LLM client / agent framework (RubyLLM::Agent, acts_as_chat)
+gem "ruby_llm", "~> 1.16"
+
 # OAuth 2.0 Provider
 gem "doorkeeper"
 
