@@ -188,7 +188,7 @@
 
 ### 6. その他の確認事項
 
-- 「更新経路」のカラム名 `origin` は代替案として `change_source` / `updated_via` がある。`origin` は Git の origin と紛らわしいという見方もあるため、設計時に確定すること（推奨は `origin`）。
+- 「更新経路」のカラム名は **`origin` で確定**（2026-07-20 実装時）。代替案は `change_source` / `updated_via` だったが、推奨どおり `origin` を採用した。値の形式は MCP 経由が `oauth:<OAuthアプリケーション名>`、レガシー静的トークン認証が `legacy-token`、Web 管理画面が `admin:<管理者メールアドレス>`。
 - 参考資料のカラム名は **`reference_links` で確定**（2026-07-18 機能設計時）。`references` は SQL 予約語だが Rails は識別子を引用するため動作自体は可能。実質的な回避理由は Rails の関連 DSL（`t.references`）・クエリメソッド（`Relation#references`）との紛らわしさ。
 
 ---
