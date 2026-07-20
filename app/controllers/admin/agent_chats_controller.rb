@@ -10,6 +10,7 @@ module Admin
       @chat = Chat.find(params[:id])
       @messages = @chat.messages.order(:id).includes(:tool_calls)
       @pending_changes_by_message = @chat.pending_changes.ordered.group_by(&:message_id)
+      @cost = ContentAgent::ChatCost.for(@chat)
     end
 
     def create

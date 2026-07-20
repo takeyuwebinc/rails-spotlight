@@ -7,6 +7,7 @@
       <h1 class="text-xl font-bold text-zinc-900 dark:text-zinc-100">
         <%= @chat.title.presence || "（無題の会話）" %>
       </h1>
+      <p class="text-sm text-zinc-500">利用コスト概算: <%= format_agent_cost(@cost) %></p>
     </div>
     <%= link_to "会話一覧へ", admin_agent_chats_path, class: "text-sm text-indigo-600 hover:text-indigo-500" %>
   </div>

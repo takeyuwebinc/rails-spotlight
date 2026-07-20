@@ -55,6 +55,17 @@ RSpec.describe "Admin::AgentChats", type: :request do
         expect(response.body).to include("承認待ち")
       end
 
+      it "会話のコスト概算を表示する" do
+        chat = create(:chat)
+        model = Model.create!(model_id: "gpt-oss-120b", name: "gpt-oss-120b", provider: "openai")
+        chat.messages.create!(role: "assistant", content: "a", model: model,
+                              input_tokens: 10_000, output_tokens: 10_000)
+
+        get admin_agent_chat_path(chat)
+
+        expect(response.body).to include("¥0.90")
+      end
+
       it "エラーがある場合は再送導線を表示する" do
         chat = create(:chat, last_error: "応答の生成に失敗しました。再送で続行できます。")
 
