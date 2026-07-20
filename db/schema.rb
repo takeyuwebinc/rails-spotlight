@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_075726) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_081000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -132,6 +132,34 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_075726) do
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_clients_on_code", unique: true
+  end
+
+  create_table "content_agent_pending_changes", force: :cascade do |t|
+    t.datetime "applied_at"
+    t.text "apply_error"
+    t.integer "chat_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "message_id"
+    t.string "operation", null: false
+    t.json "payload", default: {}, null: false
+    t.string "status", default: "pending", null: false
+    t.integer "target_id"
+    t.string "target_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id", "status"], name: "index_content_agent_pending_changes_on_chat_id_and_status"
+    t.index ["chat_id"], name: "index_content_agent_pending_changes_on_chat_id"
+    t.index ["message_id"], name: "index_content_agent_pending_changes_on_message_id"
+  end
+
+  create_table "content_agent_task_usages", force: :cascade do |t|
+    t.integer "chat_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.string "model_id", null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.string "task_kind", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_content_agent_task_usages_on_chat_id"
   end
 
   create_table "link_metadata", force: :cascade do |t|
@@ -392,6 +420,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_075726) do
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "chats", "models"
+  add_foreign_key "content_agent_pending_changes", "chats"
+  add_foreign_key "content_agent_pending_changes", "messages"
+  add_foreign_key "content_agent_task_usages", "chats"
   add_foreign_key "messages", "chats"
   add_foreign_key "messages", "models"
   add_foreign_key "messages", "tool_calls"
