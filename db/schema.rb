@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
+ActiveRecord::Schema[8.1].define(version: 2026_07_20_083000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -118,12 +118,49 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
     t.index ["superseding_adr_id"], name: "idx_adr_management_supersessions_on_superseding"
   end
 
+  create_table "chats", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "last_error"
+    t.integer "model_id"
+    t.string "title"
+    t.datetime "updated_at", null: false
+    t.index ["model_id"], name: "index_chats_on_model_id"
+  end
+
   create_table "clients", force: :cascade do |t|
     t.string "code", null: false
     t.datetime "created_at", null: false
     t.string "name", null: false
     t.datetime "updated_at", null: false
     t.index ["code"], name: "index_clients_on_code", unique: true
+  end
+
+  create_table "content_agent_pending_changes", force: :cascade do |t|
+    t.datetime "applied_at"
+    t.text "apply_error"
+    t.integer "chat_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "message_id"
+    t.string "operation", null: false
+    t.json "payload", default: {}, null: false
+    t.string "status", default: "pending", null: false
+    t.integer "target_id"
+    t.string "target_type", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id", "status"], name: "index_content_agent_pending_changes_on_chat_id_and_status"
+    t.index ["chat_id"], name: "index_content_agent_pending_changes_on_chat_id"
+    t.index ["message_id"], name: "index_content_agent_pending_changes_on_message_id"
+  end
+
+  create_table "content_agent_task_usages", force: :cascade do |t|
+    t.integer "chat_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "input_tokens", default: 0, null: false
+    t.string "model_id", null: false
+    t.integer "output_tokens", default: 0, null: false
+    t.string "task_kind", null: false
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_content_agent_task_usages_on_chat_id"
   end
 
   create_table "link_metadata", force: :cascade do |t|
@@ -137,6 +174,48 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
     t.datetime "updated_at", null: false
     t.string "url", null: false
     t.index ["url"], name: "index_link_metadata_on_url", unique: true
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.integer "cache_creation_tokens"
+    t.integer "cached_tokens"
+    t.integer "chat_id", null: false
+    t.text "content"
+    t.json "content_raw"
+    t.datetime "created_at", null: false
+    t.integer "input_tokens"
+    t.integer "model_id"
+    t.integer "output_tokens"
+    t.string "role", null: false
+    t.text "thinking_signature"
+    t.text "thinking_text"
+    t.integer "thinking_tokens"
+    t.integer "tool_call_id"
+    t.datetime "updated_at", null: false
+    t.index ["chat_id"], name: "index_messages_on_chat_id"
+    t.index ["model_id"], name: "index_messages_on_model_id"
+    t.index ["role"], name: "index_messages_on_role"
+    t.index ["tool_call_id"], name: "index_messages_on_tool_call_id"
+  end
+
+  create_table "models", force: :cascade do |t|
+    t.json "capabilities", default: []
+    t.integer "context_window"
+    t.datetime "created_at", null: false
+    t.string "family"
+    t.date "knowledge_cutoff"
+    t.integer "max_output_tokens"
+    t.json "metadata", default: {}
+    t.json "modalities", default: {}
+    t.datetime "model_created_at"
+    t.string "model_id", null: false
+    t.string "name", null: false
+    t.json "pricing", default: {}
+    t.string "provider", null: false
+    t.datetime "updated_at", null: false
+    t.index ["family"], name: "index_models_on_family"
+    t.index ["provider", "model_id"], name: "index_models_on_provider_and_model_id", unique: true
+    t.index ["provider"], name: "index_models_on_provider"
   end
 
   create_table "oauth_access_grants", force: :cascade do |t|
@@ -265,6 +344,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
     t.index ["slug"], name: "index_tags_on_slug", unique: true
   end
 
+  create_table "tool_calls", force: :cascade do |t|
+    t.json "arguments", default: {}
+    t.datetime "created_at", null: false
+    t.integer "message_id", null: false
+    t.string "name", null: false
+    t.text "thought_signature"
+    t.string "tool_call_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_tool_calls_on_message_id"
+    t.index ["name"], name: "index_tool_calls_on_name"
+    t.index ["tool_call_id"], name: "index_tool_calls_on_tool_call_id", unique: true
+  end
+
   create_table "uses_items", force: :cascade do |t|
     t.string "category", null: false
     t.datetime "created_at", null: false
@@ -328,6 +420,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "chats", "models"
+  add_foreign_key "content_agent_pending_changes", "chats"
+  add_foreign_key "content_agent_pending_changes", "messages"
+  add_foreign_key "content_agent_task_usages", "chats"
+  add_foreign_key "messages", "chats"
+  add_foreign_key "messages", "models"
+  add_foreign_key "messages", "tool_calls"
   add_foreign_key "oauth_access_grants", "oauth_applications", column: "application_id"
   add_foreign_key "oauth_access_tokens", "oauth_applications", column: "application_id"
   add_foreign_key "slide_pages", "slides"
@@ -335,6 +434,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_20_040005) do
   add_foreign_key "slide_tags", "tags"
   add_foreign_key "speaking_engagement_tags", "speaking_engagements"
   add_foreign_key "speaking_engagement_tags", "tags"
+  add_foreign_key "tool_calls", "messages"
   add_foreign_key "work_hour_project_monthly_estimates", "work_hour_projects", column: "project_id"
   add_foreign_key "work_hour_projects", "work_hour_clients", column: "client_id"
   add_foreign_key "work_hour_work_entries", "work_hour_projects", column: "project_id"

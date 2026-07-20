@@ -91,6 +91,14 @@ Rails.application.routes.draw do
       end
       resources :adrs
     end
+    resources :agent_chats, only: %i[index show create] do
+      resources :messages, only: %i[create], controller: "agent_chat_messages"
+      resource :resend, only: %i[create], controller: "agent_chat_resends"
+    end
+    resources :pending_changes, only: [] do
+      resource :approval, only: %i[create], controller: "pending_change_approvals"
+      resource :rejection, only: %i[create], controller: "pending_change_rejections"
+    end
   end
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)

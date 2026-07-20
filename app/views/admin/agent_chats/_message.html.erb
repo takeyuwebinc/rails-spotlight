@@ -1,0 +1,30 @@
+<% case message.role %>
+<% when "user" %>
+  <% if message.content.to_s.start_with?("（適用結果）") %>
+    <div class="text-center">
+      <span class="inline-block rounded-full bg-zinc-100 dark:bg-zinc-700 px-3 py-1 text-xs text-zinc-600 dark:text-zinc-300">
+        <%= message.content %>
+      </span>
+    </div>
+  <% else %>
+    <div class="flex justify-end">
+      <div class="max-w-[80%] rounded-lg bg-indigo-600 px-4 py-2 text-sm text-white whitespace-pre-wrap"><%= message.content %></div>
+    </div>
+  <% end %>
+<% when "assistant" %>
+  <% if message.tool_calls.any? %>
+    <div class="text-xs text-zinc-500 dark:text-zinc-400">
+      🔧 ツール実行: <%= message.tool_calls.map(&:name).join(", ") %>
+    </div>
+  <% end %>
+  <% if message.content.present? %>
+    <div class="flex justify-start">
+      <div class="max-w-[80%] rounded-lg bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 px-4 py-2 text-sm text-zinc-900 dark:text-zinc-100 whitespace-pre-wrap"><%= message.content %></div>
+    </div>
+  <% end %>
+<% when "tool" %>
+  <details class="text-xs text-zinc-500 dark:text-zinc-400">
+    <summary class="cursor-pointer">ツール結果</summary>
+    <pre class="mt-1 overflow-x-auto rounded bg-zinc-100 dark:bg-zinc-800 p-2 max-h-48"><%= message.content.to_s.truncate(2_000) %></pre>
+  </details>
+<% end %>
