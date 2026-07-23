@@ -15,7 +15,9 @@ module Tools
                 "combine with keyword search before concluding nothing is relevant. " \
                 "For periodic reevaluation review, use unchecked_for_days / check_result WITHOUT query " \
                 "(combine with status: accepted): the natural language path truncates to the top-scored " \
-                "results before filtering and is not exhaustive."
+                "results before filtering and is not exhaustive. " \
+                "If a search misses an ADR you later reach via another route (keyword search, listing, " \
+                "prior knowledge), report it with report_search_miss_tool."
 
     input_schema(
       properties: {
@@ -101,22 +103,28 @@ module Tools
                   confidence: confidence, after: after_date, before: before_date,
                   unchecked_for_days: unchecked_for_days, check_result: check_result }
 
+      origin = origin_from(server_context)
       if query.present?
-        natural_language_search(query, filters, limit)
+        natural_language_search(query, filters, limit, origin)
       else
-        keyword_search(keyword, filters, limit)
+        keyword_search(keyword, filters, limit, origin)
       end
     rescue => e
       text_response("Error searching ADRs: #{e.message}")
     end
 
-    def self.natural_language_search(query, filters, limit)
+    def self.natural_language_search(query, filters, limit, origin)
       result = AdrManagement::SearchNaturalLanguage.perform(
         query: query, engagement: filters[:engagement], limit: limit
       )
       return error_response(result.errors) if result.failure?
 
       scored = result.data.select { |entry| matches_filters?(entry.adr, filters) }
+      record_search_log(
+        mode: "natural_language", query: query, filters: filters, origin: origin,
+        results: scored.map { |entry| { adr_id: entry.adr.id, score: entry.score.round(4) } },
+        result_count: scored.size
+      )
       return empty_result_response(cross_engagement: filters[:engagement].nil?) if scored.empty?
 
       list = scored.map { |entry| adr_summary_line(entry.adr, relevance: entry.score) }.join("\n")
@@ -126,7 +134,7 @@ module Tools
       )
     end
 
-    def self.keyword_search(keyword, filters, limit)
+    def self.keyword_search(keyword, filters, limit, origin)
       adrs = AdrManagement::Adr.includes(:engagement)
       adrs = adrs.where(engagement: filters[:engagement]) if filters[:engagement]
       adrs = apply_attribute_filters(adrs, filters)
@@ -142,6 +150,11 @@ module Tools
 
       total = adrs.count
       adrs = adrs.order(decided_on: :desc, id: :desc).limit(limit)
+      record_search_log(
+        mode: "keyword", keyword: keyword, filters: filters, origin: origin,
+        results: adrs.map { |adr| { adr_id: adr.id } },
+        result_count: total
+      )
       return empty_result_response(cross_engagement: filters[:engagement].nil?) if total.zero?
 
       list = adrs.map { |adr| adr_summary_line(adr) }.join("\n")
@@ -209,7 +222,26 @@ module Tools
         "- 絞り込み条件（status・confidence・日付）を外す"
       ]
       guidance << "- engagement_code を外して案件横断で検索する" unless cross_engagement
+      guidance << "- 別経路（キーワード検索・一覧・既知の番号）で目的の ADR に後から到達した場合は、" \
+                  "report_search_miss_tool で取り逃がしを報告する"
       text_response(guidance.join("\n"))
+    end
+
+    # 検索ログの記録失敗で検索本体を失敗させない（索引更新と同じ
+    # ベストエフォート方針。ログは分析用であり検索の契約に含めない）
+    def self.record_search_log(mode:, filters:, origin:, results:, result_count:, query: nil, keyword: nil)
+      AdrManagement::SearchLog.create!(
+        mode: mode, query: query, keyword: keyword,
+        engagement: filters[:engagement],
+        filters: loggable_filters(filters),
+        results: results, result_count: result_count, origin: origin
+      )
+    rescue => e
+      Rails.error.report(e, handled: true)
+    end
+
+    def self.loggable_filters(filters)
+      filters.except(:engagement).compact.transform_values(&:to_s)
     end
   end
 end

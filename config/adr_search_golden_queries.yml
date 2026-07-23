@@ -1,0 +1,33 @@
+# ADR 検索のゴールデンクエリ定義
+#
+# 「このクエリならこの ADR が上位（K=10 件以内）に出るべき」という期待ペアの集合。
+# rake adr_management:search_eval が読み込み、実 DB の ADR コーパスと
+# 実埋め込み API で recall@10 を測定する。
+#
+# 育て方:
+# - 検索ログ（adr_management_search_logs）と取り逃がし報告
+#   （adr_management_search_miss_reports）から、実際に使われたクエリ・
+#   取り逃がしが起きたクエリを人手で追加する
+# - 直接語彙のクエリだけでなく言い換えクエリ（弱点の観測対象）を含める
+# - ADR を置換・削除したら期待側も更新する（存在しない期待 ADR はエラーになる）
+queries:
+  - query: "自然言語検索の実現方式はどう決めた？"
+    expect:
+      - engagement: spotlight-rails
+        number: 27
+  - query: "検索の取り逃がしを観測する仕組みはある？"
+    expect:
+      - engagement: spotlight-rails
+        number: 38
+  - query: "エージェントの品質はどうやって確かめている？"
+    expect:
+      - engagement: spotlight-rails
+        number: 34
+  - query: "決定を見直すべきか定期的に確認した記録はどこに残す？"
+    expect:
+      - engagement: spotlight-rails
+        number: 36
+  - query: "埋め込みベクトルを作る API クライアントの実装方針は？"
+    expect:
+      - engagement: spotlight-rails
+        number: 37

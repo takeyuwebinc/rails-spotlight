@@ -203,6 +203,57 @@ RSpec.describe "AdrManagement Search Tools" do
       end
     end
 
+    describe "search logging" do
+      it "records a log for the natural language path with query, results and origin" do
+        adr = create(:adr_management_adr, title: "認証方式の選定")
+        index_adr(adr, [ 1.0, 0.0 ])
+        stub_query_embedding([ 1.0, 0.0 ])
+
+        expect {
+          described_class.call(query: "認証まわりの決定は？", status: "accepted",
+            engagement_code: adr.engagement.code, server_context: server_context)
+        }.to change(AdrManagement::SearchLog, :count).by(1)
+
+        log = AdrManagement::SearchLog.last
+        expect(log.mode).to eq("natural_language")
+        expect(log.query).to eq("認証まわりの決定は？")
+        expect(log.engagement).to eq(adr.engagement)
+        expect(log.filters).to include("status" => "accepted")
+        expect(log.results.first).to include("adr_id" => adr.id)
+        expect(log.results.first["score"]).to be_a(Numeric)
+        expect(log.result_count).to eq(1)
+        expect(log.origin).to eq("oauth:Test Agent")
+      end
+
+      it "records a log for the keyword path including zero-result searches" do
+        create(:adr_management_adr, title: "認証方式の選定")
+
+        expect {
+          described_class.call(keyword: "存在しない語", server_context: server_context)
+        }.to change(AdrManagement::SearchLog, :count).by(1)
+
+        log = AdrManagement::SearchLog.last
+        expect(log.mode).to eq("keyword")
+        expect(log.keyword).to eq("存在しない語")
+        expect(log.result_count).to eq(0)
+        expect(log.results).to eq([])
+      end
+
+      it "still returns the search response when logging fails" do
+        create(:adr_management_adr, title: "認証方式の選定")
+        allow(AdrManagement::SearchLog).to receive(:create!).and_raise(ActiveRecord::StatementInvalid)
+
+        text = response_text(described_class.call(keyword: "認証", server_context: server_context))
+
+        expect(text).to include("認証方式の選定")
+      end
+
+      it "guides to report_search_miss_tool on empty results" do
+        text = response_text(described_class.call(keyword: "存在しない語", server_context: server_context))
+        expect(text).to include("report_search_miss_tool")
+      end
+    end
+
     it "returns master_not_found for an unknown engagement" do
       text = response_text(described_class.call(
         keyword: "x", engagement_code: "nope", server_context: server_context

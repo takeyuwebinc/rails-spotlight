@@ -52,7 +52,8 @@ class ContentServer
         Tools::GetAdrTool,
         Tools::RegisterAdrTool,
         Tools::UpdateAdrTool,
-        Tools::RecordReevaluationCheckTool
+        Tools::RecordReevaluationCheckTool,
+        Tools::ReportSearchMissTool
       ],
       server_context: { origin: origin }
     )
