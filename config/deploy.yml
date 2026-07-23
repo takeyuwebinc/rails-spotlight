@@ -34,6 +34,9 @@ registry:
 env:
   clear:
     TZ: "Asia/Tokyo"
+    # puma プロセス内で Solid Queue（ワーカー・ディスパッチャ・recurring）を起動する。
+    # 単一サーバー・小規模のため専用ワーカーコンテナは設けない（SPOTLIGHT-RAILS-39）
+    SOLID_QUEUE_IN_PUMA: "1"
   secret:
     - RAILS_MASTER_KEY
 

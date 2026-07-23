@@ -34,18 +34,6 @@ namespace :adr_management do
   desc "検索実行数・0件率・取り逃がし報告件数を集計する（SINCE=YYYY-MM-DD、省略時は直近30日）"
   task search_quality_report: :environment do
     since = ENV["SINCE"].present? ? Date.parse(ENV["SINCE"]).beginning_of_day : 30.days.ago
-    summary = AdrManagement::SearchLog.summary(since: since)
-    miss_reports = AdrManagement::SearchMissReport.where(created_at: since..)
-
-    puts "対象期間: #{since.to_date} 〜 #{Date.current}"
-    puts "検索実行数: #{summary[:total]} 件"
-    summary[:by_mode].each { |mode, count| puts "  #{mode}: #{count} 件" }
-    zero_rate = summary[:total].zero? ? nil : summary[:zero_result_count].fdiv(summary[:total])
-    puts "0件検索: #{summary[:zero_result_count]} 件#{zero_rate ? format("（%.1f%%）", zero_rate * 100) : ""}"
-    puts "取り逃がし報告: #{miss_reports.count} 件"
-    miss_reports.recent_first.each do |report|
-      target = report.adr ? report.adr.display_number : "(未到達)"
-      puts "  - #{report.created_at.to_date} #{target}: #{report.query}"
-    end
+    puts AdrManagement::BuildSearchQualityReport.perform(since: since).data[:text]
   end
 end
