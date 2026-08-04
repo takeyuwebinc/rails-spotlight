@@ -98,5 +98,14 @@ gem "omniauth-rails_csrf_protection"
 gem "sentry-ruby", "~> 6.6"
 gem "sentry-rails", "~> 6.6"
 
+# LLM・アプリのトレースを OpenTelemetry で計装し、Sentry の OTLP 取り込みへ送る
+gem "sentry-opentelemetry", "~> 6.6"
+gem "opentelemetry-sdk"
+gem "opentelemetry-exporter-otlp"
+gem "opentelemetry-instrumentation-ruby_llm"
+gem "opentelemetry-instrumentation-rails"
+gem "opentelemetry-instrumentation-faraday"
+gem "opentelemetry-instrumentation-net_http"
+
 # RSS parsing
 gem "rss"

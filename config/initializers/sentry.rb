@@ -3,7 +3,6 @@
 Sentry.init do |config|
   config.breadcrumbs_logger = [ :active_support_logger ]
   config.dsn = "https://4c9c655faa3ad26cb0a278bd3c88b1b6@o135775.ingest.us.sentry.io/4510050183479296"
-  config.traces_sample_rate = 1.0
   config.send_default_pii = true
   config.enable_logs = true
   config.enabled_patches << :logger
@@ -11,4 +10,33 @@ Sentry.init do |config|
 
   # テスト環境では無効化
   config.enabled_environments = %w[development production]
+
+  # トレースは OpenTelemetry 計装（config/initializers/opentelemetry.rb）で収集し
+  # OTLP で取り込む。SDK ネイティブのトレーシング（traces_sample_rate）とは
+  # 併用できないため設定しない。
+  if Rails.env.development? || Rails.env.production?
+    config.otlp.enabled = true
+    # エクスポータは自動設定を使わず、機密キーのマスキングを挟んで下で登録する
+    config.otlp.setup_otlp_traces_exporter = false
+  end
+end
+
+# LLM スパンの内容属性へ filter_parameters を適用してから送信するため、
+# OTLP エクスポータをマスキング用ラッパー越しに登録する。
+# エンドポイントと認証ヘッダの組み立ては sentry-opentelemetry の自動設定
+# （Sentry::OpenTelemetry::OTLPSetup）と同じ方式。自動設定にはエクスポータを
+# 差し替える拡張点がないため自前で行っている。
+if Rails.env.development? || Rails.env.production?
+  require Rails.root.join("lib/observability/gen_ai_content_filter_exporter")
+
+  dsn = Sentry.configuration.dsn
+  otlp_exporter = OpenTelemetry::Exporter::OTLP::Exporter.new(
+    endpoint: "#{dsn.server}#{dsn.otlp_traces_endpoint}",
+    headers: { "X-Sentry-Auth" => dsn.generate_auth_header(client: "sentry-ruby.otlp/#{Sentry::VERSION}") }
+  )
+  OpenTelemetry.tracer_provider.add_span_processor(
+    OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
+      Observability::GenAiContentFilterExporter.new(otlp_exporter)
+    )
+  )
 end
