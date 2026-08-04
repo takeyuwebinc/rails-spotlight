@@ -151,4 +151,17 @@ RSpec.describe AdrManagement::RegisterAdr do
       end
     end
   end
+
+  describe "reference syncing" do
+    it "records references resolved from the body at registration" do
+      target = create(:adr_management_adr, engagement: engagement)
+
+      result = register(
+        attributes: attributes.merge(context: "#{target.display_number} の決定を前提とする")
+      )
+
+      expect(result).to be_success
+      expect(result.data.referenced_adrs).to eq([ target ])
+    end
+  end
 end

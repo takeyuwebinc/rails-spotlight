@@ -36,6 +36,22 @@ RSpec.describe "Admin::AdrManagement::Adrs", type: :request do
       expect(response.body).to include("oauth:Agent")
     end
 
+    it "uses the ADR number in the URL instead of the database id" do
+      adr = create(:adr_management_adr, engagement: engagement)
+
+      expect(admin_adr_management_adr_path(adr)).to eq("/admin/adr/adrs/FABBLE-#{adr.number}")
+
+      get admin_adr_management_adr_path(adr)
+      expect(response).to have_http_status(:success)
+    end
+
+    it "keeps resolving legacy id-based URLs" do
+      adr = create(:adr_management_adr, engagement: engagement)
+
+      get "/admin/adr/adrs/#{adr.id}"
+      expect(response).to have_http_status(:success)
+    end
+
     it "shows the supersession chain" do
       old_adr = create(:adr_management_adr, engagement: engagement, status: "accepted", title: "旧決定")
       result = AdrManagement::RegisterAdr.perform(

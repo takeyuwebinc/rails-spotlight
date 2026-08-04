@@ -26,6 +26,7 @@ module AdrManagement
           before: before,
           changed_fields: changed
         )
+        SyncAdrReferences.perform(adr: @adr)
       end
       RefreshSearchIndex.perform(adr: @adr)
       success(@adr)

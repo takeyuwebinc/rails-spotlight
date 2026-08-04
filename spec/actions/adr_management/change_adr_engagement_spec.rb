@@ -60,4 +60,18 @@ RSpec.describe AdrManagement::ChangeAdrEngagement do
     expect(adr.reload.number).to eq(original_number)
     expect(adr.revisions.where(change_type: "engagement_changed")).to be_empty
   end
+
+  it "re-syncs body references after the move" do
+    target = create(:adr_management_adr, engagement: source_engagement)
+    adr = create(
+      :adr_management_adr, engagement: source_engagement,
+      context: "#{target.display_number} の決定を前提とする"
+    )
+    AdrManagement::SyncAdrReferences.perform(adr: adr)
+
+    result = described_class.perform(adr: adr, engagement: target_engagement, origin: origin)
+
+    expect(result).to be_success
+    expect(adr.referenced_adrs.reload).to eq([ target ])
+  end
 end

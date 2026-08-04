@@ -36,6 +36,7 @@ module AdrManagement
           before: before,
           changed_fields: %w[engagement_id number project_id]
         )
+        SyncAdrReferences.perform(adr: @adr)
       end
       # 検索インデックスの再構築は不要: チャンクの内容は本文のみに依存し、
       # 案件による絞り込みは検索時に ADR 本体を JOIN して解決するため

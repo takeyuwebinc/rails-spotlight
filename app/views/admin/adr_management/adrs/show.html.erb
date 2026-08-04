@@ -1,7 +1,7 @@
 <% content_for(:title) { "#{@adr.display_number}: #{@adr.title}" } %>
 
 <div class="mb-6">
-  <h1 class="text-2xl font-bold text-zinc-900"><%= @adr.engagement.code %>-<%= @adr.number %>: <%= @adr.title %></h1>
+  <h1 class="text-2xl font-bold text-zinc-900"><%= @adr.display_number %>: <%= @adr.title %></h1>
   <p class="text-sm text-zinc-500 mt-1">
     案件: <%= link_to @adr.engagement.name, admin_adr_management_engagement_path(@adr.engagement), class: "text-indigo-600 hover:text-indigo-900" %>
     ／ ステータス: <%= adr_status_label(@adr.status) %>
@@ -60,6 +60,36 @@
     </section>
   <% end %>
 </div>
+
+<% referenced_adrs = @adr.referenced_adrs.includes(:engagement).to_a %>
+<% referencing_adrs = @adr.referencing_adrs.includes(:engagement).to_a %>
+<% if referenced_adrs.any? || referencing_adrs.any? %>
+  <div class="bg-white shadow rounded-lg p-6 mb-6">
+    <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">関連 ADR</h2>
+    <% if referenced_adrs.any? %>
+      <p class="text-sm font-medium text-zinc-700">この ADR が参照している決定:</p>
+      <ul class="list-disc pl-5 text-sm text-zinc-700 mb-3">
+        <% referenced_adrs.each do |referenced| %>
+          <li>
+            <%= link_to "#{referenced.display_number} #{referenced.title}", admin_adr_management_adr_path(referenced), class: "text-indigo-600 hover:text-indigo-900 underline" %>
+            <span class="text-zinc-500">（<%= adr_status_label(referenced.status) %>）</span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+    <% if referencing_adrs.any? %>
+      <p class="text-sm font-medium text-zinc-700">この ADR を参照している決定:</p>
+      <ul class="list-disc pl-5 text-sm text-zinc-700">
+        <% referencing_adrs.each do |referencing| %>
+          <li>
+            <%= link_to "#{referencing.display_number} #{referencing.title}", admin_adr_management_adr_path(referencing), class: "text-indigo-600 hover:text-indigo-900 underline" %>
+            <span class="text-zinc-500">（<%= adr_status_label(referencing.status) %>）</span>
+          </li>
+        <% end %>
+      </ul>
+    <% end %>
+  </div>
+<% end %>
 
 <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
   <div class="px-6 py-4 border-b border-zinc-200">

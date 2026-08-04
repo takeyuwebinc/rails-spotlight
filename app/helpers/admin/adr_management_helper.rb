@@ -46,7 +46,44 @@ module Admin
         renderer,
         tables: true, fenced_code_blocks: true, autolink: true, strikethrough: true
       )
-      markdown.render(text).html_safe
+      link_adr_display_numbers(markdown.render(text)).html_safe
+    end
+
+    # HTML 中の解決可能な ADR 番号表記を該当 ADR の詳細ページへのリンクに
+    # 変換する。markdown 描画は filter_html 有効のため、描画前のテキストに
+    # HTML を注入せず、描画後の HTML のテキストノードだけを書き換える。
+    # コードブロック・既存リンク内の表記は変換しない
+    def link_adr_display_numbers(html)
+      fragment = Nokogiri::HTML::DocumentFragment.parse(html)
+      text_nodes = fragment.xpath(
+        ".//text()[not(ancestor::a) and not(ancestor::code) and not(ancestor::pre)]"
+      )
+      return html if text_nodes.empty?
+
+      references = ::AdrManagement::Adr.resolve_text_references(
+        *text_nodes.map(&:content)
+      )[:references]
+      return html if references.empty?
+
+      text_nodes.each do |node|
+        content = node.content
+        next unless content.match?(::AdrManagement::Adr::DISPLAY_NUMBER_TOKEN)
+
+        # トークンは英数字とハイフンのみで構成されるため、先に全体を
+        # エスケープしてもトークンの境界・内容は変化しない
+        replaced = false
+        linked = ERB::Util.html_escape(content).gsub(::AdrManagement::Adr::DISPLAY_NUMBER_TOKEN) do |token|
+          adr = references[token]
+          if adr
+            replaced = true
+            link_to(token, admin_adr_management_adr_path(adr), class: "text-indigo-600 hover:text-indigo-900 underline")
+          else
+            token
+          end
+        end
+        node.replace(Nokogiri::HTML::DocumentFragment.parse(linked)) if replaced
+      end
+      fragment.to_html
     end
   end
 end

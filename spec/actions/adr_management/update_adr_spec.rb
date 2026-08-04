@@ -75,4 +75,16 @@ RSpec.describe AdrManagement::UpdateAdr do
       expect(adr.revisions.where(change_type: "updated")).to be_empty
     end
   end
+
+  describe "reference syncing" do
+    it "syncs references from the updated body" do
+      target = create(:adr_management_adr, engagement: adr.engagement)
+
+      update(context: "#{target.display_number} の決定を前提とする")
+      expect(adr.referenced_adrs.reload).to eq([ target ])
+
+      update(context: "参照なし")
+      expect(adr.referenced_adrs.reload).to be_empty
+    end
+  end
 end
