@@ -31,3 +31,10 @@ queries:
     expect:
       - engagement: spotlight-rails
         number: 37
+  # 表記揺れ（カタカナ⇄英語）を埋め込み経路が吸収できることの回帰確認。
+  # keyword 検索「ペイロード」が0件になった実事例（取り逃がし報告 2026-08-04、
+  # ADR 本文は "payload" と英語表記）に由来する
+  - query: "ペイロードの内容をどう検証するか決めたことは？"
+    expect:
+      - engagement: spotlight-rails
+        number: 34
