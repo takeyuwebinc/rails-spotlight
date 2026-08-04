@@ -11,6 +11,45 @@ RSpec.describe AdrManagement::Adr, type: :model do
     end
   end
 
+  describe "#to_param" do
+    it "returns the display number for URL generation" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      adr = create(:adr_management_adr, engagement: engagement, number: 12)
+      expect(adr.to_param).to eq("FABBLE-12")
+    end
+  end
+
+  describe ".find_by_display_number!" do
+    let!(:engagement) { create(:adr_management_engagement, code: "spotlight-rails") }
+    let!(:adr) { create(:adr_management_adr, engagement: engagement, number: 38) }
+
+    it "finds the adr from a display number with a hyphenated code" do
+      expect(described_class.find_by_display_number!("SPOTLIGHT-RAILS-38")).to eq(adr)
+    end
+
+    it "matches the engagement code case-insensitively" do
+      expect(described_class.find_by_display_number!("spotlight-rails-38")).to eq(adr)
+    end
+
+    it "raises RecordNotFound for an unknown engagement code" do
+      expect {
+        described_class.find_by_display_number!("UNKNOWN-38")
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "raises RecordNotFound for an unissued number" do
+      expect {
+        described_class.find_by_display_number!("SPOTLIGHT-RAILS-999")
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+
+    it "raises RecordNotFound for a malformed value" do
+      expect {
+        described_class.find_by_display_number!("SPOTLIGHT-RAILS")
+      }.to raise_error(ActiveRecord::RecordNotFound)
+    end
+  end
+
   describe "validations" do
     it "is valid with valid attributes" do
       adr = build(:adr_management_adr)

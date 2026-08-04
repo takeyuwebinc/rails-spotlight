@@ -96,7 +96,12 @@ module Admin
       private
 
       def set_adr
-        @adr = ::AdrManagement::Adr.find(params[:id])
+        # 旧 URL（DB の id ベース）からのアクセスも引き続き受け付ける
+        @adr = if params[:id].to_s.match?(/\A\d+\z/)
+          ::AdrManagement::Adr.find(params[:id])
+        else
+          ::AdrManagement::Adr.find_by_display_number!(params[:id])
+        end
       end
 
       def filtered_adrs

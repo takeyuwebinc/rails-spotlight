@@ -1,7 +1,7 @@
 <% content_for(:title) { "#{@adr.display_number}: #{@adr.title}" } %>
 
 <div class="mb-6">
-  <h1 class="text-2xl font-bold text-zinc-900"><%= @adr.engagement.code %>-<%= @adr.number %>: <%= @adr.title %></h1>
+  <h1 class="text-2xl font-bold text-zinc-900"><%= @adr.display_number %>: <%= @adr.title %></h1>
   <p class="text-sm text-zinc-500 mt-1">
     案件: <%= link_to @adr.engagement.name, admin_adr_management_engagement_path(@adr.engagement), class: "text-indigo-600 hover:text-indigo-900" %>
     ／ ステータス: <%= adr_status_label(@adr.status) %>

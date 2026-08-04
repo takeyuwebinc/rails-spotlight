@@ -65,6 +65,25 @@ module AdrManagement
       "#{engagement.code.upcase}-#{number}"
     end
 
+    # URL では DB の id ではなく ADR 番号を用いる（用語集で id の対外露出は禁止）
+    def to_param
+      display_number
+    end
+
+    # 表示用 ADR 番号（例: SPOTLIGHT-RAILS-12）から ADR を引く。案件 code は
+    # ハイフンを含み得るため、末尾のハイフン以降を連番として分割する
+    def self.find_by_display_number!(value)
+      code, separator, number = value.to_s.rpartition("-")
+      unless separator == "-" && number.match?(/\A\d+\z/)
+        raise ActiveRecord::RecordNotFound, "ADR 番号の形式が不正です: #{value}"
+      end
+
+      engagement = Engagement.where("LOWER(code) = ?", code.downcase).first
+      raise ActiveRecord::RecordNotFound, "案件（code: #{code}）が存在しません" unless engagement
+
+      engagement.adrs.find_by!(number: number)
+    end
+
     def supersession_involved?
       supersessions_as_superseding.exists? || supersession_as_superseded.present?
     end
