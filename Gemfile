@@ -95,8 +95,8 @@ gem "omniauth"
 gem "omniauth-google-oauth2"
 gem "omniauth-rails_csrf_protection"
 
-gem "sentry-ruby"
-gem "sentry-rails"
+gem "sentry-ruby", "~> 6.6"
+gem "sentry-rails", "~> 6.6"
 
 # RSS parsing
 gem "rss"
