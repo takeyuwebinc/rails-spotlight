@@ -33,6 +33,8 @@
   // Uncomment to connect as root instead. More info: https://containers.dev/implementors/json_reference/#remoteUser.
   // "remoteUser": "root",
 
+  // Ensure host directories exist before bind mount (avoids root-owned empty dirs).
+  "initializeCommand": "mkdir -p ${localEnv:HOME}/.config/gh",
 
   // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bin/claude-setup.sh && bin/setup --skip-server",
@@ -40,6 +42,7 @@
   // Mount host's ~/.claude if it exists
   "mounts": [
     "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
-    "source=${localEnv:HOME}/.claude,target=${localEnv:HOME}/.claude,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.claude,target=${localEnv:HOME}/.claude,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
   ]
 }
