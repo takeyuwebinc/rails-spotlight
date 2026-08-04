@@ -90,6 +90,15 @@ Rails.application.routes.draw do
         resources :projects, except: %i[show]
       end
       resources :adrs
+      resource :search_quality, only: %i[show], controller: "search_quality"
+      resources :search_logs, only: [] do
+        resource :miss_report, only: %i[create], controller: "search_log_miss_reports"
+        resource :review, only: %i[create], controller: "search_log_reviews"
+      end
+      resources :search_miss_reports, only: [] do
+        resource :golden_query, only: %i[create], controller: "search_miss_report_golden_queries"
+        resource :review, only: %i[create], controller: "search_miss_report_reviews"
+      end
     end
     resources :agent_chats, only: %i[index show create] do
       resources :messages, only: %i[create], controller: "agent_chat_messages"

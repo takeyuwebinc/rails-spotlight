@@ -14,5 +14,7 @@ module AdrManagement
     validates :origin, presence: true
 
     scope :recent_first, -> { order(created_at: :desc, id: :desc) }
+    # 管理画面のレビューキュー対象: ゴールデンクエリ採用等が未処理の報告
+    scope :pending_review, -> { where(reviewed_at: nil) }
   end
 end

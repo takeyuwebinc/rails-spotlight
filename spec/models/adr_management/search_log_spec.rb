@@ -23,6 +23,16 @@ RSpec.describe AdrManagement::SearchLog do
     end
   end
 
+  describe ".pending_review" do
+    it "returns zero-result logs that have not been reviewed" do
+      pending = create(:adr_management_search_log, result_count: 0)
+      create(:adr_management_search_log, result_count: 0, reviewed_at: Time.current)
+      create(:adr_management_search_log, result_count: 3)
+
+      expect(described_class.pending_review).to eq([ pending ])
+    end
+  end
+
   describe ".summary" do
     it "aggregates totals, per-mode counts and zero-result counts within the period" do
       create(:adr_management_search_log, mode: "natural_language", result_count: 3)

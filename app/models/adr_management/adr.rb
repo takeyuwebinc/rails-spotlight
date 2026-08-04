@@ -42,6 +42,8 @@ module AdrManagement
       dependent: :destroy
     has_many :chunks, class_name: "AdrManagement::AdrChunk",
       dependent: :delete_all
+    has_many :golden_queries, class_name: "AdrManagement::GoldenQuery",
+      dependent: :destroy
     has_many :reevaluation_checks, class_name: "AdrManagement::ReevaluationCheck",
       dependent: :delete_all
 
