@@ -31,4 +31,32 @@ RSpec.describe AdrManagement::BuildSearchQualityReport do
     expect(text).to include("0件検索: 0 件")
     expect(text).not_to include("%")
   end
+
+  it "includes evaluation results, auto-check outcome, review queue counts and the admin URL" do
+    create(:adr_management_search_log, result_count: 0)
+    create(:adr_management_search_miss_report)
+    missed_adr = create(:adr_management_adr)
+    evaluation = create(:adr_management_search_evaluation, recall: 0.5, details: [
+      { "query" => "外れたクエリ", "hits" => [], "missed" => [ missed_adr.id ] }
+    ])
+
+    result = described_class.perform(
+      since: 30.days.ago,
+      evaluation: evaluation,
+      check: { result: "suspected", note: "計測値" }
+    )
+
+    text = result.data[:text]
+    expect(text).to include("recall@10: 0.500")
+    expect(text).to include("miss: 外れたクエリ")
+    expect(text).to include("自動点検（SPOTLIGHT-RAILS-38）: suspected")
+    expect(text).to include("レビュー待ち: 0件検索 1 件 / 取り逃がし報告 1 件")
+    expect(text).to include("https://takeyuweb.co.jp/admin/adr/search_quality")
+  end
+
+  it "notes a degraded evaluation when none is given" do
+    result = described_class.perform(since: 30.days.ago)
+
+    expect(result.data[:text]).to include("ゴールデンクエリ評価: 未実行")
+  end
 end

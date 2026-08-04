@@ -2,28 +2,23 @@
 
 module AdrManagement
   # ゴールデンクエリ（自然言語クエリと期待 ADR の組）で検索品質を測定する。
-  # 各クエリで自然言語検索を実行し、期待 ADR の順位（上位 K 件内なら hit）と
-  # 全体の recall@K を返す。検索実装の変更（チャンク戦略・モデル・方式）の
-  # 前後で実行し、劣化を検知する回帰テストとして使う。
+  # クエリごとに自然言語検索を実行し、期待 ADR の順位（上位 K 件内なら hit）と
+  # 全体の recall@K を返す。検索実装の変更・コーパスの変化による劣化を
+  # 検知する回帰テストとして使う。
   class EvaluateGoldenQueries < ApplicationAction
     K = 10
 
     QueryResult = Data.define(:query, :hits, :missed)
     Hit = Data.define(:adr, :rank, :score)
 
-    # entries: [ { "query" => String, "expect" => [ { "engagement" => code, "number" => Integer } ] } ]
-    def initialize(entries:, embedding_client: Sakura::EmbeddingClient.new)
-      @entries = entries
+    def initialize(embedding_client: Sakura::EmbeddingClient.new)
       @embedding_client = embedding_client
     end
 
     def perform
-      expected_sets = resolve_expected_sets
-      return failure(expected_sets) if expected_sets.is_a?(OperationError)
-
       results = []
-      @entries.each_with_index do |entry, index|
-        result = evaluate(entry.fetch("query"), expected_sets.fetch(index))
+      grouped_expectations.each do |query, expected_adrs|
+        result = evaluate(query, expected_adrs)
         return result if result.is_a?(ActionResult)
 
         results << result
@@ -34,30 +29,18 @@ module AdrManagement
       success({
         results: results,
         recall: expected_total.zero? ? nil : hit_total.fdiv(expected_total),
-        k: K
+        k: K,
+        details: build_details(results)
       })
     end
 
     private
 
-    # 期待 ADR の解決失敗は評価続行せずエラーにする。存在しない ADR を
-    # 黙って除外すると、ADR の削除・番号誤記で recall が実態より高く出る
-    def resolve_expected_sets
-      @entries.map do |entry|
-        entry.fetch("expect").map do |ref|
-          engagement = Engagement.where("LOWER(code) = ?", ref.fetch("engagement").downcase).first
-          adr = engagement&.adrs&.find_by(number: ref.fetch("number"))
-          unless adr
-            return OperationError.build(
-              kind: :invalid_input,
-              param: "expect",
-              message: "ゴールデンクエリの期待 ADR が存在しません: #{ref["engagement"]}-#{ref["number"]}",
-              next_action: "ゴールデンクエリ定義から削除するか、正しい案件 code・番号に修正してください"
-            )
-          end
-          adr
-        end
-      end
+    # 同じクエリ文の期待 ADR は1回の検索でまとめて判定する
+    def grouped_expectations
+      GoldenQuery.includes(:adr).order(:id)
+        .group_by(&:query)
+        .transform_values { |entries| entries.map(&:adr) }
     end
 
     def evaluate(query, expected_adrs)
@@ -78,6 +61,17 @@ module AdrManagement
         end
       end
       QueryResult.new(query: query, hits: hits, missed: missed)
+    end
+
+    # 評価履歴（SearchEvaluation.details）に保存できる形の内訳
+    def build_details(results)
+      results.map do |result|
+        {
+          query: result.query,
+          hits: result.hits.map { |h| { adr_id: h.adr.id, rank: h.rank, score: h.score.round(4) } },
+          missed: result.missed.map(&:id)
+        }
+      end
     end
   end
 end

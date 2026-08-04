@@ -15,6 +15,10 @@ module AdrManagement
       numericality: { only_integer: true, greater_than_or_equal_to: 0 }
     validates :origin, presence: true
 
+    # 管理画面のレビューキュー対象: 取り逃がし判定が未処理の0件検索
+    scope :pending_review, -> { where(result_count: 0, reviewed_at: nil) }
+    scope :recent_first, -> { order(created_at: :desc, id: :desc) }
+
     # 期間内の検索実行数（モード別）と0件検索の数を集計して返す
     def self.summary(since:)
       logs = where(created_at: since..)

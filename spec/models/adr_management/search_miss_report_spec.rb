@@ -15,4 +15,13 @@ RSpec.describe AdrManagement::SearchMissReport do
       expect(build(:adr_management_search_miss_report, origin: nil)).not_to be_valid
     end
   end
+
+  describe ".pending_review" do
+    it "returns reports that have not been reviewed" do
+      pending = create(:adr_management_search_miss_report)
+      create(:adr_management_search_miss_report, reviewed_at: Time.current)
+
+      expect(described_class.pending_review).to eq([ pending ])
+    end
+  end
 end

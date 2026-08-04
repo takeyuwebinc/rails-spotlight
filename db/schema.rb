@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_07_23_100001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_100002) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -100,6 +100,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_100001) do
     t.index ["code"], name: "index_adr_management_engagements_on_code", unique: true
   end
 
+  create_table "adr_management_golden_queries", force: :cascade do |t|
+    t.integer "adr_id", null: false
+    t.datetime "created_at", null: false
+    t.text "note"
+    t.string "origin", null: false
+    t.text "query", null: false
+    t.index ["adr_id"], name: "idx_adr_golden_queries_on_adr_id"
+  end
+
   create_table "adr_management_projects", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.date "end_date"
@@ -120,6 +129,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_100001) do
     t.index ["adr_id", "checked_on"], name: "idx_adr_reevaluation_checks_on_adr_and_checked_on"
   end
 
+  create_table "adr_management_search_evaluations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.json "details"
+    t.integer "k", null: false
+    t.string "origin", null: false
+    t.float "recall", null: false
+    t.index ["created_at"], name: "idx_adr_search_evaluations_on_created_at"
+  end
+
   create_table "adr_management_search_logs", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.integer "engagement_id"
@@ -130,6 +148,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_100001) do
     t.text "query"
     t.integer "result_count", null: false
     t.json "results"
+    t.datetime "reviewed_at"
     t.index ["created_at"], name: "idx_adr_search_logs_on_created_at"
   end
 
@@ -139,6 +158,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_07_23_100001) do
     t.text "note", null: false
     t.string "origin", null: false
     t.text "query", null: false
+    t.datetime "reviewed_at"
     t.index ["created_at"], name: "idx_adr_search_miss_reports_on_created_at"
   end
 
