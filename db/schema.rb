@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_100002) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_04_110001) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -49,6 +49,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_100002) do
     t.datetime "updated_at", null: false
     t.index ["adr_id"], name: "index_adr_management_adr_chunks_on_adr_id"
     t.index ["state"], name: "index_adr_management_adr_chunks_on_state"
+  end
+
+  create_table "adr_management_adr_references", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.integer "source_adr_id", null: false
+    t.integer "target_adr_id", null: false
+    t.index ["source_adr_id", "target_adr_id"], name: "idx_adr_references_on_source_and_target", unique: true
+    t.index ["target_adr_id"], name: "idx_adr_references_on_target"
   end
 
   create_table "adr_management_adr_revisions", force: :cascade do |t|

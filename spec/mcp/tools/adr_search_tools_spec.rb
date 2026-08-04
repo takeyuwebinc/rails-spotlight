@@ -329,6 +329,25 @@ RSpec.describe "AdrManagement Search Tools" do
       expect(old_text).to include("この ADR を置き換えた決定", "新決定")
     end
 
+    it "shows related adrs in both directions with their statuses" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      target = create(:adr_management_adr, engagement: engagement, title: "参照先決定")
+      source = create(:adr_management_adr, engagement: engagement, title: "参照元決定",
+        context: "FABBLE-#{target.number} の決定を前提とする")
+      AdrManagement::SyncAdrReferences.perform(adr: source)
+
+      source_text = response_text(described_class.call(
+        engagement_code: "fabble", number: source.number, server_context: server_context
+      ))
+      expect(source_text).to include("関連 ADR", "この ADR が参照している決定", "参照先決定")
+
+      target_text = response_text(described_class.call(
+        engagement_code: "fabble", number: target.number, server_context: server_context
+      ))
+      expect(target_text).to include("関連 ADR", "この ADR を参照している決定", "参照元決定")
+      expect(target_text).to include("[accepted/high]")
+    end
+
     it "finds the engagement case-insensitively (uppercase display form)" do
       engagement = create(:adr_management_engagement, code: "fabble")
       adr = create(:adr_management_adr, engagement: engagement, title: "認証方式の選定")

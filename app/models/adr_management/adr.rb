@@ -22,6 +22,12 @@ module AdrManagement
       reference_links
     ].freeze
 
+    # ADR 間参照の抽出対象となる本文フィールド
+    REFERENCE_SOURCE_ATTRIBUTES = %w[
+      context decision consequences alternatives reevaluation_conditions
+      reference_links
+    ].freeze
+
     belongs_to :engagement, class_name: "AdrManagement::Engagement"
     belongs_to :project, class_name: "AdrManagement::Project", optional: true
 
@@ -37,6 +43,13 @@ module AdrManagement
       source: :superseded_adr
     has_one :superseding_adr, through: :supersession_as_superseded,
       source: :superseding_adr
+
+    has_many :outgoing_references, class_name: "AdrManagement::AdrReference",
+      foreign_key: :source_adr_id, inverse_of: :source_adr, dependent: :delete_all
+    has_many :incoming_references, class_name: "AdrManagement::AdrReference",
+      foreign_key: :target_adr_id, inverse_of: :target_adr, dependent: :delete_all
+    has_many :referenced_adrs, through: :outgoing_references, source: :target_adr
+    has_many :referencing_adrs, through: :incoming_references, source: :source_adr
 
     has_many :revisions, class_name: "AdrManagement::AdrRevision",
       dependent: :destroy
@@ -70,18 +83,68 @@ module AdrManagement
       display_number
     end
 
-    # 表示用 ADR 番号（例: SPOTLIGHT-RAILS-12）から ADR を引く。案件 code は
-    # ハイフンを含み得るため、末尾のハイフン以降を連番として分割する
-    def self.find_by_display_number!(value)
-      code, separator, number = value.to_s.rpartition("-")
-      unless separator == "-" && number.match?(/\A\d+\z/)
-        raise ActiveRecord::RecordNotFound, "ADR 番号の形式が不正です: #{value}"
-      end
+    # 本文テキスト中で ADR 番号表記の候補となるトークン。単語境界で区切った
+    # 英数字とハイフンの最大連続列のうち、英字で始まり「-連番」で終わるもの
+    DISPLAY_NUMBER_TOKEN = /(?<![A-Za-z0-9-])[A-Za-z][A-Za-z0-9-]*-\d+(?![A-Za-z0-9-])/
 
-      engagement = Engagement.where("LOWER(code) = ?", code.downcase).first
+    # 表示用 ADR 番号のトークンを [案件 code（小文字）, 連番] に分割する。
+    # 案件 code はハイフンを含み得るため、末尾のハイフン以降を連番とする。
+    # 形式が不正な場合は nil を返す
+    def self.split_display_number(value)
+      code, separator, number = value.to_s.rpartition("-")
+      return nil unless separator == "-" && code.present? && number.match?(/\A\d+\z/)
+
+      [ code.downcase, Integer(number, 10) ]
+    end
+
+    # 表示用 ADR 番号（例: SPOTLIGHT-RAILS-12）から ADR を引く
+    def self.find_by_display_number!(value)
+      code_and_number = split_display_number(value)
+      raise ActiveRecord::RecordNotFound, "ADR 番号の形式が不正です: #{value}" unless code_and_number
+
+      code, number = code_and_number
+      engagement = Engagement.where("LOWER(code) = ?", code).first
       raise ActiveRecord::RecordNotFound, "案件（code: #{code}）が存在しません" unless engagement
 
       engagement.adrs.find_by!(number: number)
+    end
+
+    # テキスト中の ADR 番号表記を解決する。トークン全体が「実在する案件 code
+    # ＋実在する連番」に一致する場合のみ解決し（大文字小文字非依存）、
+    # トークン内部の部分一致は行わない。戻り値:
+    #   references: 解決できた表記（トークン文字列 => Adr）
+    #   unknown_numbers: 案件 code は実在するが連番が存在しない表記の配列
+    # 案件 code 自体が実在しない表記（UTF-8 等の一般表記）はどちらにも含めない
+    def self.resolve_text_references(*texts)
+      tokens = texts.compact.flat_map { |text| text.scan(DISPLAY_NUMBER_TOKEN) }.uniq
+      candidates = tokens.filter_map do |token|
+        code, number = split_display_number(token)
+        code && { token: token, code: code, number: number }
+      end
+      return { references: {}, unknown_numbers: [] } if candidates.empty?
+
+      engagements = Engagement.where("LOWER(code) IN (?)", candidates.map { |c| c[:code] }.uniq)
+        .index_by { |engagement| engagement.code.downcase }
+      adr_scope = candidates.filter_map do |candidate|
+        engagement = engagements[candidate[:code]]
+        engagement && Adr.where(engagement_id: engagement.id, number: candidate[:number])
+      end.reduce(:or)
+      adrs = adr_scope ? adr_scope.to_a : []
+
+      references = {}
+      unknown_numbers = []
+      candidates.each do |candidate|
+        engagement = engagements[candidate[:code]]
+        next unless engagement
+
+        adr = adrs.find { |a| a.engagement_id == engagement.id && a.number == candidate[:number] }
+        if adr
+          references[candidate[:token]] = adr
+        else
+          unknown_numbers << candidate[:token]
+        end
+      end
+      { references: references, unknown_numbers: unknown_numbers }
     end
 
     def supersession_involved?

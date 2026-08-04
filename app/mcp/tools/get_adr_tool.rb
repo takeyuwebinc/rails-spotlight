@@ -55,6 +55,7 @@ module Tools
       sections << "## 再評価条件\n#{adr.reevaluation_conditions}" if adr.reevaluation_conditions.present?
       sections << "## 参考資料\n#{adr.reference_links}" if adr.reference_links.present?
       sections << supersession_section(adr)
+      sections << references_section(adr)
       sections << checks_section(adr)
       sections << revisions_section(adr)
       sections.compact.join("\n\n")
@@ -73,6 +74,23 @@ module Tools
       return nil if lines.empty?
 
       "## 置換変遷\n#{lines.join("\n")}"
+    end
+
+    def self.references_section(adr)
+      referenced = adr.referenced_adrs.includes(:engagement).to_a
+      referencing = adr.referencing_adrs.includes(:engagement).to_a
+      lines = []
+      if referenced.any?
+        lines << "この ADR が参照している決定:"
+        referenced.each { |target| lines << adr_summary_line(target) }
+      end
+      if referencing.any?
+        lines << "この ADR を参照している決定:"
+        referencing.each { |source| lines << adr_summary_line(source) }
+      end
+      return nil if lines.empty?
+
+      "## 関連 ADR\n#{lines.join("\n")}"
     end
 
     def self.checks_section(adr)

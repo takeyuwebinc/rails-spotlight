@@ -72,6 +72,27 @@ RSpec.describe "AdrManagement Write Tools" do
       text = response_text(described_class.call(**base_params, project_name: "nope"))
       expect(text).to include("種別: master_not_found", "原因パラメータ: project_name", "create_adr_project_tool")
     end
+
+    it "notes resolved references and warns about unknown numbers of existing codes" do
+      target = create(:adr_management_adr, engagement: engagement)
+
+      text = response_text(described_class.call(
+        **base_params,
+        context: "FABBLE-#{target.number} を前提とし、FABBLE-9999 にも触れる。UTF-8 は無関係"
+      ))
+
+      expect(text).to include("References: FABBLE-#{target.number}")
+      expect(text).to include("Warning", "FABBLE-9999")
+      expect(text).not_to include("UTF-8")
+      registered = engagement.adrs.order(:number).last
+      expect(registered.referenced_adrs).to eq([ target ])
+    end
+
+    it "omits reference notes when the body has no adr references" do
+      text = response_text(described_class.call(**base_params))
+
+      expect(text).not_to include("References:", "Warning")
+    end
   end
 
   describe Tools::UpdateAdrTool do
@@ -113,6 +134,20 @@ RSpec.describe "AdrManagement Write Tools" do
         engagement_code: "fabble", number: 999, title: "x", server_context: server_context
       ))
       expect(text).to include("種別: master_not_found")
+    end
+
+    it "notes resolved references and warns about unknown numbers after the update" do
+      target = create(:adr_management_adr, engagement: engagement)
+
+      text = response_text(described_class.call(
+        engagement_code: "fabble", number: adr.number,
+        context: "FABBLE-#{target.number} を前提とする。FABBLE-9999 は誤記",
+        server_context: server_context
+      ))
+
+      expect(text).to include("References: FABBLE-#{target.number}")
+      expect(text).to include("Warning", "FABBLE-9999")
+      expect(adr.referenced_adrs.reload).to eq([ target ])
     end
   end
 end

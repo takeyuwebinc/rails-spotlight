@@ -125,4 +125,80 @@ RSpec.describe AdrManagement::Adr, type: :model do
       expect(create(:adr_management_adr).supersession_involved?).to be(false)
     end
   end
+
+  describe ".split_display_number" do
+    it "splits a display number into lowercase code and integer number" do
+      expect(described_class.split_display_number("SPOTLIGHT-RAILS-12")).to eq([ "spotlight-rails", 12 ])
+    end
+
+    it "returns nil for malformed values" do
+      expect(described_class.split_display_number("SPOTLIGHT-RAILS")).to be_nil
+      expect(described_class.split_display_number("-12")).to be_nil
+      expect(described_class.split_display_number("")).to be_nil
+    end
+  end
+
+  describe ".resolve_text_references" do
+    let!(:engagement) { create(:adr_management_engagement, code: "spotlight-rails") }
+    let!(:adr) { create(:adr_management_adr, engagement: engagement) }
+
+    it "resolves tokens whose code and number both exist, case-insensitively" do
+      result = described_class.resolve_text_references(
+        "本文中で SPOTLIGHT-RAILS-#{adr.number} と spotlight-rails-#{adr.number} を参照"
+      )
+      expect(result[:references].values.uniq).to eq([ adr ])
+      expect(result[:references].keys).to contain_exactly(
+        "SPOTLIGHT-RAILS-#{adr.number}", "spotlight-rails-#{adr.number}"
+      )
+    end
+
+    it "reports tokens with an existing code but missing number as unknown" do
+      result = described_class.resolve_text_references("SPOTLIGHT-RAILS-9999 を参照")
+      expect(result[:references]).to be_empty
+      expect(result[:unknown_numbers]).to eq([ "SPOTLIGHT-RAILS-9999" ])
+    end
+
+    it "ignores tokens whose code does not exist" do
+      result = described_class.resolve_text_references("UTF-8 や SHA-256 は一般表記")
+      expect(result[:references]).to be_empty
+      expect(result[:unknown_numbers]).to be_empty
+    end
+
+    it "does not resolve partial matches inside a longer token" do
+      rails_engagement = create(:adr_management_engagement, code: "rails")
+      create(:adr_management_adr, engagement: rails_engagement, number: adr.number)
+
+      result = described_class.resolve_text_references("SPOTLIGHT-RAILS-#{adr.number}")
+      expect(result[:references].values).to eq([ adr ])
+    end
+
+    it "collects tokens across multiple texts and ignores nils" do
+      result = described_class.resolve_text_references(nil, "SPOTLIGHT-RAILS-#{adr.number}", nil)
+      expect(result[:references].values).to eq([ adr ])
+    end
+  end
+
+  describe "reference associations" do
+    let!(:source) { create(:adr_management_adr) }
+    let!(:target) { create(:adr_management_adr) }
+
+    before do
+      AdrManagement::AdrReference.create!(source_adr: source, target_adr: target)
+    end
+
+    it "exposes references in both directions" do
+      expect(source.referenced_adrs).to eq([ target ])
+      expect(target.referencing_adrs).to eq([ source ])
+    end
+
+    it "allows deleting a referenced adr, removing only the reference records" do
+      expect { target.destroy! }.to change(AdrManagement::AdrReference, :count).by(-1)
+      expect(source.reload).to be_persisted
+    end
+
+    it "allows deleting a referencing adr, removing only the reference records" do
+      expect { source.destroy! }.to change(AdrManagement::AdrReference, :count).by(-1)
+      expect(target.reload).to be_persisted
+    end
+  end
 end

@@ -121,11 +121,13 @@ module Tools
       else
         ""
       end
+      notes = reference_notes(adr)
+      reference_note = notes.present? ? "\n#{notes}" : ""
       text_response(
         "ADR registered successfully:\n" \
         "- Number: #{adr.display_number}\n" \
         "- Title: #{adr.title}\n" \
-        "- Status: #{adr.status}#{superseded_note}"
+        "- Status: #{adr.status}#{superseded_note}#{reference_note}"
       )
     rescue => e
       text_response("Error registering ADR: #{e.message}")

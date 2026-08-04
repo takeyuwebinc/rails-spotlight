@@ -94,12 +94,14 @@ module Tools
       return error_response(result.errors) if result.failure?
 
       updated = result.data
+      notes = reference_notes(updated)
+      reference_note = notes.present? ? "\n#{notes}" : ""
       text_response(
         "ADR updated successfully:\n" \
         "- Number: #{updated.display_number}\n" \
         "- Title: #{updated.title}\n" \
         "- Status: #{updated.status}\n" \
-        "- Updated fields: #{updates.keys.join(', ')}"
+        "- Updated fields: #{updates.keys.join(', ')}#{reference_note}"
       )
     rescue => e
       text_response("Error updating ADR: #{e.message}")

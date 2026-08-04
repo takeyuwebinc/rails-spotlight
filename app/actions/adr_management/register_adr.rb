@@ -115,6 +115,7 @@ module AdrManagement
           )
         )
         adr.record_revision!(change_type: "created", origin: @origin)
+        SyncAdrReferences.perform(adr: adr)
 
         superseded_adrs.each do |superseded|
           before = superseded.snapshot_attributes

@@ -60,6 +60,25 @@ module Tools
       "- #{parts.join(' ')}"
     end
 
+    # 書き込み応答用の参照結果の注記。解決できた参照（参照テーブル由来）と、
+    # 案件 code は実在するが連番が存在しない表記への警告を返す。実在しない
+    # code の表記（UTF-8 等の一般表記）は ADR 参照とみなさず警告しない
+    def reference_notes(adr)
+      notes = []
+      referenced = adr.referenced_adrs.includes(:engagement).to_a
+      if referenced.any?
+        notes << "- References: #{referenced.map(&:display_number).join(', ')}"
+      end
+
+      texts = AdrManagement::Adr::REFERENCE_SOURCE_ATTRIBUTES.map { |attribute| adr.public_send(attribute) }
+      unknown = AdrManagement::Adr.resolve_text_references(*texts)[:unknown_numbers]
+      if unknown.any?
+        notes << "- Warning: 本文中の ADR 番号表記のうち、案件は実在するが該当番号の ADR が存在しません: " \
+                 "#{unknown.join(', ')}（番号の誤記でないか確認してください）"
+      end
+      notes.join("\n")
+    end
+
     def parse_date_or_error(value, param)
       return [ nil, nil ] if value.blank?
 
