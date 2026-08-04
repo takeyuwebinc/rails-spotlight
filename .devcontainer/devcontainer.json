@@ -37,12 +37,13 @@
   "initializeCommand": "mkdir -p ${localEnv:HOME}/.config/gh",
 
   // Use 'postCreateCommand' to run commands after the container is created.
-  "postCreateCommand": "bin/claude-setup.sh && bin/setup --skip-server",
+  "postCreateCommand": ".devcontainer/post-create.sh && bin/setup --skip-server",
 
   // Mount host's ~/.claude if it exists
   "mounts": [
     "source=claude-code-bashhistory-${devcontainerId},target=/commandhistory,type=volume",
     "source=${localEnv:HOME}/.claude,target=${localEnv:HOME}/.claude,type=bind,consistency=cached",
-    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached"
+    "source=${localEnv:HOME}/.config/gh,target=/home/vscode/.config/gh,type=bind,consistency=cached",
+    "source=${localEnv:HOME}/.sentryclirc,target=/home/vscode/.sentryclirc,type=bind,consistency=cached"
   ]
 }
