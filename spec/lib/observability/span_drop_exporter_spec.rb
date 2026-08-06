@@ -9,8 +9,11 @@ RSpec.describe Observability::SpanDropExporter do
     described_class.new(inner_exporter, name_prefixes: %w[SolidQueue:: SolidCache:: SolidCable::])
   end
 
-  def build_span_data(name)
-    OpenTelemetry::SDK::Trace::SpanData.new.tap { |span_data| span_data.name = name }
+  def build_span_data(name, attributes: nil)
+    OpenTelemetry::SDK::Trace::SpanData.new.tap do |span_data|
+      span_data.name = name
+      span_data.attributes = attributes
+    end
   end
 
   describe "#export" do
@@ -39,6 +42,18 @@ RSpec.describe Observability::SpanDropExporter do
       exporter.export([ build_span_data("Admin::SolidQueueDashboard#show") ])
 
       expect(inner_exporter.finished_spans.map(&:name)).to eq([ "Admin::SolidQueueDashboard#show" ])
+    end
+
+    it "code.namespace 属性がプレフィックスに一致するスパンを除外する" do
+      exporter.export(
+        [
+          build_span_data("ActiveRecord.transaction", attributes: { "code.namespace" => "SolidQueue::ReadyExecution" }),
+          build_span_data("ActiveRecord.transaction", attributes: { "code.namespace" => "ApplicationRecord" })
+        ]
+      )
+
+      expect(inner_exporter.finished_spans.size).to eq(1)
+      expect(inner_exporter.finished_spans.first.attributes).to eq({ "code.namespace" => "ApplicationRecord" })
     end
   end
 end
