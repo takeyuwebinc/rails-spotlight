@@ -35,6 +35,7 @@ module AdrManagement
       lines.concat(evaluation_section)
       lines.concat(check_section)
       lines.concat(review_queue_section)
+      lines.concat(quality_section)
       lines << ""
       lines.concat(judgment_guide)
       lines.join("\n")
@@ -80,6 +81,18 @@ module AdrManagement
       [
         "- レビュー待ち: 0件検索 #{pending_logs} 件 / 取り逃がし報告 #{pending_reports} 件",
         "  - 管理画面で処理: https://#{ADMIN_HOST}/admin/adr/search_quality"
+      ]
+    end
+
+    # ADR 品質所見のサマリ。誤検知率が高止まりする場合は評価基準を見直す
+    # （SPOTLIGHT-RAILS-46 の再評価条件の観測データ）
+    def quality_section
+      quality = QualityAssessment.findings_summary(since: @since)
+      rate = quality[:dismissed_rate] ? format("%.1f%%", quality[:dismissed_rate] * 100) : "未処理"
+      [
+        "- 品質所見: 新規 #{quality[:new_findings]} 件 / 未処理 #{quality[:open_findings]} 件 / " \
+        "処理内訳 修正 #{quality[:addressed]}・誤検知 #{quality[:dismissed]}（誤検知率 #{rate}）",
+        "  - 管理画面で処理: https://#{ADMIN_HOST}/admin/adr/quality"
       ]
     end
 

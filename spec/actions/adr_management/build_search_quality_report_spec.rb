@@ -59,4 +59,19 @@ RSpec.describe AdrManagement::BuildSearchQualityReport do
 
     expect(result.data[:text]).to include("ゴールデンクエリ評価: 未実行")
   end
+
+  it "includes the quality findings summary with the dismissed rate and the admin URL" do
+    create(:adr_management_quality_assessment, findings: [
+      { "code" => "alternatives_missing", "field" => "alternatives", "message" => "m1" },
+      { "code" => "status_quo_missing", "field" => "alternatives",
+        "message" => "m2", "review_result" => "addressed" },
+      { "code" => "generic_knowledge", "field" => "decision",
+        "message" => "m3", "review_result" => "dismissed" }
+    ])
+
+    text = described_class.perform(since: 30.days.ago).data[:text]
+
+    expect(text).to include("品質所見: 新規 3 件 / 未処理 1 件 / 処理内訳 修正 1・誤検知 1（誤検知率 50.0%）")
+    expect(text).to include("https://takeyuweb.co.jp/admin/adr/quality")
+  end
 end
