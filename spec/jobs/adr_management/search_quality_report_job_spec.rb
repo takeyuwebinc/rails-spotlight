@@ -35,7 +35,7 @@ RSpec.describe AdrManagement::SearchQualityReportJob do
 
     expect(client).to receive(:create_issue).with(
       repo: "takeyuwebinc/rails-spotlight",
-      title: "ADR検索 品質レポート #{Date.current.strftime("%Y-%m")}",
+      title: "ADR検索品質レポート #{Date.current.strftime("%Y-%m")}",
       body: include("recall@10: 1.000").and(include("自動点検（SPOTLIGHT-RAILS-38）: no_trigger")),
       labels: [ "search-quality" ]
     )

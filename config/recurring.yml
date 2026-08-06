@@ -1,5 +1,5 @@
 production:
-  # ADR 検索の品質レポート（毎月1日 9時 JST。TZ は deploy.yml で設定）
+  # ADR の検索品質レポート（毎月1日 9時 JST。TZ は deploy.yml で設定）
   adr_search_quality_report:
     class: AdrManagement::SearchQualityReportJob
     queue: default

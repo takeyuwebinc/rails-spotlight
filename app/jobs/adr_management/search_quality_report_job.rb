@@ -32,7 +32,7 @@ module AdrManagement
       )
       Github::IssueClient.new.create_issue(
         repo: REPO,
-        title: "ADR検索 品質レポート #{Date.current.strftime("%Y-%m")}",
+        title: "ADR検索品質レポート #{Date.current.strftime("%Y-%m")}",
         body: report.data[:text],
         labels: [ LABEL ]
       )

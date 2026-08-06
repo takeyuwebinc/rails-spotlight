@@ -33,7 +33,7 @@ module AdrManagement
     scope :stale, -> { where(state: "stale") }
 
     # ADR 本文から埋め込み対象のチャンク（kind と content の組）を組み立てる。
-    # 各チャンクにタイトルを前置し、チャンク単独でどの決定の断片かが
+    # 各チャンクにタイトルを前置し、チャンク単独でどの決定に属するかが
     # 埋め込み空間上で判別できるようにする。
     def self.build_contents_for(adr)
       CHUNK_SOURCES.flat_map do |kind, extractor|
