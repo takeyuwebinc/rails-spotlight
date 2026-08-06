@@ -22,6 +22,15 @@ RSpec.describe "Admin::AdrManagement::Adrs", type: :request do
       expect(response.body).not_to include("提案中の決定")
       expect(response.body).not_to include("他案件の決定")
     end
+
+    it "matches the keyword against generated search aliases" do
+      create(:adr_management_adr, engagement: engagement, title: "payload 検証方式の選定",
+        search_aliases: "ペイロード")
+
+      get admin_adr_management_adrs_path, params: { keyword: "ペイロード" }
+
+      expect(response.body).to include("payload 検証方式の選定")
+    end
   end
 
   describe "GET /admin/adr/adrs/:id" do
@@ -34,6 +43,14 @@ RSpec.describe "Admin::AdrManagement::Adrs", type: :request do
 
       expect(response.body).to include("<strong>強調された制約</strong>")
       expect(response.body).to include("oauth:Agent")
+    end
+
+    it "shows the generated search aliases" do
+      adr = create(:adr_management_adr, engagement: engagement, search_aliases: "ペイロード\nスキーマ")
+
+      get admin_adr_management_adr_path(adr)
+
+      expect(response.body).to include("検索エイリアス", "ペイロード", "スキーマ")
     end
 
     it "uses the ADR number in the URL instead of the database id" do

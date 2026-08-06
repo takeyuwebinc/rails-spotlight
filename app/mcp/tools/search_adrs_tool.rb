@@ -27,7 +27,9 @@ module Tools
         },
         keyword: {
           type: "string",
-          description: "Keyword for partial match against title and body fields (used when query is not given)"
+          description: "Keyword for partial match against title and body fields (used when query is not given). " \
+                       "Generated aliases (katakana/English spelling variants of terms in the body) are also " \
+                       "matched; results found only via an alias are marked in the response"
         },
         engagement_code: {
           type: "string",
@@ -138,31 +140,39 @@ module Tools
       adrs = AdrManagement::Adr.includes(:engagement)
       adrs = adrs.where(engagement: filters[:engagement]) if filters[:engagement]
       adrs = apply_attribute_filters(adrs, filters)
-
-      if keyword.present?
-        pattern = "%#{ActiveRecord::Base.sanitize_sql_like(keyword)}%"
-        adrs = adrs.where(
-          [ "title", "context", "decision", "consequences", "alternatives" ]
-            .map { |column| "#{column} LIKE :pattern" }.join(" OR "),
-          pattern: pattern
-        )
-      end
+      adrs = adrs.keyword_match(keyword) if keyword.present?
 
       total = adrs.count
       adrs = adrs.order(decided_on: :desc, id: :desc).limit(limit)
+      alias_only = alias_only_matches(adrs, keyword)
       record_search_log(
         mode: "keyword", keyword: keyword, filters: filters, origin: origin,
-        results: adrs.map { |adr| { adr_id: adr.id } },
+        results: adrs.map do |adr|
+          entry = { adr_id: adr.id }
+          entry[:match] = "alias" if alias_only.include?(adr.id)
+          entry
+        end,
         result_count: total
       )
       return empty_result_response(cross_engagement: filters[:engagement].nil?) if total.zero?
 
-      list = adrs.map { |adr| adr_summary_line(adr) }.join("\n")
+      list = adrs.map do |adr|
+        line = adr_summary_line(adr)
+        alias_only.include?(adr.id) ? "#{line} ※エイリアス一致（本文は別表記）" : line
+      end.join("\n")
       note = total > limit ? "\n（他 #{total - limit} 件。日付・ステータス等で絞り込んでください）" : ""
       text_response(
         "Found #{total} ADR(s) (keyword/attribute search, newest first):\n#{list}#{note}\n\n" \
         "全文は get_adr_tool（engagement_code と number を指定）で参照できます。"
       )
+    end
+
+    # 本文に一致箇所がなくエイリアスでのみ一致した ADR の id。利用者が本文を
+    # 検索語で探しても見つからないため、応答での明示と観測のために区別する
+    def self.alias_only_matches(adrs, keyword)
+      return Set.new if keyword.blank?
+
+      adrs.reject { |adr| adr.body_matches_keyword?(keyword) }.map(&:id).to_set
     end
 
     def self.apply_attribute_filters(adrs, filters)

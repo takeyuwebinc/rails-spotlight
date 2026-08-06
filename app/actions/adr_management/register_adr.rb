@@ -33,6 +33,7 @@ module AdrManagement
       adr = register_with_numbering_retry(superseded_adrs)
       RefreshSearchIndex.perform(adr: adr)
       record_rule_quality(adr)
+      enqueue_alias_generation(adr)
       success(adr)
     rescue ActiveRecord::RecordInvalid => e
       failure(invalid_input_errors(e.record))
@@ -140,6 +141,13 @@ module AdrManagement
       AssessAdrQualityJob.perform_later(adr.id)
     rescue => e
       Rails.error.report(e, context: { adr_id: adr.id }, source: "adr_management.quality")
+    end
+
+    # 検索エイリアスは検索の補助情報のため、失敗しても登録自体は成功させる
+    def enqueue_alias_generation(adr)
+      GenerateSearchAliasesJob.perform_later(adr.id)
+    rescue => e
+      Rails.error.report(e, context: { adr_id: adr.id }, source: "adr_management.search_aliases")
     end
 
     def invalid_input_errors(record)

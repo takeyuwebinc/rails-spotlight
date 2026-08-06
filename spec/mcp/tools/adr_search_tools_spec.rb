@@ -143,6 +143,32 @@ RSpec.describe "AdrManagement Search Tools" do
         text = response_text(described_class.call(keyword: "存在しない", server_context: server_context))
         expect(text).to include("0件")
       end
+
+      it "matches generated aliases and marks alias-only hits" do
+        create(:adr_management_adr, title: "payload 検証方式の選定",
+          decision: "payload は JSON Schema で検証する", search_aliases: "ペイロード")
+
+        text = response_text(described_class.call(keyword: "ペイロード", server_context: server_context))
+
+        expect(text).to include("Found 1 ADR(s)", "payload 検証方式の選定", "エイリアス一致")
+      end
+
+      it "does not mark hits that also match the body" do
+        create(:adr_management_adr, title: "ペイロード検証方式の選定", search_aliases: "payload")
+
+        text = response_text(described_class.call(keyword: "ペイロード", server_context: server_context))
+
+        expect(text).to include("Found 1 ADR(s)")
+        expect(text).not_to include("エイリアス一致")
+      end
+
+      it "still matches the body for adrs whose aliases are not generated yet" do
+        create(:adr_management_adr, title: "認証方式の選定", search_aliases: nil)
+
+        text = response_text(described_class.call(keyword: "認証", server_context: server_context))
+
+        expect(text).to include("Found 1 ADR(s)", "認証方式の選定")
+      end
     end
 
     describe "reevaluation check filters" do
@@ -237,6 +263,18 @@ RSpec.describe "AdrManagement Search Tools" do
         expect(log.keyword).to eq("存在しない語")
         expect(log.result_count).to eq(0)
         expect(log.results).to eq([])
+      end
+
+      it "records the alias match type for hits found only via an alias" do
+        body_hit = create(:adr_management_adr, title: "ペイロード検証方式の選定")
+        alias_hit = create(:adr_management_adr, title: "payload 変換方式の選定",
+          search_aliases: "ペイロード")
+
+        described_class.call(keyword: "ペイロード", server_context: server_context)
+
+        results = AdrManagement::SearchLog.last.results.index_by { |entry| entry["adr_id"] }
+        expect(results.dig(alias_hit.id, "match")).to eq("alias")
+        expect(results.fetch(body_hit.id)).not_to have_key("match")
       end
 
       it "still returns the search response when logging fails" do

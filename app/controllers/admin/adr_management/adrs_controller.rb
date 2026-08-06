@@ -108,14 +108,7 @@ module Admin
         adrs = ::AdrManagement::Adr.includes(:engagement).order(decided_on: :desc, id: :desc)
         adrs = adrs.where(engagement_id: params[:engagement_id]) if params[:engagement_id].present?
         adrs = adrs.where(status: params[:status]) if params[:status].present?
-        if params[:keyword].present?
-          pattern = "%#{::AdrManagement::Adr.sanitize_sql_like(params[:keyword])}%"
-          adrs = adrs.where(
-            [ "title", "context", "decision", "consequences", "alternatives" ]
-              .map { |column| "#{column} LIKE :pattern" }.join(" OR "),
-            pattern: pattern
-          )
-        end
+        adrs = adrs.keyword_match(params[:keyword]) if params[:keyword].present?
         adrs
       end
 

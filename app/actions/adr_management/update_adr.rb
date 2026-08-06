@@ -31,6 +31,7 @@ module AdrManagement
       end
       RefreshSearchIndex.perform(adr: @adr)
       record_rule_quality if (changed & QualityAssessment::SOURCE_ATTRIBUTES).any?
+      enqueue_alias_generation if (changed & Adr::ALIAS_SOURCE_ATTRIBUTES).any?
       success(@adr)
     rescue ActiveRecord::RecordInvalid => e
       failure(invalid_input_errors(e.record))
@@ -61,6 +62,13 @@ module AdrManagement
       AssessAdrQualityJob.perform_later(@adr.id)
     rescue => e
       Rails.error.report(e, context: { adr_id: @adr.id }, source: "adr_management.quality")
+    end
+
+    # 検索エイリアスは検索の補助情報のため、失敗しても更新自体は成功させる
+    def enqueue_alias_generation
+      GenerateSearchAliasesJob.perform_later(@adr.id)
+    rescue => e
+      Rails.error.report(e, context: { adr_id: @adr.id }, source: "adr_management.search_aliases")
     end
 
     def invalid_input_errors(record)

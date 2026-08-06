@@ -28,6 +28,15 @@ module AdrManagement
       reference_links
     ].freeze
 
+    # キーワード検索が本文として一致を取るカラム
+    KEYWORD_SEARCH_ATTRIBUTES = %w[
+      title context decision consequences alternatives
+    ].freeze
+
+    # 検索エイリアスの生成元となる本文フィールド。エイリアスはキーワード検索の
+    # 一致対象カラムの表記ゆれを補うものであり、生成元は一致対象と同一になる
+    ALIAS_SOURCE_ATTRIBUTES = KEYWORD_SEARCH_ATTRIBUTES
+
     belongs_to :engagement, class_name: "AdrManagement::Engagement"
     belongs_to :project, class_name: "AdrManagement::Project", optional: true
 
@@ -73,6 +82,14 @@ module AdrManagement
     validate :project_belongs_to_same_engagement
 
     scope :accepted, -> { where(status: "accepted") }
+
+    # キーワードの部分一致。本文カラムに加え、登録時に生成した検索エイリアスにも
+    # 一致させる。本文が英語表記の用語をカタカナで検索したときの0件を防ぐため
+    scope :keyword_match, ->(keyword) {
+      pattern = "%#{sanitize_sql_like(keyword)}%"
+      columns = KEYWORD_SEARCH_ATTRIBUTES + [ "search_aliases" ]
+      where(columns.map { |column| "#{column} LIKE :pattern" }.join(" OR "), pattern: pattern)
+    }
 
     # 効力を失ったステータス。これらへの遷移時、未処理の品質所見は
     # レビューする意味がなくなるため自動クローズする
@@ -153,6 +170,15 @@ module AdrManagement
         end
       end
       { references: references, unknown_numbers: unknown_numbers }
+    end
+
+    # 本文（検索エイリアスを除く）に検索語を含むか。エイリアスでのみ一致した
+    # 結果は利用者が本文から検索語を確認できないため、区別して扱う
+    def body_matches_keyword?(keyword)
+      needle = keyword.to_s.downcase
+      KEYWORD_SEARCH_ATTRIBUTES.any? do |attribute|
+        public_send(attribute).to_s.downcase.include?(needle)
+      end
     end
 
     def supersession_involved?
