@@ -13,9 +13,11 @@ module AdrManagement
 
     ScoredAdr = Data.define(:adr, :score)
 
-    def initialize(query:, engagement: nil, limit: 10, embedding_client: Sakura::EmbeddingClient.new)
+    # adr_scope: 検索対象を絞り込んだ ADR のリレーション。案件・ステータス・
+    # キーワード等の条件は呼び出し側が SQL で表現して渡す
+    def initialize(query:, adr_scope: Adr.all, limit: 10, embedding_client: Sakura::EmbeddingClient.new)
       @query = query
-      @engagement = engagement
+      @adr_scope = adr_scope
       @limit = limit
       @embedding_client = embedding_client
     end
@@ -51,10 +53,11 @@ module AdrManagement
       Rails.error.report(e, handled: true)
     end
 
+    # 絞り込みはスコア計算の前（チャンクの取得段階）に適用する。上位 limit 件へ
+    # 切り詰めてから絞り込むと、条件に合う ADR が limit 件未満しか残らず
+    # 結果が目減りするため、対象の絞り込みは SQL 側で完結させる
     def scoped_chunks
-      chunks = AdrChunk.joins(:adr)
-      chunks = chunks.where(adr_management_adrs: { engagement_id: @engagement.id }) if @engagement
-      chunks
+      AdrChunk.where(adr_id: @adr_scope.select(:id))
     end
 
     def best_scores_per_adr(query_vector)
@@ -70,7 +73,7 @@ module AdrManagement
     end
 
     def load_scored_adrs(scored)
-      adrs = Adr.where(id: scored.map(&:first)).index_by(&:id)
+      adrs = Adr.includes(:engagement).where(id: scored.map(&:first)).index_by(&:id)
       scored.map { |adr_id, score| ScoredAdr.new(adr: adrs.fetch(adr_id), score: score) }
     end
   end

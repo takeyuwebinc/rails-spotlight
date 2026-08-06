@@ -116,8 +116,10 @@ module Tools
     end
 
     def self.natural_language_search(query, filters, limit, origin)
+      scope = AdrManagement::Adr.all
+      scope = scope.where(engagement: filters[:engagement]) if filters[:engagement]
       result = AdrManagement::SearchNaturalLanguage.perform(
-        query: query, engagement: filters[:engagement], limit: limit
+        query: query, adr_scope: scope, limit: limit
       )
       return error_response(result.errors) if result.failure?
 
@@ -237,21 +239,12 @@ module Tools
       text_response(guidance.join("\n"))
     end
 
-    # 検索ログの記録失敗で検索本体を失敗させない（索引更新と同じ
-    # ベストエフォート方針。ログは分析用であり検索の契約に含めない）
     def self.record_search_log(mode:, filters:, origin:, results:, result_count:, query: nil, keyword: nil)
-      AdrManagement::SearchLog.create!(
+      AdrManagement::SearchLog.record(
         mode: mode, query: query, keyword: keyword,
-        engagement: filters[:engagement],
-        filters: loggable_filters(filters),
+        engagement: filters[:engagement], filters: filters.except(:engagement),
         results: results, result_count: result_count, origin: origin
       )
-    rescue => e
-      Rails.error.report(e, handled: true)
-    end
-
-    def self.loggable_filters(filters)
-      filters.except(:engagement).compact.transform_values(&:to_s)
     end
   end
 end
