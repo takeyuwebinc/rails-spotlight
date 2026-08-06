@@ -68,6 +68,42 @@ RSpec.describe AdrManagement::QualityAssessment do
     end
   end
 
+  describe ".close_previous_findings!" do
+    let(:adr) { create(:adr_management_adr) }
+
+    def create_assessment(codes, layer: "rule")
+      create(:adr_management_quality_assessment, adr: adr, layer: layer,
+        findings: codes.map { |code| { "code" => code, "field" => "f", "message" => "m" } })
+    end
+
+    it "closes findings absent from the new result as addressed and remaining ones as obsolete" do
+      assessment = create_assessment(%w[a b])
+
+      adr.quality_assessments.rule_layer.close_previous_findings!([ { "code" => "b", "message" => "m" } ])
+
+      results = assessment.reload.findings.to_h { |finding| [ finding["code"], finding["review_result"] ] }
+      expect(results).to eq("a" => "addressed", "b" => "obsolete")
+      expect(assessment.reviewed_at).to be_present
+    end
+
+    it "leaves other layers untouched" do
+      llm_assessment = create_assessment(%w[a], layer: "llm")
+
+      adr.quality_assessments.rule_layer.close_previous_findings!([])
+
+      expect(llm_assessment.reload.open_findings).not_to be_empty
+    end
+
+    it "does not overwrite findings that are already processed" do
+      assessment = create_assessment(%w[a])
+      assessment.close_open_findings!(result: "dismissed")
+
+      adr.quality_assessments.rule_layer.close_previous_findings!([])
+
+      expect(assessment.reload.findings.sole["review_result"]).to eq("dismissed")
+    end
+  end
+
   describe "auto-close on ADR retirement" do
     it "closes open findings as obsolete when the adr is deprecated" do
       adr = create(:adr_management_adr, status: "accepted")

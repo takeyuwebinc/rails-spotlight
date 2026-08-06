@@ -10,6 +10,9 @@ module AdrManagement
   # 所見は参考情報であり、LLM 呼び出しの失敗は評価なしで縮退する
   # （呼び出し元の登録・更新には影響しない）。同一本文（指紋一致）の
   # 評価が既にあれば実行をスキップする（連続更新時の多重評価の防止）。
+  #
+  # 有効な llm 層の評価は最新の1件に保ち、旧評価の未処理所見は
+  # 今回の評価結果との差分で自動クローズする（rule 層と同一の規則）。
   class AssessAdrQuality < ApplicationAction
     FINDING_CODES = %w[
       ai_error_example_weak reevaluation_condition_unobservable generic_knowledge
@@ -25,6 +28,9 @@ module AdrManagement
     def perform
       return success(nil) if Adr::RETIRED_STATUSES.include?(@adr.status)
 
+      # 指紋の照合対象は過去の全評価であり最新の1件ではない。本文を過去の版と
+      # 同一内容に戻すと再評価も所見の差分クローズも行われず、その間の版に
+      # 対する未処理所見は開いたまま残る
       fingerprint = QualityAssessment.fingerprint_for(@adr)
       existing = @adr.quality_assessments.llm_layer.find_by(content_fingerprint: fingerprint)
       return success(existing) if existing
@@ -34,7 +40,7 @@ module AdrManagement
 
       assessment = nil
       ActiveRecord::Base.transaction do
-        close_previous_open_findings
+        @adr.quality_assessments.llm_layer.close_previous_findings!(findings)
         assessment = @adr.quality_assessments.create!(
           layer: "llm",
           content_fingerprint: fingerprint,
@@ -47,14 +53,6 @@ module AdrManagement
     end
 
     private
-
-    # 最新の評価のみを有効とする（rule 層の自動クローズと対称）。
-    # 旧本文への未処理所見は失効として閉じ、誤検知率の集計から除外する
-    def close_previous_open_findings
-      @adr.quality_assessments.llm_layer.pending_review.find_each do |assessment|
-        assessment.close_open_findings!(result: "obsolete")
-      end
-    end
 
     # 失敗時は nil を返して縮退する（評価は記録しない）
     def evaluate_with_llm

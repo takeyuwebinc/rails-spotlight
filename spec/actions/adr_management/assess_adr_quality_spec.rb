@@ -56,7 +56,7 @@ RSpec.describe AdrManagement::AssessAdrQuality do
     expect(llm).to have_received(:ask).once
   end
 
-  it "re-evaluates after a body change and closes previous open llm findings as obsolete" do
+  it "re-evaluates after a body change and closes resolved llm findings as addressed" do
     stub_llm('{"findings": [{"code": "generic_knowledge", "field": "decision", "message": "一般論です"}]}')
     first = perform
 
@@ -67,7 +67,24 @@ RSpec.describe AdrManagement::AssessAdrQuality do
     expect(second).not_to eq(first)
     first.reload
     expect(first.open_findings).to be_empty
-    expect(first.findings.sole["review_result"]).to eq("obsolete")
+    expect(first.findings.sole["review_result"]).to eq("addressed")
+  end
+
+  it "closes still-detected findings as obsolete and keeps the new ones open" do
+    stub_llm(<<~JSON)
+      {"findings": [
+        {"code": "generic_knowledge", "field": "decision", "message": "一般論です"},
+        {"code": "ai_error_example_weak", "field": "context", "message": "具体例がありません"}]}
+    JSON
+    first = perform
+
+    adr.update!(decision: "固有の制約に基づく別の決定")
+    stub_llm('{"findings": [{"code": "generic_knowledge", "field": "decision", "message": "まだ一般論です"}]}')
+    second = perform
+
+    results = first.reload.findings.to_h { |finding| [ finding["code"], finding["review_result"] ] }
+    expect(results).to eq("generic_knowledge" => "obsolete", "ai_error_example_weak" => "addressed")
+    expect(second.open_findings.sole["code"]).to eq("generic_knowledge")
   end
 
   it "skips retired adrs without calling the llm" do
