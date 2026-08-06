@@ -94,6 +94,12 @@ RSpec.describe "AdrManagement Write Tools" do
       expect(text).not_to include("References:", "Warning")
     end
 
+    it "enqueues alias generation for the registered adr" do
+      expect do
+        described_class.call(**base_params)
+      end.to have_enqueued_job(AdrManagement::GenerateSearchAliasesJob)
+    end
+
     it "appends quality notes as advisory information and still registers the adr" do
       text = nil
       expect do
@@ -208,6 +214,32 @@ RSpec.describe "AdrManagement Write Tools" do
           status: "accepted", server_context: server_context
         )
       end.not_to have_enqueued_job(AdrManagement::AssessAdrQualityJob)
+    end
+
+    it "enqueues alias generation on a body update but not on a status-only update" do
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          decision: "新しい決定", server_context: server_context
+        )
+      end.to have_enqueued_job(AdrManagement::GenerateSearchAliasesJob).with(adr.id)
+
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          status: "accepted", server_context: server_context
+        )
+      end.not_to have_enqueued_job(AdrManagement::GenerateSearchAliasesJob)
+    end
+
+    it "does not enqueue alias generation when only the reevaluation conditions change" do
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          reevaluation_conditions: "- 件数が100件を超えた場合（分割を検討する）",
+          server_context: server_context
+        )
+      end.not_to have_enqueued_job(AdrManagement::GenerateSearchAliasesJob)
     end
   end
 end

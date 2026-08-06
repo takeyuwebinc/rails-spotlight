@@ -59,6 +59,19 @@
       <div class="prose prose-zinc max-w-none text-sm"><%= render_adr_markdown(@adr.reference_links) %></div>
     </section>
   <% end %>
+  <% if @adr.search_aliases.present? %>
+    <section>
+      <h2 class="text-lg font-medium text-zinc-900 border-b border-zinc-200 pb-2 mb-3">検索エイリアス</h2>
+      <p class="text-xs text-zinc-500 mb-2">
+        本文の表記とは別の表記でもキーワード検索にヒットさせるため、登録時に自動生成した語。
+      </p>
+      <ul class="flex flex-wrap gap-2">
+        <% @adr.search_aliases.split("\n").each do |search_alias| %>
+          <li class="px-2 py-0.5 rounded bg-zinc-100 text-zinc-700 text-sm"><%= search_alias %></li>
+        <% end %>
+      </ul>
+    </section>
+  <% end %>
 </div>
 
 <% referenced_adrs = @adr.referenced_adrs.includes(:engagement).to_a %>

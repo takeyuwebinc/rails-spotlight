@@ -68,4 +68,24 @@ namespace :adr_management do
     since = ENV["SINCE"].present? ? Date.parse(ENV["SINCE"]).beginning_of_day : 30.days.ago
     puts AdrManagement::BuildSearchQualityReport.perform(since: since).data[:text]
   end
+
+  desc "検索エイリアス（表記ゆれ対策）が未生成の ADR に生成する（FORCE=1 で全件再生成）"
+  task generate_search_aliases: :environment do
+    scope = ENV["FORCE"].present? ? AdrManagement::Adr.all : AdrManagement::Adr.where(search_aliases: nil)
+    total = scope.count
+    if total.zero?
+      puts "対象の ADR はありません（未生成の ADR なし）"
+      next
+    end
+
+    generated = 0
+    scope.find_each.with_index(1) do |adr, index|
+      result = AdrManagement::GenerateSearchAliases.perform(adr: adr)
+      aliases = result.data&.search_aliases
+      generated += 1 if aliases
+      label = aliases.presence&.split("\n")&.join("、") || "（なし）"
+      puts "[#{index}/#{total}] #{adr.display_number}: #{label}"
+    end
+    puts "完了: #{generated}/#{total} 件を生成しました"
+  end
 end
