@@ -2,6 +2,8 @@
 
 module Api
   class McpController < ApplicationController
+    include ObservabilityUserContext
+
     skip_before_action :verify_authenticity_token
     before_action :authenticate_mcp_request
 
@@ -45,11 +47,16 @@ module Api
     def authenticate_mcp_request
       # Try OAuth token first (Doorkeeper)
       if doorkeeper_token_valid?
+        # ユーザーは OAuth アプリケーション（Agent）単位で識別する。
+        # request_origin と同じ表記（oauth:<アプリ名> / legacy-token）で
+        # テレメトリに紐づける
+        set_observability_user(id: request_origin)
         return
       end
 
       # Fall back to legacy static token for backwards compatibility
       if legacy_token_valid?
+        set_observability_user(id: request_origin)
         return
       end
 

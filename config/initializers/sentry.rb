@@ -39,6 +39,7 @@ if Rails.env.development? || Rails.env.production?
   require Rails.root.join("lib/observability/gen_ai_content_filter_exporter")
   require Rails.root.join("lib/observability/span_drop_exporter")
   require Rails.root.join("lib/observability/sentry_release_span_processor")
+  require Rails.root.join("lib/observability/user_attributes_span_processor")
 
   # リリースはスパン属性でしか渡せないため、エクスポート前に全スパンへ付与する。
   # 環境（deployment.environment.name）は resource 属性として
@@ -48,6 +49,12 @@ if Rails.env.development? || Rails.env.production?
       Observability::SentryReleaseSpanProcessor.new(release)
     )
   end
+
+  # 認証済みリクエスト中のスパンへ操作主体（user.* 属性）を付与する。
+  # 設定側は app/controllers/concerns/observability_user_context.rb を参照
+  OpenTelemetry.tracer_provider.add_span_processor(
+    Observability::UserAttributesSpanProcessor.new
+  )
 
   dsn = Sentry.configuration.dsn
   otlp_exporter = OpenTelemetry::Exporter::OTLP::Exporter.new(
