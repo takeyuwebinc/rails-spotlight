@@ -28,6 +28,16 @@ end
 # 差し替える拡張点がないため自前で行っている。
 if Rails.env.development? || Rails.env.production?
   require Rails.root.join("lib/observability/gen_ai_content_filter_exporter")
+  require Rails.root.join("lib/observability/sentry_release_span_processor")
+
+  # リリースはスパン属性でしか渡せないため、エクスポート前に全スパンへ付与する。
+  # 環境（deployment.environment.name）は resource 属性として
+  # config/initializers/opentelemetry.rb で設定済み。
+  if (release = Sentry.configuration.release)
+    OpenTelemetry.tracer_provider.add_span_processor(
+      Observability::SentryReleaseSpanProcessor.new(release)
+    )
+  end
 
   dsn = Sentry.configuration.dsn
   otlp_exporter = OpenTelemetry::Exporter::OTLP::Exporter.new(
