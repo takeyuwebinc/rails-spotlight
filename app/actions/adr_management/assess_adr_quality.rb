@@ -28,6 +28,9 @@ module AdrManagement
     def perform
       return success(nil) if Adr::RETIRED_STATUSES.include?(@adr.status)
 
+      # 指紋の照合対象は過去の全評価であり最新の1件ではない。本文を過去の版と
+      # 同一内容に戻すと再評価も所見の差分クローズも行われず、その間の版に
+      # 対する未処理所見は開いたまま残る
       fingerprint = QualityAssessment.fingerprint_for(@adr)
       existing = @adr.quality_assessments.llm_layer.find_by(content_fingerprint: fingerprint)
       return success(existing) if existing
