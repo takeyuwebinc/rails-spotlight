@@ -28,6 +28,7 @@ end
 # 差し替える拡張点がないため自前で行っている。
 if Rails.env.development? || Rails.env.production?
   require Rails.root.join("lib/observability/gen_ai_content_filter_exporter")
+  require Rails.root.join("lib/observability/span_drop_exporter")
   require Rails.root.join("lib/observability/sentry_release_span_processor")
 
   # リリースはスパン属性でしか渡せないため、エクスポート前に全スパンへ付与する。
@@ -46,7 +47,12 @@ if Rails.env.development? || Rails.env.production?
   )
   OpenTelemetry.tracer_provider.add_span_processor(
     OpenTelemetry::SDK::Trace::Export::BatchSpanProcessor.new(
-      Observability::GenAiContentFilterExporter.new(otlp_exporter)
+      # Solid アダプタ内部の DB アクセススパンはノイズのため除外してから
+      # マスキングを適用する
+      Observability::SpanDropExporter.new(
+        Observability::GenAiContentFilterExporter.new(otlp_exporter),
+        name_prefixes: %w[SolidQueue:: SolidCache:: SolidCable::]
+      )
     )
   )
 end
