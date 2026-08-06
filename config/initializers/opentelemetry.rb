@@ -10,6 +10,14 @@ if Rails.env.development? || Rails.env.production?
 
   OpenTelemetry::SDK.configure do |c|
     c.service_name = "spotlight-rails"
+    # Sentry の OTLP 取り込みは resource 属性 deployment.environment.name を
+    # スパン属性 sentry.environment にバックフィルする。これを付けないと
+    # トレースに環境が入らず、development と production を分離できない。
+    # エラーイベント・ログの環境は SDK が RAILS_ENV から自動で設定するため、
+    # 出所を揃える目的でここでも Rails.env を使う。
+    c.resource = OpenTelemetry::SDK::Resources::Resource.create(
+      "deployment.environment.name" => Rails.env.to_s
+    )
     c.use "OpenTelemetry::Instrumentation::Rails"
     c.use "OpenTelemetry::Instrumentation::Faraday"
     c.use "OpenTelemetry::Instrumentation::Net::HTTP"
