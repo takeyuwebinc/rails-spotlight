@@ -4,9 +4,8 @@ module AdrManagement
   # ADR 本文の決定的ルールチェックを実行し、rule 層の品質評価として記録する。
   # 所見は参考情報であり、ADR の登録・更新の成否には影響しない。
   #
-  # 有効な rule 層の評価は常に最新の1件に保つ。旧評価の未処理所見は、
-  # 今回のチェックで検出されなくなったものを addressed（修正済み）、
-  # 引き続き検出されるものを obsolete（最新評価へ引き継ぎ）で自動クローズする。
+  # 有効な rule 層の評価は常に最新の1件に保ち、旧評価の未処理所見は
+  # 今回の検出結果との差分で自動クローズする。
   class CheckAdrQuality < ApplicationAction
     # 1ページ相当の目安。ADR 記録原則の「1ページ以内」を文字数で近似する
     MAX_BODY_CHARS = 8_000
@@ -28,7 +27,7 @@ module AdrManagement
       findings = detect_findings
       assessment = nil
       ActiveRecord::Base.transaction do
-        close_previous_open_findings(findings)
+        @adr.quality_assessments.rule_layer.close_previous_findings!(findings)
         assessment = @adr.quality_assessments.create!(
           layer: "rule",
           content_fingerprint: QualityAssessment.fingerprint_for(@adr),
@@ -41,16 +40,6 @@ module AdrManagement
     end
 
     private
-
-    def close_previous_open_findings(current_findings)
-      current_codes = current_findings.map { |finding| finding["code"] }
-      @adr.quality_assessments.rule_layer.pending_review.find_each do |assessment|
-        open_codes = assessment.open_findings.map { |finding| finding["code"] }
-        resolved = open_codes - current_codes
-        assessment.close_open_findings!(result: "addressed", only_codes: resolved) if resolved.any?
-        assessment.close_open_findings!(result: "obsolete")
-      end
-    end
 
     def detect_findings
       [

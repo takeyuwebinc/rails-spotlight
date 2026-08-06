@@ -12,10 +12,11 @@ module AdrManagement
   class QualityAssessment < ApplicationRecord
     LAYERS = %w[rule llm].freeze
 
-    # 所見の処理結果。addressed=修正した / dismissed=誤検知として却下 /
-    # obsolete=対象 ADR の失効・再評価による自動クローズ。
-    # 誤検知率は dismissed の比率で導出するため、自動クローズは
-    # dismissed と区別する
+    # 所見の処理結果。addressed=修正した（人が記録したものと、再評価で
+    # 指摘が消えたことによる自動判定の両方）/ dismissed=誤検知として却下 /
+    # obsolete=対象 ADR の失効、または再評価で引き続き検出されたことによる
+    # 自動クローズ。誤検知率は dismissed の比率で導出するため、指摘が
+    # 残ったまま閉じる obsolete は dismissed と区別する
     FINDING_RESULTS = %w[addressed dismissed obsolete].freeze
 
     # 品質評価の対象となる本文フィールド。この内容の指紋
@@ -38,8 +39,8 @@ module AdrManagement
 
     # 品質所見の集計。new_findings は since 以降に作成された評価の所見数、
     # それ以外は現在のスコープ全体の値。誤検知率（dismissed_rate）は
-    # 人が処理した所見（addressed + dismissed）に占める dismissed の比率で、
-    # 失効による自動クローズ（obsolete）は分母に含めない
+    # 処理済みの所見（addressed + dismissed）に占める dismissed の比率で、
+    # 指摘が残ったまま閉じた obsolete は分母に含めない
     def self.findings_summary(since:)
       new_findings = where(created_at: since..).map { |assessment| Array(assessment.findings).size }.sum
       counts = all.flat_map { |assessment| Array(assessment.findings).map { |f| f["review_result"] } }.tally
@@ -54,6 +55,22 @@ module AdrManagement
         obsolete: counts["obsolete"].to_i,
         dismissed_rate: reviewed.zero? ? nil : dismissed.to_f / reviewed
       }
+    end
+
+    # 新しい評価結果との差分で、このスコープの未処理所見をクローズする。
+    # 新しい結果に同じ code が無い所見は指摘が解消されたとみなして
+    # addressed（修正済み）、引き続き検出される code は新しい評価の
+    # 未処理所見へ観測を引き継ぐため obsolete とする。エージェントが
+    # 所見を見て本文を修正した場合も、この差分から修正実績を記録できる。
+    # 有効な評価をレビューキュー上で最新の1件に保つため、呼び出し側は
+    # 新しい評価を作る直前に同一トランザクションで実行する
+    def self.close_previous_findings!(current_findings)
+      current_codes = current_findings.map { |finding| finding["code"] }
+      pending_review.find_each do |assessment|
+        resolved = assessment.open_findings.map { |finding| finding["code"] } - current_codes
+        assessment.close_open_findings!(result: "addressed", only_codes: resolved) if resolved.any?
+        assessment.close_open_findings!(result: "obsolete")
+      end
     end
 
     def self.fingerprint_for(adr)
