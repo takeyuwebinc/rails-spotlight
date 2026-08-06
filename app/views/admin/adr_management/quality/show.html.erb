@@ -39,9 +39,11 @@
         <li class="p-4">
           <div class="flex items-center gap-2 text-sm text-zinc-500 mb-1">
             <span><%= assessment.created_at.to_date %></span>
-            <span class="rounded bg-zinc-100 px-2 py-0.5 text-xs"><%= assessment.layer %></span>
-            <span class="font-medium text-zinc-900"><%= assessment.adr.display_number %></span>
-            <span><%= assessment.adr.title %></span>
+            <span class="rounded bg-zinc-100 px-2 py-0.5 text-xs"><%= adr_quality_layer_label(assessment.layer) %></span>
+            <%= link_to admin_adr_management_adr_path(assessment.adr), class: "text-indigo-600 hover:text-indigo-900 underline" do %>
+              <span class="font-medium"><%= assessment.adr.display_number %></span>
+              <span><%= assessment.adr.title %></span>
+            <% end %>
           </div>
           <ul class="mt-2 space-y-3">
             <% assessment.open_findings.each do |finding| %>

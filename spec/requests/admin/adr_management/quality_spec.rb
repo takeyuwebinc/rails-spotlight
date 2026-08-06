@@ -26,6 +26,15 @@ RSpec.describe "Admin AdrManagement Quality", type: :request do
       expect(response.body).to include("代替案が記録されていません", "修正した", "誤検知として却下")
     end
 
+    it "links each queued finding to the ADR detail page" do
+      adr = create(:adr_management_adr)
+      create(:adr_management_quality_assessment, adr: adr)
+
+      get "/admin/adr/quality"
+
+      expect(response.body).to include(%(href="#{admin_adr_management_adr_path(adr)}"))
+    end
+
     it "hides reviewed assessments from the queue" do
       assessment = create(:adr_management_quality_assessment, reviewed_at: Time.current, findings: [
         { "code" => "alternatives_missing", "field" => "alternatives",
