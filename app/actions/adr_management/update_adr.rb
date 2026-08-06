@@ -17,6 +17,7 @@ module AdrManagement
       end
 
       before = @adr.snapshot_attributes
+      changed = []
       ActiveRecord::Base.transaction do
         @adr.update!(@attributes)
         changed = @adr.previous_changes.keys & Adr::SNAPSHOT_ATTRIBUTES
@@ -29,6 +30,7 @@ module AdrManagement
         SyncAdrReferences.perform(adr: @adr)
       end
       RefreshSearchIndex.perform(adr: @adr)
+      record_rule_quality if (changed & QualityAssessment::SOURCE_ATTRIBUTES).any?
       success(@adr)
     rescue ActiveRecord::RecordInvalid => e
       failure(invalid_input_errors(e.record))
@@ -51,6 +53,13 @@ module AdrManagement
                  "superseded への変更は置換指定付きの登録でのみ行えます）",
         next_action: allowed.any? ? "変更可能なステータス: #{allowed.join(', ')}" : "この ADR のステータスは変更できません。決定を置き換える場合は置換指定付きの登録を使用してください"
       )
+    end
+
+    # 品質評価は参考情報のため、失敗しても更新自体は成功させる
+    def record_rule_quality
+      CheckAdrQuality.perform(adr: @adr, origin: @origin)
+    rescue => e
+      Rails.error.report(e, context: { adr_id: @adr.id }, source: "adr_management.quality")
     end
 
     def invalid_input_errors(record)

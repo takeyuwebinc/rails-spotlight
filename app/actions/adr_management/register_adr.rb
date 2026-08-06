@@ -32,6 +32,7 @@ module AdrManagement
 
       adr = register_with_numbering_retry(superseded_adrs)
       RefreshSearchIndex.perform(adr: adr)
+      record_rule_quality(adr)
       success(adr)
     rescue ActiveRecord::RecordInvalid => e
       failure(invalid_input_errors(e.record))
@@ -131,6 +132,13 @@ module AdrManagement
 
         adr
       end
+    end
+
+    # 品質評価は参考情報のため、失敗しても登録自体は成功させる
+    def record_rule_quality(adr)
+      CheckAdrQuality.perform(adr: adr, origin: @origin)
+    rescue => e
+      Rails.error.report(e, context: { adr_id: adr.id }, source: "adr_management.quality")
     end
 
     def invalid_input_errors(record)

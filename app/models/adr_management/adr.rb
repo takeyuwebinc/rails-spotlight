@@ -59,6 +59,8 @@ module AdrManagement
       dependent: :destroy
     has_many :reevaluation_checks, class_name: "AdrManagement::ReevaluationCheck",
       dependent: :delete_all
+    has_many :quality_assessments, class_name: "AdrManagement::QualityAssessment",
+      dependent: :delete_all
 
     validates :number, presence: true, uniqueness: { scope: :engagement_id }
     validates :title, presence: true
@@ -71,6 +73,12 @@ module AdrManagement
     validate :project_belongs_to_same_engagement
 
     scope :accepted, -> { where(status: "accepted") }
+
+    # 効力を失ったステータス。これらへの遷移時、未処理の品質所見は
+    # レビューする意味がなくなるため自動クローズする
+    RETIRED_STATUSES = %w[superseded rejected deprecated].freeze
+
+    after_update :close_quality_findings_on_retirement
 
     # ADR 番号の表示名（例: SPOTLIGHT-RAILS-12）。案件 code は照合用に
     # 小文字で保持し、ADR 番号としての表示時のみ大文字にする。
@@ -165,6 +173,14 @@ module AdrManagement
     end
 
     private
+
+    def close_quality_findings_on_retirement
+      return unless saved_change_to_status? && RETIRED_STATUSES.include?(status)
+
+      quality_assessments.pending_review.find_each do |assessment|
+        assessment.close_open_findings!(result: "obsolete")
+      end
+    end
 
     def project_belongs_to_same_engagement
       return if project.nil? || project.engagement_id == engagement_id
