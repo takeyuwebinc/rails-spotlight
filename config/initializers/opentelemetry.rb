@@ -30,7 +30,11 @@ if Rails.env.development? || Rails.env.production?
     # 本番は config/deploy.yml で明示的に true を与えている
     c.use_all(
       # ヘルスチェックはトレース対象から除外する
-      "OpenTelemetry::Instrumentation::Rack" => { untraced_endpoints: [ "/up" ] }
+      "OpenTelemetry::Instrumentation::Rack" => { untraced_endpoints: [ "/up" ] },
+      # Sentry へのテレメトリ送信（エラー・ログのエンベロープ POST）自体が
+      # トレースされる自己計測を防ぐ。OTLP エクスポータは自前で untraced
+      # ラップするため対象外だが、sentry-ruby SDK の送信はラップされない
+      "OpenTelemetry::Instrumentation::Net::HTTP" => { untraced_hosts: [ /\.sentry\.io\z/ ] }
     )
   end
 end
