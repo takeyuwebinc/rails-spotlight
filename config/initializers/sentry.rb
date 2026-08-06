@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require Rails.root.join("lib/observability/log_drop_filter")
+
 Sentry.init do |config|
   config.breadcrumbs_logger = [ :active_support_logger ]
   config.dsn = "https://4c9c655faa3ad26cb0a278bd3c88b1b6@o135775.ingest.us.sentry.io/4510050183479296"
@@ -7,6 +9,13 @@ Sentry.init do |config|
   config.enable_logs = true
   config.enabled_patches << :logger
   config.rails.structured_logging.enabled = true
+
+  # トレースと同様にノイズになるログは送信しない：
+  # - Solid アダプタ内部の動作ログ（SpanDropExporter の除外対象と対応）
+  # - ヘルスチェックのコントローラログ（Rack 計装の untraced_endpoints と対応）
+  config.before_send_log = Observability::LogDropFilter.new(
+    /\bSolid(?:Queue|Cache|Cable)\b|\bRails::HealthController\b/
+  )
 
   # テスト環境では無効化
   config.enabled_environments = %w[development production]
