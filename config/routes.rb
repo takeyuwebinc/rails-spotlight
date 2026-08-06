@@ -91,6 +91,10 @@ Rails.application.routes.draw do
       end
       resources :adrs
       resource :search_quality, only: %i[show], controller: "search_quality"
+      resource :quality, only: %i[show], controller: "quality"
+      resources :quality_assessments, only: [] do
+        resource :finding_review, only: %i[create], controller: "quality_finding_reviews"
+      end
       resources :search_logs, only: [] do
         resource :miss_report, only: %i[create], controller: "search_log_miss_reports"
         resource :review, only: %i[create], controller: "search_log_reviews"

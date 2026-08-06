@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_04_110001) do
+ActiveRecord::Schema[8.1].define(version: 2026_08_06_000000) do
   create_table "active_storage_attachments", force: :cascade do |t|
     t.bigint "blob_id", null: false
     t.datetime "created_at", null: false
@@ -125,6 +125,19 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_04_110001) do
     t.date "start_date"
     t.datetime "updated_at", null: false
     t.index ["engagement_id"], name: "index_adr_management_projects_on_engagement_id"
+  end
+
+  create_table "adr_management_quality_assessments", force: :cascade do |t|
+    t.integer "adr_id", null: false
+    t.string "content_fingerprint", null: false
+    t.datetime "created_at", null: false
+    t.json "findings", null: false
+    t.string "layer", null: false
+    t.string "origin", null: false
+    t.datetime "reviewed_at"
+    t.datetime "updated_at", null: false
+    t.index ["adr_id", "layer"], name: "idx_adr_quality_assessments_on_adr_and_layer"
+    t.index ["reviewed_at"], name: "idx_adr_quality_assessments_on_reviewed_at"
   end
 
   create_table "adr_management_reevaluation_checks", force: :cascade do |t|

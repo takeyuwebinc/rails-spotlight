@@ -79,6 +79,20 @@ module Tools
       notes.join("\n")
     end
 
+    # 書き込み応答用の品質所見の注記（rule 層の最新評価の未処理所見）。
+    # 参考情報であり登録・更新は成功している旨を明示し、エージェントの
+    # その場での自己修正（update_adr_tool）を促す
+    def quality_notes(adr)
+      assessment = adr.quality_assessments.rule_layer.recent_first.first
+      open = assessment ? assessment.open_findings : []
+      return "" if open.empty?
+
+      lines = [ "- Quality notes（品質所見・参考情報。登録/更新は成功しています。" \
+                "修正する場合は update_adr_tool を使用してください）:" ]
+      open.each { |finding| lines << "  - #{finding['message']}" }
+      "\n#{lines.join("\n")}"
+    end
+
     def parse_date_or_error(value, param)
       return [ nil, nil ] if value.blank?
 

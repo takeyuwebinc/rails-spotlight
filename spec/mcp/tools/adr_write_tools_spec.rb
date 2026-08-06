@@ -93,6 +93,32 @@ RSpec.describe "AdrManagement Write Tools" do
 
       expect(text).not_to include("References:", "Warning")
     end
+
+    it "appends quality notes as advisory information and still registers the adr" do
+      text = nil
+      expect do
+        text = response_text(described_class.call(**base_params))
+      end.to have_enqueued_job(AdrManagement::AssessAdrQualityJob)
+
+      expect(text).to include("registered successfully", "Quality notes")
+      adr = engagement.adrs.sole
+      assessment = adr.quality_assessments.rule_layer.sole
+      expect(assessment.open_findings.map { |f| f["code"] }).to include("alternatives_missing")
+    end
+
+    it "omits quality notes and records a zero-finding assessment for a well-formed adr" do
+      text = response_text(described_class.call(
+        **base_params,
+        alternatives: "### 案1: 現状維持\n遅延が残るため却下。\n### 案2: 別方式\n運用負荷のため却下。",
+        consequences: "ポジティブ: 応答が短縮される。\nネガティブ: 実装が複雑になる。",
+        reevaluation_conditions: "- 障害が月3件を超えた場合（方式の見直しを検討する）"
+      ))
+
+      expect(text).not_to include("Quality notes")
+      assessment = engagement.adrs.sole.quality_assessments.rule_layer.sole
+      expect(assessment.findings).to be_empty
+      expect(assessment.reviewed_at).to be_present
+    end
   end
 
   describe Tools::UpdateAdrTool do
@@ -148,6 +174,40 @@ RSpec.describe "AdrManagement Write Tools" do
       expect(text).to include("References: FABBLE-#{target.number}")
       expect(text).to include("Warning", "FABBLE-9999")
       expect(adr.referenced_adrs.reload).to eq([ target ])
+    end
+
+    it "appends quality notes on a body update but not on a status-only update" do
+      text = response_text(described_class.call(
+        engagement_code: "fabble", number: adr.number,
+        consequences: "高速になり保守もしやすくなる", server_context: server_context
+      ))
+      expect(text).to include("Quality notes")
+
+      assessments_before = adr.quality_assessments.count
+      text = response_text(described_class.call(
+        engagement_code: "fabble", number: adr.number,
+        status: "accepted", server_context: server_context
+      ))
+
+      expect(text).to include("updated successfully")
+      expect(text).not_to include("Quality notes")
+      expect(adr.quality_assessments.count).to eq(assessments_before)
+    end
+
+    it "enqueues the llm assessment job on a body update but not on a status-only update" do
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          decision: "新しい決定", server_context: server_context
+        )
+      end.to have_enqueued_job(AdrManagement::AssessAdrQualityJob).with(adr.id)
+
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          status: "accepted", server_context: server_context
+        )
+      end.not_to have_enqueued_job(AdrManagement::AssessAdrQualityJob)
     end
   end
 end

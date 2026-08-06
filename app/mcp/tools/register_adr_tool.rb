@@ -127,7 +127,7 @@ module Tools
         "ADR registered successfully:\n" \
         "- Number: #{adr.display_number}\n" \
         "- Title: #{adr.title}\n" \
-        "- Status: #{adr.status}#{superseded_note}#{reference_note}"
+        "- Status: #{adr.status}#{superseded_note}#{reference_note}#{quality_notes(adr)}"
       )
     rescue => e
       text_response("Error registering ADR: #{e.message}")

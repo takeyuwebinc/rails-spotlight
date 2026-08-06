@@ -56,9 +56,21 @@ module Tools
       sections << "## 参考資料\n#{adr.reference_links}" if adr.reference_links.present?
       sections << supersession_section(adr)
       sections << references_section(adr)
+      sections << quality_section(adr)
       sections << checks_section(adr)
       sections << revisions_section(adr)
       sections.compact.join("\n\n")
+    end
+
+    # 未処理の品質所見のみを表示する（処理済み・失効分はノイズになるため
+    # 出さない）。所見は参考情報であり、決定の効力には影響しない
+    def self.quality_section(adr)
+      lines = adr.quality_assessments.pending_review.recent_first.flat_map do |assessment|
+        assessment.open_findings.map { |finding| "- [#{assessment.layer}] #{finding['message']}" }
+      end
+      return nil if lines.empty?
+
+      "## 品質所見（未処理のみ・参考情報）\n#{lines.join("\n")}"
     end
 
     def self.supersession_section(adr)

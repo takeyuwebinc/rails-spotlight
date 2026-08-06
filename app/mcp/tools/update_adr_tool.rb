@@ -96,12 +96,17 @@ module Tools
       updated = result.data
       notes = reference_notes(updated)
       reference_note = notes.present? ? "\n#{notes}" : ""
+      # 品質所見は本文フィールドを変更した更新でのみ付記する。ステータスのみの
+      # 更新では本文が変わらず品質評価も実行されないため付記しない
+      body_updated = (updates.keys.map(&:to_s) &
+        AdrManagement::QualityAssessment::SOURCE_ATTRIBUTES).any?
+      quality_note = body_updated ? quality_notes(updated) : ""
       text_response(
         "ADR updated successfully:\n" \
         "- Number: #{updated.display_number}\n" \
         "- Title: #{updated.title}\n" \
         "- Status: #{updated.status}\n" \
-        "- Updated fields: #{updates.keys.join(', ')}#{reference_note}"
+        "- Updated fields: #{updates.keys.join(', ')}#{reference_note}#{quality_note}"
       )
     rescue => e
       text_response("Error updating ADR: #{e.message}")
