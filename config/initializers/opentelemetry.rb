@@ -18,13 +18,19 @@ if Rails.env.development? || Rails.env.production?
     c.resource = OpenTelemetry::SDK::Resources::Resource.create(
       "deployment.environment.name" => Rails.env.to_s
     )
-    c.use "OpenTelemetry::Instrumentation::Rails"
-    c.use "OpenTelemetry::Instrumentation::Faraday"
-    c.use "OpenTelemetry::Instrumentation::Net::HTTP"
-    # プロンプト・出力本文をスパンに含めるかは環境変数
+    # use_all で登録済みの全計装（Rails の各コンポーネント・Faraday・
+    # Net::HTTP・RubyLLM）を有効化する。個別に use "OpenTelemetry::
+    # Instrumentation::Rails" とするのは誤りで、アンブレラ計装の install は
+    # no-op のため Rack・ActionPack・ActiveRecord 等のサブ計装が入らず、
+    # リクエスト・DB・ジョブのスパンが一切生成されない。
+    #
+    # プロンプト・出力本文を RubyLLM のスパンに含めるかは環境変数
     # OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT で制御する。
     # 計装 gem の既定は含めないため、開発は .devcontainer/devcontainer.json、
     # 本番は config/deploy.yml で明示的に true を与えている
-    c.use "OpenTelemetry::Instrumentation::RubyLLM"
+    c.use_all(
+      # ヘルスチェックはトレース対象から除外する
+      "OpenTelemetry::Instrumentation::Rack" => { untraced_endpoints: [ "/up" ] }
+    )
   end
 end
