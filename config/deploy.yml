@@ -37,6 +37,12 @@ env:
     # puma プロセス内で Solid Queue（ワーカー・ディスパッチャ・recurring）を起動する。
     # 単一サーバー・小規模のため専用ワーカーコンテナは設けない（SPOTLIGHT-RAILS-39）
     SOLID_QUEUE_IN_PUMA: "1"
+    # LLM スパンにプロンプト・出力本文（gen_ai.input.messages / gen_ai.output.messages）を
+    # 含めて Sentry へ送る。計装 gem の既定は false のため明示的に有効化する。
+    # 送信前に filter_parameters によるキーベースのマスキングを通す
+    # （Observability::GenAiContentFilterExporter）が、自由文中の機密は素通りする。
+    # 会話内容が米国リージョンの Sentry に保存されることは SPOTLIGHT-RAILS-44 で受容済み
+    OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT: "true"
   secret:
     - RAILS_MASTER_KEY
 

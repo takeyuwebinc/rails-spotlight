@@ -14,7 +14,9 @@ if Rails.env.development? || Rails.env.production?
     c.use "OpenTelemetry::Instrumentation::Faraday"
     c.use "OpenTelemetry::Instrumentation::Net::HTTP"
     # プロンプト・出力本文をスパンに含めるかは環境変数
-    # OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT で制御する（既定: 含めない）
+    # OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT で制御する。
+    # 計装 gem の既定は含めないため、開発は .devcontainer/devcontainer.json、
+    # 本番は config/deploy.yml で明示的に true を与えている
     c.use "OpenTelemetry::Instrumentation::RubyLLM"
   end
 end

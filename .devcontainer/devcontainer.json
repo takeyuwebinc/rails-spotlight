@@ -17,7 +17,9 @@
 
   "containerEnv": {
     "KAMAL_REGISTRY_PASSWORD": "$KAMAL_REGISTRY_PASSWORD",
-    "CLAUDE_CONFIG_DIR": "${localEnv:HOME}/.claude"
+    "CLAUDE_CONFIG_DIR": "${localEnv:HOME}/.claude",
+    // LLM スパンにプロンプト・出力本文を含めて Sentry へ送る（本番は config/deploy.yml で設定）
+    "OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT": "true"
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.

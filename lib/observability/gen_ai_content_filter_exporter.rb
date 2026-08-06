@@ -9,7 +9,8 @@ module Observability
   # キーに紐づかない自由文（プロンプト・出力の本文）はキーベースでは
   # マスクできず、そのまま送信されうる。この残余リスクは受容している。
   # 内容の送信自体の可否は環境変数
-  # OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT（既定: 送信しない）で制御する。
+  # OTEL_INSTRUMENTATION_GENAI_CAPTURE_MESSAGE_CONTENT で制御する
+  # （計装 gem の既定は送信しない。本アプリは開発・本番とも true を設定している）。
   class GenAiContentFilterExporter
     # 会話・ツール実行の内容が入る属性。値は計装側が生成する JSON 文字列
     # （ツール結果のみ素の文字列のことがある）。
