@@ -36,6 +36,26 @@ module AdrManagement
     scope :recent_first, -> { order(created_at: :desc, id: :desc) }
     scope :pending_review, -> { where(reviewed_at: nil) }
 
+    # 品質所見の集計。new_findings は since 以降に作成された評価の所見数、
+    # それ以外は現在のスコープ全体の値。誤検知率（dismissed_rate）は
+    # 人が処理した所見（addressed + dismissed）に占める dismissed の比率で、
+    # 失効による自動クローズ（obsolete）は分母に含めない
+    def self.findings_summary(since:)
+      new_findings = where(created_at: since..).map { |assessment| Array(assessment.findings).size }.sum
+      counts = all.flat_map { |assessment| Array(assessment.findings).map { |f| f["review_result"] } }.tally
+      addressed = counts["addressed"].to_i
+      dismissed = counts["dismissed"].to_i
+      reviewed = addressed + dismissed
+      {
+        new_findings: new_findings,
+        open_findings: counts[nil].to_i,
+        addressed: addressed,
+        dismissed: dismissed,
+        obsolete: counts["obsolete"].to_i,
+        dismissed_rate: reviewed.zero? ? nil : dismissed.to_f / reviewed
+      }
+    end
+
     def self.fingerprint_for(adr)
       Digest::SHA256.hexdigest(
         SOURCE_ATTRIBUTES.map { |attribute| adr.public_send(attribute).to_s }.join("\x1F")

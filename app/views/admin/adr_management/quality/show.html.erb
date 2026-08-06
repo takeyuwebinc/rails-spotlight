@@ -1,0 +1,67 @@
+<% content_for(:title) { "品質所見" } %>
+
+<div class="flex justify-between items-center mb-6">
+  <h1 class="text-2xl font-bold text-zinc-900">品質所見</h1>
+</div>
+
+<%# 概況 %>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <div class="bg-white shadow rounded-lg p-4">
+    <p class="text-sm text-zinc-500">新規所見（30日）</p>
+    <p class="text-2xl font-bold text-zinc-900"><%= @summary[:new_findings] %> 件</p>
+  </div>
+  <div class="bg-white shadow rounded-lg p-4">
+    <p class="text-sm text-zinc-500">未処理</p>
+    <p class="text-2xl font-bold text-zinc-900"><%= @summary[:open_findings] %> 件</p>
+  </div>
+  <div class="bg-white shadow rounded-lg p-4">
+    <p class="text-sm text-zinc-500">処理内訳（累計）</p>
+    <p class="text-2xl font-bold text-zinc-900"><%= @summary[:addressed] + @summary[:dismissed] %> 件</p>
+    <p class="text-xs text-zinc-500">修正: <%= @summary[:addressed] %> / 誤検知: <%= @summary[:dismissed] %></p>
+  </div>
+  <div class="bg-white shadow rounded-lg p-4">
+    <p class="text-sm text-zinc-500">誤検知率</p>
+    <p class="text-2xl font-bold text-zinc-900">
+      <%= @summary[:dismissed_rate] ? format("%.1f%%", @summary[:dismissed_rate] * 100) : "未処理" %>
+    </p>
+  </div>
+</div>
+
+<%# レビューキュー: 品質所見 %>
+<div class="bg-white shadow rounded-lg mb-6">
+  <div class="px-4 py-3 border-b border-zinc-200">
+    <h2 class="text-lg font-semibold text-zinc-900">レビュー待ち: 品質所見（<%= @pending_assessments.size %> 件の評価）</h2>
+    <p class="text-sm text-zinc-500">所見は参考情報です。ADR を修正したら「修正した」、指摘が妥当でなければ「誤検知として却下」で処理してください。</p>
+  </div>
+  <% if @pending_assessments.any? %>
+    <ul class="divide-y divide-zinc-200">
+      <% @pending_assessments.each do |assessment| %>
+        <li class="p-4">
+          <div class="flex items-center gap-2 text-sm text-zinc-500 mb-1">
+            <span><%= assessment.created_at.to_date %></span>
+            <span class="rounded bg-zinc-100 px-2 py-0.5 text-xs"><%= assessment.layer %></span>
+            <span class="font-medium text-zinc-900"><%= assessment.adr.display_number %></span>
+            <span><%= assessment.adr.title %></span>
+          </div>
+          <ul class="mt-2 space-y-3">
+            <% assessment.open_findings.each do |finding| %>
+              <li class="flex flex-wrap items-center gap-3">
+                <p class="text-zinc-900"><%= finding["message"] %></p>
+                <div class="flex gap-2">
+                  <%= button_to "修正した", admin_adr_management_quality_assessment_finding_review_path(assessment),
+                        params: { code: finding["code"], review_result: "addressed" },
+                        class: "rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-500 cursor-pointer" %>
+                  <%= button_to "誤検知として却下", admin_adr_management_quality_assessment_finding_review_path(assessment),
+                        params: { code: finding["code"], review_result: "dismissed" },
+                        class: "rounded-md border border-zinc-300 px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 cursor-pointer" %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        </li>
+      <% end %>
+    </ul>
+  <% else %>
+    <p class="p-4 text-sm text-zinc-500">レビュー待ちの品質所見はありません。</p>
+  <% end %>
+</div>
