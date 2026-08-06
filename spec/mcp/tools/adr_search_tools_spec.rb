@@ -304,6 +304,36 @@ RSpec.describe "AdrManagement Search Tools" do
       expect(text).not_to include("2026-07-01 no_trigger")
     end
 
+    it "shows open quality findings only" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      adr = create(:adr_management_adr, engagement: engagement)
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule", findings: [
+        { "code" => "alternatives_missing", "field" => "alternatives", "message" => "代替案が記録されていません" }
+      ])
+      create(:adr_management_quality_assessment, adr: adr, layer: "llm", reviewed_at: Time.current, findings: [
+        { "code" => "generic_knowledge", "field" => "decision",
+          "message" => "一般論に見えます", "review_result" => "dismissed" }
+      ])
+
+      text = response_text(described_class.call(
+        engagement_code: "fabble", number: adr.number, server_context: server_context
+      ))
+
+      expect(text).to include("品質所見（未処理のみ・参考情報）", "[rule] 代替案が記録されていません")
+      expect(text).not_to include("一般論に見えます")
+    end
+
+    it "omits the quality section when there are no open findings" do
+      engagement = create(:adr_management_engagement, code: "fabble")
+      adr = create(:adr_management_adr, engagement: engagement)
+
+      text = response_text(described_class.call(
+        engagement_code: "fabble", number: adr.number, server_context: server_context
+      ))
+
+      expect(text).not_to include("品質所見")
+    end
+
     it "shows the supersession chain in both directions" do
       engagement = create(:adr_management_engagement, code: "fabble")
       old_adr = create(:adr_management_adr, engagement: engagement, status: "accepted", title: "旧決定")

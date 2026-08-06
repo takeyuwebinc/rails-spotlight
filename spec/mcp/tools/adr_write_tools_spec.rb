@@ -95,7 +95,10 @@ RSpec.describe "AdrManagement Write Tools" do
     end
 
     it "appends quality notes as advisory information and still registers the adr" do
-      text = response_text(described_class.call(**base_params))
+      text = nil
+      expect do
+        text = response_text(described_class.call(**base_params))
+      end.to have_enqueued_job(AdrManagement::AssessAdrQualityJob)
 
       expect(text).to include("registered successfully", "Quality notes")
       adr = engagement.adrs.sole
@@ -189,6 +192,22 @@ RSpec.describe "AdrManagement Write Tools" do
       expect(text).to include("updated successfully")
       expect(text).not_to include("Quality notes")
       expect(adr.quality_assessments.count).to eq(assessments_before)
+    end
+
+    it "enqueues the llm assessment job on a body update but not on a status-only update" do
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          decision: "新しい決定", server_context: server_context
+        )
+      end.to have_enqueued_job(AdrManagement::AssessAdrQualityJob).with(adr.id)
+
+      expect do
+        described_class.call(
+          engagement_code: "fabble", number: adr.number,
+          status: "accepted", server_context: server_context
+        )
+      end.not_to have_enqueued_job(AdrManagement::AssessAdrQualityJob)
     end
   end
 end
