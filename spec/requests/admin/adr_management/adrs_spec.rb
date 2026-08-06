@@ -69,6 +69,40 @@ RSpec.describe "Admin::AdrManagement::Adrs", type: :request do
       expect(response).to have_http_status(:success)
     end
 
+    it "shows the latest quality assessment of each layer with the finding state" do
+      adr = create(:adr_management_adr, engagement: engagement)
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule",
+        content_fingerprint: "a" * 64, origin: "admin:old@example.com",
+        reviewed_at: Time.current, created_at: 2.days.ago, findings: [
+          { "code" => "alternatives_missing", "field" => "alternatives",
+            "message" => "旧版の所見", "review_result" => "addressed" }
+        ])
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule",
+        origin: "admin:new@example.com", created_at: 1.day.ago, findings: [
+          { "code" => "status_quo_missing", "field" => "alternatives",
+            "message" => "現状維持案の検討が見当たりません" }
+        ])
+
+      get admin_adr_management_adr_path(adr)
+
+      expect(response.body).to include("品質所見", "現状維持案の検討が見当たりません", "未処理")
+      expect(response.body).to include("admin:new@example.com")
+      # 層ごとに最新の1件のみを表示する
+      expect(response.body).not_to include("旧版の所見")
+      # 評価が無い層は未評価として示す
+      expect(response.body).to include("LLM", "未評価")
+    end
+
+    it "shows an assessed ADR without findings as having none" do
+      adr = create(:adr_management_adr, engagement: engagement)
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule",
+        findings: [], reviewed_at: Time.current)
+
+      get admin_adr_management_adr_path(adr)
+
+      expect(response.body).to include("所見なし")
+    end
+
     it "shows the supersession chain" do
       old_adr = create(:adr_management_adr, engagement: engagement, status: "accepted", title: "旧決定")
       result = AdrManagement::RegisterAdr.perform(

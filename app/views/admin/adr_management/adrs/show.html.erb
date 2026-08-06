@@ -106,6 +106,49 @@
 
 <div class="bg-white shadow rounded-lg overflow-hidden mb-6">
   <div class="px-6 py-4 border-b border-zinc-200">
+    <h2 class="text-lg font-medium text-zinc-900">品質所見</h2>
+    <p class="text-sm text-zinc-500 mt-1">
+      層ごとの最新の評価結果です。所見は参考情報で、処理（修正した・誤検知として却下）は
+      <%= link_to "品質所見のレビューキュー", admin_adr_management_quality_path, class: "text-indigo-600 hover:text-indigo-900 underline" %>
+      から行います。
+    </p>
+  </div>
+  <div class="divide-y divide-zinc-200">
+    <% @quality_assessments.each do |layer, assessment| %>
+      <div class="px-6 py-4">
+        <div class="flex flex-wrap items-center gap-2 text-sm text-zinc-500">
+          <span class="rounded bg-zinc-100 px-2 py-0.5 text-xs text-zinc-700"><%= adr_quality_layer_label(layer) %></span>
+          <% if assessment %>
+            <span><%= assessment.created_at.strftime("%Y-%m-%d %H:%M") %></span>
+            <span>経路: <%= assessment.origin %></span>
+          <% else %>
+            <span>未評価</span>
+          <% end %>
+        </div>
+        <% if assessment %>
+          <% if assessment.findings.blank? %>
+            <p class="mt-2 text-sm text-zinc-500">所見なし（評価済み・指摘はありません）</p>
+          <% else %>
+            <ul class="mt-2 space-y-2">
+              <% assessment.findings.each do |finding| %>
+                <li class="text-sm">
+                  <span class="rounded px-2 py-0.5 text-xs font-medium <%= adr_finding_result_badge_class(finding["review_result"]) %>"><%= adr_finding_result_label(finding["review_result"]) %></span>
+                  <span class="text-zinc-900"><%= finding["message"] %></span>
+                  <% if finding["field"].present? %>
+                    <span class="text-zinc-500">（対象: <%= finding["field"] %>）</span>
+                  <% end %>
+                </li>
+              <% end %>
+            </ul>
+          <% end %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="bg-white shadow rounded-lg overflow-hidden mb-6">
+  <div class="px-6 py-4 border-b border-zinc-200">
     <h2 class="text-lg font-medium text-zinc-900">版履歴</h2>
   </div>
   <div class="divide-y divide-zinc-200">

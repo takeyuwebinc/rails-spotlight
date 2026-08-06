@@ -12,6 +12,7 @@ module Admin
 
       def show
         @revisions = @adr.revisions.recent_first
+        @quality_assessments = latest_quality_assessments_by_layer
       end
 
       def new
@@ -101,6 +102,15 @@ module Admin
           ::AdrManagement::Adr.find(params[:id])
         else
           ::AdrManagement::Adr.find_by_display_number!(params[:id])
+        end
+      end
+
+      # 層ごとの最新評価が現在の品質状態を表す。新しい評価の作成時に同じ層の
+      # 旧評価の未処理所見は自動クローズされるため、未処理所見は最新の1件にしか
+      # 残らない。評価が無い層は nil（未評価）として表示する
+      def latest_quality_assessments_by_layer
+        ::AdrManagement::QualityAssessment::LAYERS.index_with do |layer|
+          @adr.quality_assessments.where(layer: layer).recent_first.first
         end
       end
 

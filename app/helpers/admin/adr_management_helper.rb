@@ -23,6 +23,27 @@ module Admin
       "engagement_changed" => "案件変更"
     }.freeze
 
+    ADR_QUALITY_LAYER_LABELS = {
+      "rule" => "ルール",
+      "llm" => "LLM"
+    }.freeze
+
+    # 所見の処理結果。未処理（review_result 未設定）も表示上のラベルを持つため
+    # nil をキーに含める
+    ADR_FINDING_RESULT_LABELS = {
+      nil => "未処理",
+      "addressed" => "修正済み",
+      "dismissed" => "誤検知",
+      "obsolete" => "失効"
+    }.freeze
+
+    ADR_FINDING_RESULT_BADGE_CLASSES = {
+      nil => "bg-amber-100 text-amber-800",
+      "addressed" => "bg-green-100 text-green-800",
+      "dismissed" => "bg-zinc-200 text-zinc-600",
+      "obsolete" => "bg-zinc-200 text-zinc-600"
+    }.freeze
+
     def adr_status_label(status)
       ADR_STATUS_LABELS.fetch(status, status)
     end
@@ -33,6 +54,18 @@ module Admin
 
     def adr_change_type_label(change_type)
       ADR_CHANGE_TYPE_LABELS.fetch(change_type, change_type)
+    end
+
+    def adr_quality_layer_label(layer)
+      ADR_QUALITY_LAYER_LABELS.fetch(layer, layer)
+    end
+
+    def adr_finding_result_label(review_result)
+      ADR_FINDING_RESULT_LABELS.fetch(review_result.presence, review_result)
+    end
+
+    def adr_finding_result_badge_class(review_result)
+      ADR_FINDING_RESULT_BADGE_CLASSES.fetch(review_result.presence, "bg-zinc-200 text-zinc-600")
     end
 
     def render_adr_markdown(text)
