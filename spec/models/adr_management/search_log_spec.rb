@@ -23,6 +23,33 @@ RSpec.describe AdrManagement::SearchLog do
     end
   end
 
+  describe ".record" do
+    it "stores the search with stringified filters" do
+      engagement = create(:adr_management_engagement)
+
+      log = described_class.record(
+        mode: "natural_language", query: "認証まわりの決定", keyword: "認証",
+        engagement: engagement, filters: { status: "accepted", confidence: nil },
+        results: [ { adr_id: 1, score: 0.87 } ], result_count: 1, origin: "admin:me@example.com"
+      )
+
+      expect(log.mode).to eq("natural_language")
+      expect(log.engagement).to eq(engagement)
+      expect(log.filters).to eq("status" => "accepted")
+      expect(log.results).to eq([ { "adr_id" => 1, "score" => 0.87 } ])
+      expect(log.origin).to eq("admin:me@example.com")
+    end
+
+    # ログは分析用であり検索の契約に含めない（記録失敗で検索を失敗させない）
+    it "does not raise when the record cannot be saved" do
+      expect(Rails.error).to receive(:report).with(instance_of(ActiveRecord::RecordInvalid), handled: true)
+
+      expect {
+        described_class.record(mode: "unknown", results: [], result_count: 0, origin: "admin:me@example.com")
+      }.not_to raise_error
+    end
+  end
+
   describe ".pending_review" do
     it "returns zero-result logs that have not been reviewed" do
       pending = create(:adr_management_search_log, result_count: 0)

@@ -19,6 +19,21 @@ module AdrManagement
     scope :pending_review, -> { where(result_count: 0, reviewed_at: nil) }
     scope :recent_first, -> { order(created_at: :desc, id: :desc) }
 
+    # 検索の実行記録を残す。記録の失敗で検索本体を失敗させない（索引更新と
+    # 同じベストエフォート方針。ログは分析用であり検索の契約に含めない）。
+    # MCP ツールと管理画面の双方から呼ばれるため、集計対象となる値の作り方
+    # （案件の分離・フィルタの文字列化）はここに集約する
+    def self.record(mode:, origin:, results:, result_count:,
+                    query: nil, keyword: nil, engagement: nil, filters: {})
+      create!(
+        mode: mode, query: query, keyword: keyword, engagement: engagement,
+        filters: filters.compact.transform_values(&:to_s),
+        results: results, result_count: result_count, origin: origin
+      )
+    rescue => e
+      Rails.error.report(e, handled: true)
+    end
+
     # 期間内の検索実行数（モード別）と0件検索の数を集計して返す
     def self.summary(since:)
       logs = where(created_at: since..)

@@ -42,24 +42,40 @@ RSpec.describe AdrManagement::SearchNaturalLanguage do
     end
   end
 
-  describe "engagement scope" do
-    it "restricts results to the given engagement" do
+  describe "adr scope" do
+    it "restricts results to the given scope" do
       target = create_indexed_adr([ 1.0, 0.0, 0.0 ])
       create_indexed_adr([ 1.0, 0.0, 0.0 ])
       stub_query_embedding([ 1.0, 0.0, 0.0 ])
 
-      result = described_class.perform(query: "検索", engagement: target.engagement)
+      result = described_class.perform(
+        query: "検索", adr_scope: AdrManagement::Adr.where(engagement: target.engagement)
+      )
 
       expect(result.data.map(&:adr)).to eq([ target ])
     end
 
-    it "searches across engagements when no engagement is given" do
+    it "searches across all adrs when no scope is given" do
       first = create_indexed_adr([ 1.0, 0.0, 0.0 ])
       second = create_indexed_adr([ 0.9, 0.1, 0.0 ])
       stub_query_embedding([ 1.0, 0.0, 0.0 ])
 
       result = described_class.perform(query: "検索")
       expect(result.data.map(&:adr)).to contain_exactly(first, second)
+    end
+
+    # 上位 limit 件へ切り詰めてから絞り込むと、スコアの高い対象外 ADR に
+    # 枠を奪われて結果が目減りする。絞り込みはスコア計算の前に適用する
+    it "applies the scope before truncating to the limit" do
+      3.times { create_indexed_adr([ 1.0, 0.0, 0.0 ], status: "proposed") }
+      target = create_indexed_adr([ 0.5, 0.5, 0.0 ], status: "accepted")
+      stub_query_embedding([ 1.0, 0.0, 0.0 ])
+
+      result = described_class.perform(
+        query: "検索", adr_scope: AdrManagement::Adr.where(status: "accepted"), limit: 3
+      )
+
+      expect(result.data.map(&:adr)).to eq([ target ])
     end
   end
 

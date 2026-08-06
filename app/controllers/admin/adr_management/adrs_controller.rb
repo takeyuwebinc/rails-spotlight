@@ -3,15 +3,27 @@
 module Admin
   module AdrManagement
     class AdrsController < BaseController
+      # 自然言語検索は関連度順の上位のみを返す。一覧の既定表示（絞り込みのみ・
+      # 全件）と違い件数上限を設ける必要があるため、画面で扱える範囲の件数にする
+      NATURAL_LANGUAGE_LIMIT = 30
+
       before_action :set_adr, only: %i[show edit update destroy]
 
       def index
         @engagements = ::AdrManagement::Engagement.order(:code)
-        @adrs = filtered_adrs
+        @natural_language_limit = NATURAL_LANGUAGE_LIMIT
+        @query = params[:query].to_s.strip
+
+        if @query.present?
+          search_by_natural_language
+        else
+          @adrs = ordered(filtered_adrs)
+        end
       end
 
       def show
         @revisions = @adr.revisions.recent_first
+        @quality_assessments = latest_quality_assessments_by_layer
       end
 
       def new
@@ -104,12 +116,65 @@ module Admin
         end
       end
 
+      # 層ごとの最新評価が現在の品質状態を表す。新しい評価の作成時に同じ層の
+      # 旧評価の未処理所見は自動クローズされるため、未処理所見は最新の1件にしか
+      # 残らない。評価が無い層は nil（未評価）として表示する
+      def latest_quality_assessments_by_layer
+        ::AdrManagement::QualityAssessment::LAYERS.index_with do |layer|
+          @adr.quality_assessments.where(layer: layer).recent_first.first
+        end
+      end
+
+      # 自然言語検索の検索対象にもなるため、表示用の並び順と関連付けの
+      # 先読みは含めない（絞り込み条件だけを表すリレーションを返す）
       def filtered_adrs
-        adrs = ::AdrManagement::Adr.includes(:engagement).order(decided_on: :desc, id: :desc)
+        adrs = ::AdrManagement::Adr.all
         adrs = adrs.where(engagement_id: params[:engagement_id]) if params[:engagement_id].present?
         adrs = adrs.where(status: params[:status]) if params[:status].present?
         adrs = adrs.keyword_match(params[:keyword]) if params[:keyword].present?
         adrs
+      end
+
+      def ordered(adrs)
+        adrs.includes(:engagement).order(decided_on: :desc, id: :desc)
+      end
+
+      # 絞り込み後の ADR を対象に関連度順で上位を返す。埋め込み API が使えない
+      # ときは画面を失敗させず、絞り込みのみの一覧に縮退する（索引は自然言語
+      # 検索専用であり、DB を参照する一覧は索引が古くても正しさを保つ）
+      def search_by_natural_language
+        result = ::AdrManagement::SearchNaturalLanguage.perform(
+          query: @query, adr_scope: filtered_adrs, limit: NATURAL_LANGUAGE_LIMIT
+        )
+
+        if result.failure?
+          flash.now[:alert] = result.errors.map(&:message).join(" / ")
+          @adrs = ordered(filtered_adrs)
+          return
+        end
+
+        @adrs = result.data.map(&:adr)
+        @relevance_scores = result.data.to_h { |scored| [ scored.adr.id, scored.score ] }
+        record_natural_language_search_log(result.data)
+      end
+
+      # 0件検索は管理画面のレビューキュー、実行数・0件率は検索品質レポートの
+      # 母数になる。指標が Agent 経由の検索に偏らないよう管理画面からの検索も残す
+      def record_natural_language_search_log(scored)
+        engagement = if params[:engagement_id].present?
+          ::AdrManagement::Engagement.find_by(id: params[:engagement_id])
+        end
+
+        ::AdrManagement::SearchLog.record(
+          mode: "natural_language",
+          query: @query,
+          keyword: params[:keyword].presence,
+          engagement: engagement,
+          filters: { status: params[:status].presence },
+          results: scored.map { |entry| { adr_id: entry.adr.id, score: entry.score.round(4) } },
+          result_count: scored.size,
+          origin: web_origin
+        )
       end
 
       # フォームの選択肢。プロジェクトと置換対象は同一案件のものに限られるため、

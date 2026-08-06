@@ -33,6 +33,78 @@ RSpec.describe "Admin::AdrManagement::Adrs", type: :request do
     end
   end
 
+  describe "GET /admin/adr/adrs (自然言語検索)" do
+    def create_indexed_adr(vector, **attributes)
+      adr = create(:adr_management_adr, { engagement: engagement }.merge(attributes))
+      adr.chunks.create!(kind: "decision", content: adr.decision, state: "fresh",
+        embedding: vector.pack("f*"))
+      adr
+    end
+
+    def stub_query_embedding(vector)
+      stub_request(:post, Sakura::EmbeddingClient::ENDPOINT.to_s).to_return(
+        status: 200,
+        headers: { "Content-Type" => "application/json" },
+        body: { data: [ { embedding: vector, index: 0 } ] }.to_json
+      )
+    end
+
+    it "lists adrs in relevance order with their scores" do
+      create_indexed_adr([ 1.0, 0.0, 0.0 ], title: "近い決定")
+      create_indexed_adr([ 0.0, 1.0, 0.0 ], title: "遠い決定")
+      stub_query_embedding([ 1.0, 0.1, 0.0 ])
+
+      get admin_adr_management_adrs_path, params: { query: "認証まわりで過去に決めたことは？" }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("関連度</th>")
+      expect(response.body.index("近い決定")).to be < response.body.index("遠い決定")
+    end
+
+    it "narrows the candidates by the attribute and keyword filters" do
+      create_indexed_adr([ 1.0, 0.0, 0.0 ], title: "認証方式の選定", status: "accepted")
+      create_indexed_adr([ 1.0, 0.0, 0.0 ], title: "認証まわりの提案", status: "proposed")
+      create_indexed_adr([ 1.0, 0.0, 0.0 ], title: "デプロイ手順の決定", status: "accepted")
+      stub_query_embedding([ 1.0, 0.0, 0.0 ])
+
+      get admin_adr_management_adrs_path,
+        params: { query: "認証について", status: "accepted", keyword: "認証" }
+
+      expect(response.body).to include("認証方式の選定")
+      expect(response.body).not_to include("認証まわりの提案")
+      expect(response.body).not_to include("デプロイ手順の決定")
+    end
+
+    it "records the search with the admin origin" do
+      create_indexed_adr([ 1.0, 0.0, 0.0 ])
+      stub_query_embedding([ 1.0, 0.0, 0.0 ])
+
+      get admin_adr_management_adrs_path,
+        params: { query: "認証について", engagement_id: engagement.id, status: "accepted" }
+
+      log = ::AdrManagement::SearchLog.last
+      expect(log.mode).to eq("natural_language")
+      expect(log.query).to eq("認証について")
+      expect(log.engagement).to eq(engagement)
+      expect(log.filters).to eq("status" => "accepted")
+      expect(log.result_count).to eq(1)
+      expect(log.origin).to eq("admin:test@takeyuweb.co.jp")
+    end
+
+    it "falls back to the filtered list with an alert when the embedding api is down" do
+      create_indexed_adr([ 1.0, 0.0, 0.0 ], title: "既存の決定")
+      stub_request(:post, Sakura::EmbeddingClient::ENDPOINT.to_s).to_return(status: 500)
+
+      get admin_adr_management_adrs_path, params: { query: "認証について" }
+
+      expect(response).to have_http_status(:success)
+      expect(response.body).to include("自然言語検索を実行できません")
+      expect(response.body).to include("既存の決定")
+      expect(response.body).not_to include("関連度</th>")
+      expect(::AdrManagement::SearchLog.count).to eq(0)
+    end
+  end
+
   describe "GET /admin/adr/adrs/:id" do
     it "renders the body as markdown and shows revisions" do
       adr = create(:adr_management_adr, engagement: engagement,
@@ -67,6 +139,40 @@ RSpec.describe "Admin::AdrManagement::Adrs", type: :request do
 
       get "/admin/adr/adrs/#{adr.id}"
       expect(response).to have_http_status(:success)
+    end
+
+    it "shows the latest quality assessment of each layer with the finding state" do
+      adr = create(:adr_management_adr, engagement: engagement)
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule",
+        content_fingerprint: "a" * 64, origin: "admin:old@example.com",
+        reviewed_at: Time.current, created_at: 2.days.ago, findings: [
+          { "code" => "alternatives_missing", "field" => "alternatives",
+            "message" => "旧版の所見", "review_result" => "addressed" }
+        ])
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule",
+        origin: "admin:new@example.com", created_at: 1.day.ago, findings: [
+          { "code" => "status_quo_missing", "field" => "alternatives",
+            "message" => "現状維持案の検討が見当たりません" }
+        ])
+
+      get admin_adr_management_adr_path(adr)
+
+      expect(response.body).to include("品質所見", "現状維持案の検討が見当たりません", "未処理")
+      expect(response.body).to include("admin:new@example.com")
+      # 層ごとに最新の1件のみを表示する
+      expect(response.body).not_to include("旧版の所見")
+      # 評価が無い層は未評価として示す
+      expect(response.body).to include("LLM", "未評価")
+    end
+
+    it "shows an assessed ADR without findings as having none" do
+      adr = create(:adr_management_adr, engagement: engagement)
+      create(:adr_management_quality_assessment, adr: adr, layer: "rule",
+        findings: [], reviewed_at: Time.current)
+
+      get admin_adr_management_adr_path(adr)
+
+      expect(response.body).to include("所見なし")
     end
 
     it "shows the supersession chain" do
